@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>XTREME AVIATOR SHA512 HASH HIGH PREDICTOR PRO</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
@@ -26,6 +26,10 @@
       margin: 0;
       padding: 0;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
     }
     
     body {
@@ -37,6 +41,7 @@
       justify-content: center;
       align-items: center;
       padding: 20px;
+      touch-action: manipulation;
     }
     
     .main-container {
@@ -81,6 +86,7 @@
     
     .input-group {
       margin-bottom: 20px;
+      position: relative;
     }
     
     .input-group label {
@@ -91,7 +97,7 @@
       color: var(--light-2);
     }
     
-    input, select {
+    #hashInput {
       width: 100%;
       padding: 14px 16px;
       background: var(--dark-3);
@@ -102,10 +108,49 @@
       transition: all 0.3s ease;
     }
     
-    input:focus, select:focus {
+    #hashInput:focus {
       outline: none;
       border-color: var(--primary);
       box-shadow: 0 0 0 3px rgba(58, 134, 255, 0.2);
+    }
+    
+    .input-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    
+    .action-btn {
+      flex: 1;
+      padding: 10px 15px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: none;
+      font-size: 0.9rem;
+    }
+    
+    .paste-btn {
+      background: rgba(58, 134, 255, 0.2);
+      color: var(--primary);
+    }
+    
+    .paste-btn:hover {
+      background: rgba(58, 134, 255, 0.3);
+    }
+    
+    .clear-btn {
+      background: rgba(255, 0, 110, 0.2);
+      color: var(--danger);
+    }
+    
+    .clear-btn:hover {
+      background: rgba(255, 0, 110, 0.3);
     }
     
     .odd-buttons {
@@ -207,7 +252,7 @@
       font-weight: 500;
     }
     
-    .clear-btn {
+    .history-clear-btn {
       background: transparent;
       color: var(--danger);
       border: 1px solid var(--danger);
@@ -218,7 +263,7 @@
       transition: all 0.2s ease;
     }
     
-    .clear-btn:hover {
+    .history-clear-btn:hover {
       background: rgba(255, 0, 110, 0.1);
     }
     
@@ -238,6 +283,7 @@
       gap: 10px;
       align-items: center;
       transition: all 0.2s ease;
+      position: relative;
     }
     
     .history-item.active {
@@ -282,6 +328,27 @@
       margin-bottom: 3px;
     }
     
+    .copy-btn {
+      position: absolute;
+      right: 15px;
+      top: 15px;
+      background: rgba(58, 134, 255, 0.2);
+      color: var(--primary);
+      border: none;
+      border-radius: 4px;
+      padding: 5px 10px;
+      font-size: 0.7rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    .copy-btn:hover {
+      background: rgba(58, 134, 255, 0.3);
+    }
+    
     .footer {
       text-align: center;
       padding: 15px;
@@ -319,6 +386,22 @@
       .content {
         padding: 20px 15px;
       }
+      
+      .copy-btn {
+        position: static;
+        margin-top: 10px;
+        width: 100%;
+        justify-content: center;
+      }
+      
+      .input-actions {
+        flex-direction: column;
+        gap: 8px;
+      }
+      
+      .action-btn {
+        padding: 12px;
+      }
     }
     
     /* Animation for active signal */
@@ -330,6 +413,97 @@
     
     .active-signal {
       animation: pulse 2s infinite;
+    }
+
+    /* Custom Dialog Styles */
+    .dialog-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .dialog-overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .dialog-box {
+      background: var(--dark-2);
+      border-radius: 10px;
+      padding: 20px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+      transform: translateY(20px);
+      transition: transform 0.3s ease;
+    }
+
+    .dialog-overlay.active .dialog-box {
+      transform: translateY(0);
+    }
+
+    .dialog-title {
+      font-size: 1.2rem;
+      margin-bottom: 15px;
+      color: var(--light-1);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .dialog-message {
+      margin-bottom: 20px;
+      color: var(--light-2);
+      line-height: 1.5;
+    }
+
+    .dialog-buttons {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .dialog-btn {
+      padding: 8px 15px;
+      border-radius: 5px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .dialog-btn-cancel {
+      background: var(--dark-3);
+      color: var(--light-1);
+      border: 1px solid var(--dark-3);
+    }
+
+    .dialog-btn-cancel:hover {
+      background: var(--dark-1);
+    }
+
+    .dialog-btn-confirm {
+      background: var(--danger);
+      color: white;
+      border: 1px solid var(--danger);
+    }
+
+    .dialog-btn-confirm:hover {
+      background: #e00064;
+    }
+
+    .dialog-icon {
+      font-size: 1.5rem;
+      color: var(--danger);
     }
   </style>
 </head>
@@ -349,6 +523,15 @@
       <div class="input-group">
         <label for="hashInput">Enter SHA512 Hash</label>
         <input type="text" id="hashInput" placeholder="Paste your hash here...">
+        
+        <div class="input-actions">
+          <button class="action-btn paste-btn" id="pasteHashInput">
+            <i class="fas fa-paste"></i> Paste Hash
+          </button>
+          <button class="action-btn clear-btn" id="clearHashInput">
+            <i class="fas fa-times"></i> Clear
+          </button>
+        </div>
       </div>
       
       <div class="odd-buttons">
@@ -402,7 +585,7 @@
       <div class="history-container">
         <div class="history-header">
           <h3><i class="fas fa-history"></i> Prediction History</h3>
-          <button class="clear-btn" onclick="clearHistory()">
+          <button class="history-clear-btn" onclick="showClearDialog()">
             <i class="fas fa-trash-alt"></i> Clear
           </button>
         </div>
@@ -415,9 +598,49 @@
     </div>
   </div>
 
+  <!-- Custom Dialogs -->
+  <div class="dialog-overlay" id="clearDialog">
+    <div class="dialog-box">
+      <div class="dialog-title">
+        <i class="fas fa-exclamation-triangle dialog-icon"></i>
+        Confirm Clear History
+      </div>
+      <div class="dialog-message">Are you sure you want to clear all prediction history?</div>
+      <div class="dialog-buttons">
+        <button class="dialog-btn dialog-btn-cancel" onclick="hideClearDialog()">Cancel</button>
+        <button class="dialog-btn dialog-btn-confirm" onclick="clearHistory()">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="dialog-overlay" id="errorDialog">
+    <div class="dialog-box">
+      <div class="dialog-title">
+        <i class="fas fa-exclamation-circle dialog-icon"></i>
+        Invalid Input
+      </div>
+      <div class="dialog-message" id="errorMessage">Invalid SHA512 hash. Must be exactly 128 hexadecimal characters.</div>
+      <div class="dialog-buttons">
+        <button class="dialog-btn dialog-btn-confirm" onclick="hideErrorDialog()">OK</button>
+      </div>
+    </div>
+  </div>
+
   <audio id="signalSound" src="https://assets.mixkit.co/sfx/preview/mixkit-alarm-digital-clock-beep-989.mp3" preload="auto"></audio>
+  <textarea id="copyTemplate" style="position: absolute; left: -9999px;"></textarea>
 
   <script>
+    // Prevent text selection and zooming
+    document.addEventListener('contextmenu', function(e) {
+      e.preventDefault();
+    });
+    
+    document.addEventListener('keydown', function(e) {
+      if (e.ctrlKey && (e.keyCode === 67 || e.keyCode === 86 || e.keyCode === 85 || e.keyCode === 117)) {
+        e.preventDefault();
+      }
+    });
+    
     // Update current date and time
     function updateDateTime() {
       const now = new Date();
@@ -430,6 +653,22 @@
     
     setInterval(updateDateTime, 1000);
     updateDateTime();
+
+    // Clear hash input
+    document.getElementById("clearHashInput").addEventListener('click', function() {
+      document.getElementById("hashInput").value = '';
+    });
+
+    // Paste hash input
+    document.getElementById("pasteHashInput").addEventListener('click', async function() {
+      try {
+        const text = await navigator.clipboard.readText();
+        document.getElementById("hashInput").value = text;
+      } catch (err) {
+        console.error('Failed to read clipboard contents: ', err);
+        showErrorDialog("Failed to paste from clipboard. Please paste manually.");
+      }
+    });
 
     // Audio functions
     function playSignalSound() {
@@ -470,27 +709,59 @@
 
     // Countdown and active signal tracking
     let activeSignals = [];
+    let currentCountdown = null;
     
     function updateCountdown(targetTime, odd) {
+      // Clear any existing countdown
+      if (currentCountdown) {
+        clearInterval(currentCountdown);
+      }
+      
       const signalId = Date.now();
       activeSignals.push({ id: signalId, time: targetTime, odd });
       
-      const timer = setInterval(() => {
+      currentCountdown = setInterval(() => {
         const now = new Date();
         const diff = Math.floor((targetTime - now) / 1000);
         
         if (diff <= 0) {
-          clearInterval(timer);
+          clearInterval(currentCountdown);
           document.getElementById("countdown").textContent = `Signal for ${odd}x reached! Place your bet now!`;
+          document.getElementById("countdown").style.backgroundColor = "rgba(6, 214, 160, 0.2)";
+          document.getElementById("countdown").style.borderLeftColor = "var(--success)";
           playSignalSound();
           highlightActiveSignal(signalId);
           removeSignal(signalId);
+          
+          // Check for next signal after this one completes
+          setTimeout(checkNextSignal, 1000);
         } else {
           const min = Math.floor(diff / 60);
           const sec = diff % 60;
           document.getElementById("countdown").textContent = `Next ${odd}x signal in: ${min}m ${sec}s`;
         }
       }, 1000);
+    }
+
+    function checkNextSignal() {
+      const now = new Date();
+      const history = JSON.parse(localStorage.getItem('aviatorHistory')) || [];
+      
+      // Find the next upcoming signal that hasn't passed yet
+      const upcomingSignals = history.filter(item => {
+        const signalTime = new Date(parseInt(item.timestamp));
+        return signalTime > now;
+      }).sort((a, b) => a.timestamp - b.timestamp);
+      
+      if (upcomingSignals.length > 0) {
+        const nextSignal = upcomingSignals[0];
+        const signalTime = new Date(parseInt(nextSignal.timestamp));
+        updateCountdown(signalTime, nextSignal.odd);
+      } else {
+        document.getElementById("countdown").textContent = "No active signals. Create a new prediction.";
+        document.getElementById("countdown").style.backgroundColor = "rgba(255, 190, 11, 0.1)";
+        document.getElementById("countdown").style.borderLeftColor = "var(--warning)";
+      }
     }
 
     function highlightActiveSignal(id) {
@@ -507,6 +778,33 @@
 
     function removeSignal(id) {
       activeSignals = activeSignals.filter(signal => signal.id !== id);
+    }
+
+    // Generate WhatsApp message template
+    function generateWhatsAppTemplate(odd, timeStr) {
+      let riskText = "";
+      if (odd === "10") {
+        riskText = " (High Risk)";
+      } else if (odd === "7") {
+        riskText = " (Risk)";
+      }
+      
+      return `Xtreme Aviator Predictor : 1xbet\n\n${timeStr}\n\nODD - ${odd}×${riskText}`;
+    }
+
+    // Copy to clipboard function
+    function copyToClipboard(text) {
+      const textarea = document.getElementById("copyTemplate");
+      textarea.value = text;
+      textarea.select();
+      document.execCommand("copy");
+      
+      // Show feedback
+      const originalText = document.activeElement.innerHTML;
+      document.activeElement.innerHTML = '<i class="fas fa-check"></i> Copied!';
+      setTimeout(() => {
+        document.activeElement.innerHTML = originalText;
+      }, 2000);
     }
 
     // History functions
@@ -529,6 +827,9 @@
           <span><i class="fas fa-chart-line"></i> Score: ${score}</span>
           <span><i class="fas fa-random"></i> Entropy: ${entropy.toFixed(2)}</span>
         </div>
+        <button class="copy-btn" onclick="copySignalToClipboard('${odd}', '${timeStr}', this)">
+          <i class="fas fa-copy"></i> Copy
+        </button>
       `;
       
       log.insertBefore(entry, log.firstChild);
@@ -548,11 +849,40 @@
       localStorage.setItem('aviatorHistory', JSON.stringify(history));
     }
 
+    function copySignalToClipboard(odd, timeStr, button) {
+      const template = generateWhatsAppTemplate(odd, timeStr);
+      copyToClipboard(template);
+    }
+
+    // Dialog functions
+    function showClearDialog() {
+      document.getElementById("clearDialog").classList.add("active");
+    }
+
+    function hideClearDialog() {
+      document.getElementById("clearDialog").classList.remove("active");
+    }
+
+    function showErrorDialog(message) {
+      document.getElementById("errorMessage").textContent = message;
+      document.getElementById("errorDialog").classList.add("active");
+    }
+
+    function hideErrorDialog() {
+      document.getElementById("errorDialog").classList.remove("active");
+    }
+
     function clearHistory() {
-      if (confirm("Are you sure you want to clear all prediction history?")) {
-        document.getElementById("historyLog").innerHTML = '';
-        localStorage.removeItem('aviatorHistory');
+      document.getElementById("historyLog").innerHTML = '';
+      localStorage.removeItem('aviatorHistory');
+      document.getElementById("countdown").textContent = "No active signals. Create a new prediction.";
+      document.getElementById("countdown").style.backgroundColor = "rgba(255, 190, 11, 0.1)";
+      document.getElementById("countdown").style.borderLeftColor = "var(--warning)";
+      if (currentCountdown) {
+        clearInterval(currentCountdown);
+        currentCountdown = null;
       }
+      hideClearDialog();
     }
 
     function loadHistory() {
@@ -588,10 +918,16 @@
             <span><i class="fas fa-chart-line"></i> Score: ${item.score}</span>
             <span><i class="fas fa-random"></i> Entropy: ${item.entropy}</span>
           </div>
+          <button class="copy-btn" onclick="copySignalToClipboard('${item.odd}', '${item.signalTime}', this)">
+            <i class="fas fa-copy"></i> Copy
+          </button>
         `;
         
         log.appendChild(entry);
       });
+      
+      // Check for active signals on load
+      checkNextSignal();
     }
 
     // Main prediction function
@@ -600,7 +936,7 @@
       const output = document.getElementById("output");
 
       if (!hash || hash.length !== 128 || !/^[a-f0-9]+$/.test(hash)) {
-        alert("Invalid SHA512 hash. Must be exactly 128 hexadecimal characters.");
+        showErrorDialog("Invalid SHA512 hash. Must be exactly 128 hexadecimal characters.");
         return;
       }
 
@@ -626,20 +962,6 @@
     window.onload = function() {
       loadHistory();
       updateDateTime();
-      
-      // Check for any active signals that might have been missed
-      const history = JSON.parse(localStorage.getItem('aviatorHistory')) || [];
-      const now = new Date();
-      
-      history.forEach(item => {
-        const signalTime = new Date(parseInt(item.timestamp));
-        if (now >= signalTime && now <= new Date(signalTime.getTime() + 10000)) {
-          const entry = document.querySelector(`.history-item[data-id="${item.id}"]`);
-          if (entry) {
-            entry.classList.add('active');
-          }
-        }
-      });
     };
   </script>
 </body>
