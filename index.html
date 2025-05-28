@@ -320,8 +320,8 @@
       color: var(--primary);
       border: none;
       border-radius: 4px;
-      padding: 5px 10px;
-      font-size: 0.7rem;
+      padding: 10px 15px;
+      font-size: 0.9rem;
       cursor: pointer;
       transition: all 0.2s ease;
       display: flex;
@@ -882,6 +882,14 @@
         clearInterval(currentCountdown);
         currentCountdown = null;
       }
+      
+      // Clear the results display
+      document.getElementById("result-odd").textContent = "-";
+      document.getElementById("result-entropy").textContent = "-";
+      document.getElementById("result-score").textContent = "-";
+      document.getElementById("result-delay").textContent = "-";
+      document.getElementById("result-time").textContent = "-";
+      
       hideClearDialog();
     }
 
