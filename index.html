@@ -116,8 +116,26 @@
     
     .input-actions {
       display: flex;
-      justify-content: flex-end;
+      justify-content: space-between;
       margin-top: 10px;
+    }
+    
+    .paste-btn {
+      background: rgba(58, 134, 255, 0.2);
+      color: var(--primary);
+      border: none;
+      border-radius: 8px;
+      padding: 10px 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .paste-btn:hover {
+      background: rgba(58, 134, 255, 0.3);
     }
     
     .clear-btn {
@@ -398,6 +416,16 @@
         width: 100%;
         justify-content: center;
       }
+      
+      .input-actions {
+        flex-direction: column;
+        gap: 10px;
+      }
+      
+      .paste-btn, .clear-btn {
+        width: 100%;
+        justify-content: center;
+      }
     }
     
     /* Animation for active signal */
@@ -520,6 +548,9 @@
         <label for="hashInput">Enter SHA512 Hash</label>
         <input type="text" id="hashInput" placeholder="Paste your hash here...">
         <div class="input-actions">
+          <button class="paste-btn" id="pasteHashInput">
+            <i class="fas fa-paste"></i> Paste Hash
+          </button>
           <button class="clear-btn" id="clearHashInput">
             <i class="fas fa-times"></i> Clear
           </button>
@@ -637,6 +668,17 @@
     
     setInterval(updateDateTime, 1000);
     updateDateTime();
+
+    // Paste hash from clipboard
+    document.getElementById("pasteHashInput").addEventListener('click', async function() {
+      try {
+        const text = await navigator.clipboard.readText();
+        document.getElementById("hashInput").value = text;
+      } catch (err) {
+        showErrorDialog("Failed to read from clipboard. Please paste manually.");
+        console.error("Failed to read clipboard contents: ", err);
+      }
+    });
 
     // Clear hash input
     document.getElementById("clearHashInput").addEventListener('click', function() {
