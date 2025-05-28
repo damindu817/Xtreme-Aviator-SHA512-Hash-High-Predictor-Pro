@@ -26,10 +26,6 @@
       margin: 0;
       padding: 0;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
     }
     
     body {
@@ -106,6 +102,10 @@
       color: var(--light-1);
       font-size: 1rem;
       transition: all 0.3s ease;
+      -webkit-user-select: text;
+      -moz-user-select: text;
+      -ms-user-select: text;
+      user-select: text;
     }
     
     #hashInput:focus {
@@ -116,37 +116,22 @@
     
     .input-actions {
       display: flex;
-      gap: 10px;
+      justify-content: flex-end;
       margin-top: 10px;
-    }
-    
-    .action-btn {
-      flex: 1;
-      padding: 10px 15px;
-      border-radius: 8px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      border: none;
-      font-size: 0.9rem;
-    }
-    
-    .paste-btn {
-      background: rgba(58, 134, 255, 0.2);
-      color: var(--primary);
-    }
-    
-    .paste-btn:hover {
-      background: rgba(58, 134, 255, 0.3);
     }
     
     .clear-btn {
       background: rgba(255, 0, 110, 0.2);
       color: var(--danger);
+      border: none;
+      border-radius: 8px;
+      padding: 10px 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
     
     .clear-btn:hover {
@@ -202,7 +187,6 @@
       border-radius: 10px;
       padding: 20px;
       margin-top: 25px;
-      display: none;
       border-left: 4px solid var(--primary);
     }
     
@@ -348,6 +332,27 @@
     .copy-btn:hover {
       background: rgba(58, 134, 255, 0.3);
     }
+
+    .copy-result-btn {
+      background: rgba(58, 134, 255, 0.2);
+      color: var(--primary);
+      border: none;
+      border-radius: 8px;
+      padding: 10px 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 15px;
+      width: 100%;
+    }
+    
+    .copy-result-btn:hover {
+      background: rgba(58, 134, 255, 0.3);
+    }
     
     .footer {
       text-align: center;
@@ -392,15 +397,6 @@
         margin-top: 10px;
         width: 100%;
         justify-content: center;
-      }
-      
-      .input-actions {
-        flex-direction: column;
-        gap: 8px;
-      }
-      
-      .action-btn {
-        padding: 12px;
       }
     }
     
@@ -523,12 +519,8 @@
       <div class="input-group">
         <label for="hashInput">Enter SHA512 Hash</label>
         <input type="text" id="hashInput" placeholder="Paste your hash here...">
-        
         <div class="input-actions">
-          <button class="action-btn paste-btn" id="pasteHashInput">
-            <i class="fas fa-paste"></i> Paste Hash
-          </button>
-          <button class="action-btn clear-btn" id="clearHashInput">
+          <button class="clear-btn" id="clearHashInput">
             <i class="fas fa-times"></i> Clear
           </button>
         </div>
@@ -578,6 +570,9 @@
           <span class="label">Next Signal Time:</span>
           <span class="value" id="result-time">-</span>
         </div>
+        <button class="copy-result-btn" onclick="copyResultToClipboard(event)">
+          <i class="fas fa-copy"></i> Copy Signal
+        </button>
       </div>
       
       <div class="countdown" id="countdown"></div>
@@ -630,17 +625,6 @@
   <textarea id="copyTemplate" style="position: absolute; left: -9999px;"></textarea>
 
   <script>
-    // Prevent text selection and zooming
-    document.addEventListener('contextmenu', function(e) {
-      e.preventDefault();
-    });
-    
-    document.addEventListener('keydown', function(e) {
-      if (e.ctrlKey && (e.keyCode === 67 || e.keyCode === 86 || e.keyCode === 85 || e.keyCode === 117)) {
-        e.preventDefault();
-      }
-    });
-    
     // Update current date and time
     function updateDateTime() {
       const now = new Date();
@@ -659,15 +643,9 @@
       document.getElementById("hashInput").value = '';
     });
 
-    // Paste hash input
-    document.getElementById("pasteHashInput").addEventListener('click', async function() {
-      try {
-        const text = await navigator.clipboard.readText();
-        document.getElementById("hashInput").value = text;
-      } catch (err) {
-        console.error('Failed to read clipboard contents: ', err);
-        showErrorDialog("Failed to paste from clipboard. Please paste manually.");
-      }
+    // Allow text selection and pasting in input field
+    document.getElementById("hashInput").addEventListener('contextmenu', function(e) {
+      e.stopPropagation(); // Allow context menu for input field
     });
 
     // Audio functions
@@ -784,12 +762,27 @@
     function generateWhatsAppTemplate(odd, timeStr) {
       let riskText = "";
       if (odd === "10") {
-        riskText = " (High Risk)";
+        riskText = " (Very High Risk)";
       } else if (odd === "7") {
         riskText = " (Risk)";
       }
       
-      return `Xtreme Aviator Predictor : 1xbet\n\n${timeStr}\n\nODD - ${odd}×${riskText}`;
+      return `Xtreme Aviator Predictor - 1xBet\n\nTime: ${timeStr}\nOdd: ${odd}×${riskText}\n\nThis signal is generated using the XTREME AVIATOR SHA512 HASH HIGH PREDICTOR PRO tool.`;
+    }
+
+    // Generate result copy template
+    function generateResultCopyTemplate() {
+      const odd = document.getElementById("result-odd").textContent;
+      const time = document.getElementById("result-time").textContent;
+      
+      let riskText = "";
+      if (odd === "10x") {
+        riskText = " (Very High Risk)";
+      } else if (odd === "7x") {
+        riskText = " (Risk)";
+      }
+      
+      return `Xtreme Aviator Predictor - 1xBet\n\nTime: ${time}\nOdd: ${odd}${riskText}\n\nThis signal is generated using the XTREME AVIATOR SHA512 HASH HIGH PREDICTOR PRO tool.`;
     }
 
     // Copy to clipboard function
@@ -805,6 +798,12 @@
       setTimeout(() => {
         document.activeElement.innerHTML = originalText;
       }, 2000);
+    }
+
+    function copyResultToClipboard(e) {
+      e.preventDefault(); // Prevent keyboard from opening on mobile
+      const template = generateResultCopyTemplate();
+      copyToClipboard(template);
     }
 
     // History functions
@@ -827,7 +826,7 @@
           <span><i class="fas fa-chart-line"></i> Score: ${score}</span>
           <span><i class="fas fa-random"></i> Entropy: ${entropy.toFixed(2)}</span>
         </div>
-        <button class="copy-btn" onclick="copySignalToClipboard('${odd}', '${timeStr}', this)">
+        <button class="copy-btn" onclick="copySignalToClipboard(event, '${odd}', '${timeStr}')">
           <i class="fas fa-copy"></i> Copy
         </button>
       `;
@@ -849,7 +848,8 @@
       localStorage.setItem('aviatorHistory', JSON.stringify(history));
     }
 
-    function copySignalToClipboard(odd, timeStr, button) {
+    function copySignalToClipboard(e, odd, timeStr) {
+      e.preventDefault(); // Prevent keyboard from opening on mobile
       const template = generateWhatsAppTemplate(odd, timeStr);
       copyToClipboard(template);
     }
@@ -918,7 +918,7 @@
             <span><i class="fas fa-chart-line"></i> Score: ${item.score}</span>
             <span><i class="fas fa-random"></i> Entropy: ${item.entropy}</span>
           </div>
-          <button class="copy-btn" onclick="copySignalToClipboard('${item.odd}', '${item.signalTime}', this)">
+          <button class="copy-btn" onclick="copySignalToClipboard(event, '${item.odd}', '${item.signalTime}')">
             <i class="fas fa-copy"></i> Copy
           </button>
         `;
