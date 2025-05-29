@@ -118,6 +118,7 @@
       display: flex;
       justify-content: space-between;
       margin-top: 10px;
+      gap: 10px;
     }
     
     .paste-btn {
@@ -132,6 +133,8 @@
       display: flex;
       align-items: center;
       gap: 8px;
+      flex: 1;
+      justify-content: center;
     }
     
     .paste-btn:hover {
@@ -150,6 +153,8 @@
       display: flex;
       align-items: center;
       gap: 8px;
+      flex: 1;
+      justify-content: center;
     }
     
     .clear-btn:hover {
@@ -333,12 +338,13 @@
     .copy-btn {
       position: absolute;
       right: 15px;
-      top: 15px;
+      top: 50%;
+      transform: translateY(-50%);
       background: rgba(58, 134, 255, 0.2);
       color: var(--primary);
       border: none;
       border-radius: 4px;
-      padding: 10px 15px;
+      padding: 8px 12px;
       font-size: 0.9rem;
       cursor: pointer;
       transition: all 0.2s ease;
@@ -395,6 +401,14 @@
         text-align: left;
         margin-top: 8px;
       }
+
+      .copy-btn {
+        position: static;
+        transform: none;
+        margin-top: 10px;
+        width: 100%;
+        justify-content: center;
+      }
     }
     
     @media (max-width: 480px) {
@@ -410,21 +424,8 @@
         padding: 20px 15px;
       }
       
-      .copy-btn {
-        position: static;
-        margin-top: 10px;
-        width: 100%;
-        justify-content: center;
-      }
-      
       .input-actions {
         flex-direction: column;
-        gap: 10px;
-      }
-      
-      .paste-btn, .clear-btn {
-        width: 100%;
-        justify-content: center;
       }
     }
     
@@ -552,7 +553,7 @@
             <i class="fas fa-paste"></i> Paste Hash
           </button>
           <button class="clear-btn" id="clearHashInput">
-            <i class="fas fa-times"></i> Clear
+            <i class="fas fa-broom"></i> Clear
           </button>
         </div>
       </div>
