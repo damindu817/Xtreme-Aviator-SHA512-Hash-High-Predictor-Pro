@@ -286,7 +286,7 @@
       padding: 15px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.05);
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-columns: 1fr 1fr auto;
       gap: 10px;
       align-items: center;
       transition: all 0.2s ease;
@@ -336,10 +336,6 @@
     }
     
     .copy-btn {
-      position: absolute;
-      right: 15px;
-      top: 50%;
-      transform: translateY(-50%);
       background: rgba(58, 134, 255, 0.2);
       color: var(--primary);
       border: none;
@@ -351,6 +347,7 @@
       display: flex;
       align-items: center;
       gap: 5px;
+      margin-left: 10px;
     }
     
     .copy-btn:hover {
@@ -404,10 +401,10 @@
 
       .copy-btn {
         position: static;
-        transform: none;
         margin-top: 10px;
         width: 100%;
         justify-content: center;
+        margin-left: 0;
       }
     }
     
