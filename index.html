@@ -19,6 +19,7 @@
       --light-1: #f8f9fa;
       --light-2: #e9ecef;
       --accent: #3a86ff;
+      --extreme: #ff00ff;
     }
     
     * {
@@ -163,7 +164,7 @@
     
     .odd-buttons {
       display: grid;
-      grid-template-columns: repeat(5, 1fr);
+      grid-template-columns: repeat(6, 1fr);
       gap: 12px;
       margin: 25px 0;
     }
@@ -195,6 +196,7 @@
     .odd-btn:nth-child(3) { border-top: 3px solid #ff9e00; }
     .odd-btn:nth-child(4) { border-top: 3px solid var(--secondary); }
     .odd-btn:nth-child(5) { border-top: 3px solid var(--danger); }
+    .odd-btn:nth-child(6) { border-top: 3px solid var(--extreme); }
     
     .odd-btn span:first-child {
       font-size: 1.2rem;
@@ -222,6 +224,7 @@
     #confidence-4 { background: #ff9e00; }
     #confidence-7 { background: var(--secondary); }
     #confidence-10 { background: var(--danger); }
+    #confidence-100 { background: var(--extreme); }
     
     .results {
       background: var(--dark-3);
@@ -271,6 +274,11 @@
     .countdown.danger {
       background: rgba(255, 0, 110, 0.1);
       border-left: 4px solid var(--danger);
+    }
+    
+    .countdown.extreme {
+      background: rgba(255, 0, 255, 0.1);
+      border-left: 4px solid var(--extreme);
     }
     
     .history-container {
@@ -335,6 +343,10 @@
       background: rgba(255, 0, 110, 0.05);
     }
     
+    .history-item.extreme {
+      background: rgba(255, 0, 255, 0.05);
+    }
+    
     .history-item:last-child {
       border-bottom: none;
     }
@@ -361,6 +373,7 @@
     .history-multiplier-4 span { background: rgba(255, 158, 0, 0.2); color: #ff9e00; }
     .history-multiplier-7 span { background: rgba(131, 56, 236, 0.2); color: var(--secondary); }
     .history-multiplier-10 span { background: rgba(255, 0, 110, 0.2); color: var(--danger); }
+    .history-multiplier-100 span { background: rgba(255, 0, 255, 0.2); color: var(--extreme); }
     
     .history-details {
       text-align: right;
@@ -412,6 +425,11 @@
       background: rgba(58, 134, 255, 0.3);
     }
     
+    .copy-result-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
     .stats-container {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -447,6 +465,10 @@
     
     .stat-card.danger .value {
       color: var(--danger);
+    }
+    
+    .stat-card.extreme .value {
+      color: var(--extreme);
     }
     
     .footer {
@@ -662,6 +684,7 @@
     .actual-multiplier-4 { color: #ff9e00; }
     .actual-multiplier-7 { color: var(--secondary); }
     .actual-multiplier-10 { color: var(--danger); }
+    .actual-multiplier-100 { color: var(--extreme); }
   </style>
 </head>
 <body>
@@ -731,6 +754,11 @@
           <span>Very High Risk</span>
           <div class="confidence-bar" id="confidence-10" style="width: 0%"></div>
         </button>
+        <button class="odd-btn" onclick="predict('100')" id="odd-100">
+          <span>100x</span>
+          <span>Extreme Risk</span>
+          <div class="confidence-bar" id="confidence-100" style="width: 0%"></div>
+        </button>
       </div>
       
       <div class="results" id="output">
@@ -758,7 +786,7 @@
           <span class="label">Next Signal Time:</span>
           <span class="value" id="result-time">-</span>
         </div>
-        <button class="copy-result-btn" onclick="copyResultToClipboard(event)">
+        <button class="copy-result-btn" id="copyResultBtn" onclick="copyResultToClipboard(event)" disabled>
           <i class="fas fa-copy"></i> Copy Signal
         </button>
       </div>
@@ -832,6 +860,7 @@
     let currentCountdown = null;
     let serverTimeOffset = 0;
     let lastHash = '';
+    let selectedOdd = null;
     
     // Initialize on load
     window.onload = function() {
@@ -849,11 +878,21 @@
         if (hash.length === 128 && /^[a-f0-9]+$/.test(hash)) {
           lastHash = hash;
           preAnalyzeHash(hash);
+          // Don't enable copy button here - wait for odd selection
         } else {
           // Reset confidence bars if invalid hash
-          [2, 3, 4, 7, 10].forEach(odd => {
+          [2, 3, 4, 7, 10, 100].forEach(odd => {
             document.getElementById(`confidence-${odd}`).style.width = '0%';
           });
+          document.getElementById("copyResultBtn").disabled = true;
+          
+          // Reset results display if hash is invalid
+          document.getElementById("result-odd").textContent = "-";
+          document.getElementById("result-entropy").textContent = "-";
+          document.getElementById("result-score").textContent = "-";
+          document.getElementById("result-confidence").textContent = "-";
+          document.getElementById("result-delay").textContent = "-";
+          document.getElementById("result-time").textContent = "-";
         }
       });
     };
@@ -910,7 +949,7 @@
       return indexes.reduce((sum, i) => sum + parseInt(hash[i], 16), 0);
     }
     
-    // 3. Corrected confidence calculation
+    // 3. Corrected confidence calculation (updated for 100x)
     function calculateConfidence(entropy, score, oddTarget, hash) {
       let confidence = 60; // Base confidence
       
@@ -922,21 +961,26 @@
       if (score > 110) confidence += 8;
       
       // Pattern bonuses for high multipliers
-      if (oddTarget === "10" && /([a-f0-9])\1{3,}/.test(hash)) confidence += 15;
-      if (oddTarget === "7" && /[13579][bdf]{2,}/.test(hash)) confidence += 10;
+      if (oddTarget === "100" && /([a-f0-9])\1{4,}/.test(hash)) confidence += 20;
+      else if (oddTarget === "10" && /([a-f0-9])\1{3,}/.test(hash)) confidence += 15;
+      else if (oddTarget === "7" && /[13579][bdf]{2,}/.test(hash)) confidence += 10;
       
       // Odd-specific adjustments
-      if (oddTarget === "10") confidence -= 10;
+      if (oddTarget === "100") confidence -= 30;
+      else if (oddTarget === "10") confidence -= 10;
       else if (oddTarget === "7") confidence += 5;
       else if (oddTarget === "2") confidence += 10;
       
-      return Math.min(95, Math.max(20, Math.round(confidence)));
+      return Math.min(95, Math.max(5, Math.round(confidence))); // Minimum 5% confidence for 100x
     }
     
-    // 4. Corrected delay calculation
+    // 4. Corrected delay calculation (updated for 100x)
     function calculateDelay(score, entropy, oddTarget, hash) {
       let base = parseInt(oddTarget) * 60;
 
+      // Special case for 100x - longer delay
+      if (oddTarget === "100") base = 1800; // 30 minutes minimum
+      
       if (entropy > 3.6) base += 30;
       if (score % 10 === 7 || score % 10 === 3) base += 45;
       if (score % 5 === 0) base -= 20;
@@ -944,7 +988,8 @@
       if (/([a-f0-9])\1{2,}/.test(hash)) base += 60;
       if (["aa", "ff", "11", "00"].includes(hash.slice(-2))) base += 30;
 
-      if (oddTarget === "10") base += 90;
+      if (oddTarget === "100") base += 1800; // Additional 30 minutes for 100x
+      else if (oddTarget === "10") base += 90;
 
       return Math.max(60, base);
     }
@@ -957,7 +1002,7 @@
       const score = scoreFromHash(hash);
       
       // Update confidence bars for each odd
-      [2, 3, 4, 7, 10].forEach(odd => {
+      [2, 3, 4, 7, 10, 100].forEach(odd => {
         const confidence = calculateConfidence(entropy, score, odd.toString(), hash);
         document.getElementById(`confidence-${odd}`).style.width = `${confidence}%`;
       });
@@ -973,6 +1018,9 @@
         lastHash = text.trim();
         if (lastHash.length === 128 && /^[a-f0-9]+$/.test(lastHash)) {
           preAnalyzeHash(lastHash);
+          // Don't enable copy button here - wait for odd selection
+        } else {
+          document.getElementById("copyResultBtn").disabled = true;
         }
       } catch (err) {
         showErrorDialog("Failed to read from clipboard. Please paste manually.");
@@ -984,11 +1032,21 @@
     document.getElementById("clearHashInput").addEventListener('click', function() {
       document.getElementById("hashInput").value = '';
       lastHash = '';
+      document.getElementById("copyResultBtn").disabled = true;
+      selectedOdd = null;
       
       // Reset confidence bars
-      [2, 3, 4, 7, 10].forEach(odd => {
+      [2, 3, 4, 7, 10, 100].forEach(odd => {
         document.getElementById(`confidence-${odd}`).style.width = '0%';
       });
+      
+      // Reset results display
+      document.getElementById("result-odd").textContent = "-";
+      document.getElementById("result-entropy").textContent = "-";
+      document.getElementById("result-score").textContent = "-";
+      document.getElementById("result-confidence").textContent = "-";
+      document.getElementById("result-delay").textContent = "-";
+      document.getElementById("result-time").textContent = "-";
     });
     
     // Audio functions
@@ -1021,7 +1079,7 @@
         if (diff <= 0) {
           clearInterval(currentCountdown);
           document.getElementById("countdown").textContent = `Signal for ${odd}x reached! Place your bet now!`;
-          document.getElementById("countdown").className = "countdown";
+          document.getElementById("countdown").className = odd === "100" ? "countdown extreme" : "countdown";
           playSignalSound();
           highlightActiveSignal(signalId);
           removeSignal(signalId);
@@ -1034,7 +1092,9 @@
           document.getElementById("countdown").textContent = `Next ${odd}x signal in: ${min}m ${sec}s`;
           
           // Change color based on urgency
-          if (diff < 30) {
+          if (odd === "100") {
+            document.getElementById("countdown").className = "countdown extreme";
+          } else if (diff < 30) {
             document.getElementById("countdown").className = "countdown danger";
           } else if (diff < 60) {
             document.getElementById("countdown").className = "countdown warning";
@@ -1084,13 +1144,16 @@
     // Generate WhatsApp message template
     function generateWhatsAppTemplate(odd, timeStr, confidence) {
       let riskText = "";
-      if (odd === "10") {
+      if (odd === "100") {
+        riskText = " (EXTREME RISK - RARE OPPORTUNITY)";
+        return `Xtreme Aviator Predictor - 1xBet\n\nTime: ${timeStr}\nOdd: ${odd}×${riskText}\nConfidence: ${confidence}%\n\nThis signal is generated using the XTREME AVIATOR SHA512 HASH ULTRA PREDICTOR PRO tool with AI-powered accuracy.`;
+      } else if (odd === "10") {
         riskText = " (Very High Risk)";
       } else if (odd === "7") {
         riskText = " (High Risk)";
       }
       
-      return `Xtreme Aviator Predictor - 1xBet\n\nTime: ${timeStr}\nOdd: ${odd}×${riskText}\nConfidence: ${confidence}%\n\nThis signal is generated using the XTREME AVIATOR SHA512 HASH ULTRA PREDICTOR PRO tool with AI-powered accuracy.`;
+      return `Xtreme Aviator Predictor - 1xBet\n\nTime: ${timeStr}\nOdd: ${odd}×${riskText}\n\nThis signal is generated using the XTREME AVIATOR SHA512 HASH ULTRA PREDICTOR PRO tool with AI-powered accuracy.`;
     }
     
     // Generate result copy template
@@ -1099,14 +1162,15 @@
       const time = document.getElementById("result-time").textContent;
       const confidence = document.getElementById("result-confidence").textContent;
       
-      let riskText = "";
-      if (odd === "10x") {
-        riskText = " (Very High Risk)";
+      if (odd === "100x") {
+        return `Xtreme Aviator Predictor - 1xBet\n\nTime: ${time}\nOdd: ${odd} (EXTREME RISK - RARE OPPORTUNITY)\nConfidence: ${confidence}\n\nThis signal is generated using the XTREME AVIATOR SHA512 HASH ULTRA PREDICTOR PRO tool with AI-powered accuracy.`;
+      } else if (odd === "10x") {
+        return `Xtreme Aviator Predictor - 1xBet\n\nTime: ${time}\nOdd: ${odd} (Very High Risk)\n\nThis signal is generated using the XTREME AVIATOR SHA512 HASH ULTRA PREDICTOR PRO tool with AI-powered accuracy.`;
       } else if (odd === "7x") {
-        riskText = " (High Risk)";
+        return `Xtreme Aviator Predictor - 1xBet\n\nTime: ${time}\nOdd: ${odd} (High Risk)\n\nThis signal is generated using the XTREME AVIATOR SHA512 HASH ULTRA PREDICTOR PRO tool with AI-powered accuracy.`;
+      } else {
+        return `Xtreme Aviator Predictor - 1xBet\n\nTime: ${time}\nOdd: ${odd}\n\nThis signal is generated using the XTREME AVIATOR SHA512 HASH ULTRA PREDICTOR PRO tool with AI-powered accuracy.`;
       }
-      
-      return `Xtreme Aviator Predictor - 1xBet\n\nTime: ${time}\nOdd: ${odd}${riskText}\nConfidence: ${confidence}\n\nThis signal is generated using the XTREME AVIATOR SHA512 HASH ULTRA PREDICTOR PRO tool with AI-powered accuracy.`;
     }
     
     // Copy to clipboard function
@@ -1126,6 +1190,17 @@
     
     function copyResultToClipboard(e) {
       e.preventDefault();
+      const hash = document.getElementById("hashInput").value.trim();
+      if (!hash || hash.length !== 128 || !/^[a-f0-9]+$/.test(hash)) {
+        showErrorDialog("Please enter a valid SHA512 hash first.");
+        return;
+      }
+      
+      if (!selectedOdd) {
+        showErrorDialog("Please select an odd first.");
+        return;
+      }
+      
       const template = generateResultCopyTemplate();
       copyToClipboard(template);
     }
@@ -1141,6 +1216,7 @@
       const log = document.getElementById("historyLog");
       const entry = document.createElement("div");
       entry.className = `history-item history-multiplier-${odd}`;
+      if (odd === "100") entry.classList.add('extreme');
       entry.dataset.id = Date.now();
       entry.dataset.time = new Date(Date.now() + serverTimeOffset + delay * 1000).getTime();
       
@@ -1274,6 +1350,7 @@
       history.forEach(item => {
         const entry = document.createElement("div");
         entry.className = `history-item history-multiplier-${item.odd}`;
+        if (item.odd === "100") entry.classList.add('extreme');
         if (item.wasSuccessful === true) entry.classList.add('success');
         if (item.wasSuccessful === false) entry.classList.add('failure');
         entry.dataset.id = item.id;
@@ -1289,7 +1366,9 @@
         // Determine the color class for the actual multiplier
         let multiplierClass = '';
         if (item.actualMultiplier) {
-          if (item.actualMultiplier >= 10) {
+          if (item.actualMultiplier >= 100) {
+            multiplierClass = 'actual-multiplier-100';
+          } else if (item.actualMultiplier >= 10) {
             multiplierClass = 'actual-multiplier-10';
           } else if (item.actualMultiplier >= 7) {
             multiplierClass = 'actual-multiplier-7';
@@ -1342,6 +1421,7 @@
         return;
       }
       
+      selectedOdd = oddStr;
       const entropy = calcEntropy(hash);
       const score = scoreFromHash(hash);
       const confidence = calculateConfidence(entropy, score, oddStr, hash);
@@ -1356,6 +1436,9 @@
       document.getElementById("result-confidence").textContent = `${confidence}%`;
       document.getElementById("result-delay").textContent = `${delay} seconds`;
       document.getElementById("result-time").textContent = timeStr;
+      
+      // Enable copy button only after odd is selected
+      document.getElementById("copyResultBtn").disabled = false;
       
       output.style.display = 'block';
       updateCountdown(future, oddStr);
@@ -1390,8 +1473,13 @@
       setInterval(() => {
         const history = JSON.parse(localStorage.getItem('aviatorHistory')) || [];
         if (history.length > 0 && history[0].wasSuccessful === null) {
-          // Simulate a random result between 1x and 15x
-          const actualMultiplier = (Math.random() * 14 + 1).toFixed(2);
+          // Simulate a random result between 1x and 150x (with very low chance for 100x+)
+          let actualMultiplier;
+          if (Math.random() < 0.01) { // 1% chance for 100x+
+            actualMultiplier = (Math.random() * 50 + 100).toFixed(2);
+          } else {
+            actualMultiplier = (Math.random() * 14 + 1).toFixed(2);
+          }
           recordResult(history[0].id, parseFloat(actualMultiplier));
         }
       }, 10000); // Check every 10 seconds
