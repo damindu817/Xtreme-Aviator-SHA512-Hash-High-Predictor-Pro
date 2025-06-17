@@ -880,19 +880,7 @@
           preAnalyzeHash(hash);
           // Don't enable copy button here - wait for odd selection
         } else {
-          // Reset confidence bars if invalid hash
-          [2, 3, 4, 7, 10, 100].forEach(odd => {
-            document.getElementById(`confidence-${odd}`).style.width = '0%';
-          });
           document.getElementById("copyResultBtn").disabled = true;
-          
-          // Reset results display if hash is invalid
-          document.getElementById("result-odd").textContent = "-";
-          document.getElementById("result-entropy").textContent = "-";
-          document.getElementById("result-score").textContent = "-";
-          document.getElementById("result-confidence").textContent = "-";
-          document.getElementById("result-delay").textContent = "-";
-          document.getElementById("result-time").textContent = "-";
         }
       });
     };
@@ -931,9 +919,9 @@
       }
     }
     
-    // ====== CORRECTED CORE ALGORITHMS ====== //
+    // ====== UPDATED CORE ALGORITHMS ====== //
     
-    // 1. Corrected entropy calculation
+    // 1. Corrected entropy calculation (unchanged)
     function calcEntropy(hash) {
       const freq = {};
       for (let c of hash) freq[c] = (freq[c] || 0) + 1;
@@ -943,55 +931,54 @@
       }, 0);
     }
     
-    // 2. Corrected hash scoring
+    // 2. UPDATED hash scoring with improved index positions
     function scoreFromHash(hash) {
-      const indexes = [10, 25, 50, 75, 100];
+      const indexes = [5, 15, 25, 35, 50, 75, 100, 120];
       return indexes.reduce((sum, i) => sum + parseInt(hash[i], 16), 0);
     }
     
-    // 3. Corrected confidence calculation (updated for 100x)
+    // 3. UPDATED confidence calculation with improved logic for 3× odds
     function calculateConfidence(entropy, score, oddTarget, hash) {
-      let confidence = 60; // Base confidence
+      let confidence = 50;
       
-      // Entropy contributes up to 25%
-      confidence += (entropy - 3.5) * 8; 
+      // Improved entropy scoring
+      if (entropy > 4.2) confidence += 10;
+      if (entropy > 4.5) confidence += 15;
       
-      // Score pattern contributes up to 25%
-      if (score % 9 === 0) confidence += 12;
-      if (score > 110) confidence += 8;
+      // Improved pattern recognition
+      if (score % 7 === 0) confidence += 8;
+      if (score % 5 === 0) confidence += 5;
+      if (/(\w)\1{2,}/.test(hash)) confidence += 15;
+      if (/(\w{2,4})\1{1,}/.test(hash)) confidence += 10;
       
-      // Pattern bonuses for high multipliers
-      if (oddTarget === "100" && /([a-f0-9])\1{4,}/.test(hash)) confidence += 20;
-      else if (oddTarget === "10" && /([a-f0-9])\1{3,}/.test(hash)) confidence += 15;
-      else if (oddTarget === "7" && /[13579][bdf]{2,}/.test(hash)) confidence += 10;
+      // Tail pattern detection
+      const tail = hash.slice(-4);
+      if (/^(aaaa|ffff|0000|1111)$/.test(tail)) confidence += 20;
       
       // Odd-specific adjustments
-      if (oddTarget === "100") confidence -= 30;
-      else if (oddTarget === "10") confidence -= 10;
-      else if (oddTarget === "7") confidence += 5;
-      else if (oddTarget === "2") confidence += 10;
+      if (oddTarget === '3') confidence += 5;
+      if (oddTarget === '7') confidence += 5;
+      if (oddTarget === '10') confidence += 10;
+      if (oddTarget === '100') confidence += 15;
       
-      return Math.min(95, Math.max(5, Math.round(confidence))); // Minimum 5% confidence for 100x
+      return Math.min(98, Math.max(5, Math.round(confidence)));
     }
     
-    // 4. Corrected delay calculation (updated for 100x)
+    // 4. UPDATED delay calculation with improved timing for 3× odds
     function calculateDelay(score, entropy, oddTarget, hash) {
-      let base = parseInt(oddTarget) * 60;
-
-      // Special case for 100x - longer delay
-      if (oddTarget === "100") base = 1800; // 30 minutes minimum
+      let base = parseInt(oddTarget) * 45;
       
-      if (entropy > 3.6) base += 30;
-      if (score % 10 === 7 || score % 10 === 3) base += 45;
-      if (score % 5 === 0) base -= 20;
-
-      if (/([a-f0-9])\1{2,}/.test(hash)) base += 60;
-      if (["aa", "ff", "11", "00"].includes(hash.slice(-2))) base += 30;
-
-      if (oddTarget === "100") base += 1800; // Additional 30 minutes for 100x
-      else if (oddTarget === "10") base += 90;
-
-      return Math.max(60, base);
+      if (entropy > 4.3) base += 20;
+      if (score % 7 === 0) base += 30;
+      if (score % 5 === 0) base += 15;
+      if (/(\w)\1{2,}/.test(hash)) base += 20;
+      if (/(\w{2,4})\1{1,}/.test(hash)) base += 15;
+      
+      // Odd-specific adjustments
+      if (oddTarget === '10') base += 60;
+      if (oddTarget === '100') base += 600;
+      
+      return Math.max(45, base);
     }
     
     // Pre-analyze hash to show confidence levels
@@ -1008,7 +995,7 @@
       });
     }
     
-    // ====== END OF CORRECTED ALGORITHMS ====== //
+    // ====== END OF UPDATED ALGORITHMS ====== //
     
     // Paste hash from clipboard
     document.getElementById("pasteHashInput").addEventListener('click', async function() {
