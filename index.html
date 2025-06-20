@@ -1065,10 +1065,27 @@
       if (/^(aaaa|ffff|0000|1111)$/.test(tail)) confidence += 20;
       
       // Odd-specific adjustments
+      if (oddTarget === '2') confidence += 5;
       if (oddTarget === '3') confidence += 5;
       if (oddTarget === '7') confidence += 5;
       if (oddTarget === '10') confidence += 10;
       if (oddTarget === '100') confidence += 15;
+      
+      // New logic for 4×, 7×, and 10× multipliers
+      if (oddTarget === '4') {
+        if (entropy > 3.91 && entropy < 3.97) confidence += 10;
+        if (score >= 45 && score <= 80) confidence += 8;
+      }
+      
+      if (oddTarget === '7') {
+        if (entropy > 4.1 && entropy < 4.4) confidence += 12;
+        if (score >= 55 && score <= 90) confidence += 6;
+      }
+      
+      if (oddTarget === '10') {
+        if (entropy > 4.25 && entropy < 4.5) confidence += 15;
+        if (score >= 60 && score <= 100) confidence += 10;
+      }
       
       return Math.min(98, Math.max(5, Math.round(confidence)));
     }
