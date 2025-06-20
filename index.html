@@ -888,9 +888,9 @@
   </div>
 
   <!-- Disclaimer Badge -->
-  <div class="disclaimer-badge" id="disclaimerBadge">
+  <a href="https://damindu817.github.io/DISCLAIMER-/" target="_blank" class="disclaimer-badge" id="disclaimerBadge">
     <i class="fas fa-exclamation-triangle"></i>
-  </div>
+  </a>
 
   <!-- Disclaimer Popup -->
   <div class="disclaimer-popup" id="disclaimerPopup">
@@ -942,6 +942,7 @@
 
   <audio id="signalSound" src="https://assets.mixkit.co/sfx/preview/mixkit-alarm-digital-clock-beep-989.mp3" preload="auto"></audio>
   <audio id="successSound" src="https://assets.mixkit.co/sfx/preview/mixkit-achievement-bell-600.mp3" preload="auto"></audio>
+  <audio id="beepSound" src="https://assets.mixkit.co/sfx/preview/mixkit-positive-interface-beep-221.mp3" preload="auto"></audio>
   <textarea id="copyTemplate" style="position: absolute; left: -9999px;"></textarea>
 
   <script>
@@ -973,9 +974,6 @@
           document.getElementById("copyResultBtn").disabled = true;
         }
       });
-      
-      // Disclaimer badge
-      document.getElementById("disclaimerBadge").addEventListener('click', showDisclaimer);
       
       // Show disclaimer popup after 5 seconds
       setTimeout(() => {
@@ -1160,6 +1158,12 @@
       audio.play().catch(e => console.log("Audio play failed:", e));
     }
     
+    function playBeepSound() {
+      const audio = document.getElementById("beepSound");
+      audio.currentTime = 0;
+      audio.play().catch(e => console.log("Beep sound play failed:", e));
+    }
+    
     // Countdown and active signal tracking
     function updateCountdown(targetTime, odd) {
       // Clear any existing countdown
@@ -1179,6 +1183,7 @@
           document.getElementById("countdown").textContent = `Signal for ${odd}x reached! Place your bet now!`;
           document.getElementById("countdown").className = odd === "100" ? "countdown extreme" : "countdown";
           playSignalSound();
+          playBeepSound(); // Play beep sound when signal is reached
           highlightActiveSignal(signalId);
           removeSignal(signalId);
           
