@@ -706,7 +706,7 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      z-index: 1000;
+      z-index: 9999;
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
       transition: all 0.3s ease;
     }
@@ -731,7 +731,7 @@
       transform: translateY(20px);
       opacity: 0;
       transition: all 0.3s ease;
-      z-index: 1000;
+      z-index: 9998;
       pointer-events: none;
     }
 
@@ -930,17 +930,6 @@
       overflow: hidden;
       touch-action: none;
     }
-    
-    /* Shine effect for popup */
-    @keyframes shine {
-      0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.1); }
-      50% { box-shadow: 0 0 20px 10px rgba(255, 255, 255, 0.2); }
-      100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.1); }
-    }
-    
-    .signal-popup {
-      animation: shine 3s ease-in-out infinite;
-    }
   </style>
 </head>
 <body>
@@ -1061,7 +1050,7 @@
     </div>
     
     <div class="footer">
-      XTREME AVIATOR SHA512 HASH ULTRA PREDICTOR © <span id="current-year"></span> | ALL RIGHTS RESERVED
+      XTREME AVIATOR SHA512 HASH ULTRA PREDICTOR PRO © <span id="current-year"></span> | ALL RIGHTS RESERVED
     </div>
   </div>
 
@@ -1161,6 +1150,7 @@
     let currentSignalIndex = 0;
     let signalEndInterval = null;
     let signalCountdownInterval = null;
+    let disclaimerShown = false;
     
     // Initialize on load
     window.onload = function() {
@@ -1188,27 +1178,21 @@
       document.getElementById("signalPopupClose").addEventListener('click', closeSignalPopup);
       
       // Initialize disclaimer badge
-      document.getElementById("disclaimerBadge").addEventListener('click', function() {
-        toggleDisclaimer();
+      const disclaimerBadge = document.getElementById("disclaimerBadge");
+      disclaimerBadge.addEventListener('click', function(e) {
+        e.preventDefault();
         window.open('https://damindu817.github.io/DISCLAIMER-/', '_blank');
       });
       
-      // Show disclaimer popup after 5 seconds
-      setTimeout(() => {
-        showDisclaimer();
-        setTimeout(hideDisclaimer, 8000);
-      }, 5000);
-    };
-    
-    // Toggle disclaimer popup
-    function toggleDisclaimer() {
-      const popup = document.getElementById("disclaimerPopup");
-      if (popup.classList.contains("show")) {
-        hideDisclaimer();
-      } else {
-        showDisclaimer();
+      // Show disclaimer popup after 5 seconds if not shown before
+      if (!sessionStorage.getItem('disclaimerShown')) {
+        setTimeout(() => {
+          showDisclaimer();
+          setTimeout(hideDisclaimer, 8000);
+          sessionStorage.setItem('disclaimerShown', 'true');
+        }, 5000);
       }
-    }
+    };
     
     // Show disclaimer popup
     function showDisclaimer() {
