@@ -764,171 +764,320 @@
       text-decoration: underline;
     }
 
-    /* New Signal Popup - Improved for mobile */
-    .signal-popup-overlay {
+    /* Premium Signal Popup Styles (from popup htmlviewer.html) */
+    .signal-container {
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
       bottom: 0;
-      background: rgba(0, 0, 0, 0.85);
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(8px);
       display: flex;
       justify-content: center;
       align-items: center;
       z-index: 2000;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.3s ease;
-      padding: 15px;
+      transition: opacity 0.4s ease-out;
     }
-
-    .signal-popup-overlay.active {
+    
+    .signal-container.active {
       opacity: 1;
       pointer-events: all;
     }
-
-    .signal-popup {
-      background: rgba(26, 32, 44, 0.95);
-      border-radius: 16px;
+    
+    .signal-card {
       width: 100%;
-      max-width: 500px;
-      max-height: 90vh;
-      overflow-y: auto;
-      padding: 20px;
+      max-width: 440px;
+      background: linear-gradient(145deg, #1e293b, #0f172a);
+      border-radius: 20px;
       border: 1px solid rgba(255, 255, 255, 0.1);
-      transform: scale(0.9);
-      opacity: 0;
-      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      position: relative;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
       overflow: hidden;
+      transform: translateY(20px) scale(0.98);
+      opacity: 0;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2);
     }
-
-    .signal-popup-overlay.active .signal-popup {
-      transform: scale(1);
+    
+    .signal-container.active .signal-card {
+      transform: translateY(0) scale(1);
       opacity: 1;
     }
-
-    .signal-popup-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
+    
+    /* Header Section */
+    .signal-header {
+      padding: 24px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
       position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
-
-    .signal-popup-title {
+    
+    .signal-header::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 24px;
+      right: 24px;
+      height: 2px;
+      background: linear-gradient(90deg, var(--primary), rgba(58, 134, 255, 0.3));
+      opacity: 0.3;
+    }
+    
+    .signal-title {
       font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--light-1);
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
       display: flex;
       align-items: center;
       gap: 10px;
+      transform: translateY(5px);
     }
-
-    .signal-popup-close {
-      background: transparent;
-      border: none;
-      color: var(--light-2);
-      font-size: 1.5rem;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      padding: 5px;
+    
+    .signal-title i {
+      color: white;
+      font-size: 1.2em;
     }
-
-    .signal-popup-close:hover {
-      color: var(--danger);
-      transform: rotate(90deg);
-    }
-
-    .signal-popup-content {
-      margin-bottom: 20px;
-    }
-
-    .signal-guide {
-      background: rgba(6, 214, 160, 0.1);
-      border-left: 4px solid var(--success);
-      padding: 15px;
-      border-radius: 8px;
-      margin-top: 15px;
-    }
-
-    .signal-guide-title {
-      font-weight: 600;
-      color: var(--success);
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .signal-guide-content {
-      font-size: 0.9rem;
-      line-height: 1.6;
-      color: var(--light-2);
-    }
-
-    .signal-guide-step {
-      margin-bottom: 8px;
-      display: flex;
-      gap: 8px;
-    }
-
-    .signal-guide-step i {
-      color: var(--success);
-      margin-top: 3px;
-    }
-
-    .signal-popup-footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 20px;
-      font-size: 0.8rem;
-      color: var(--light-2);
-    }
-
-    /* Countdown circle styles */
-    .countdown-circle {
-      width: 60px;
-      height: 60px;
+    
+    .close-btn {
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
-      background: rgba(255, 255, 255, 0.1);
+      background: rgba(0, 0, 0, 0.2);
+      border: none;
+      color: white;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 15px auto;
-      position: relative;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      transform: translateY(5px);
     }
-
+    
+    .close-btn:hover {
+      background: var(--danger);
+      transform: translateY(5px) rotate(90deg);
+    }
+    
+    /* Signal Meta Section */
+    .signal-meta {
+      display: flex;
+      justify-content: space-between;
+      padding: 30px 24px 0;
+    }
+    
+    .meta-item {
+      text-align: center;
+      flex: 1;
+    }
+    
+    .meta-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      opacity: 0.7;
+      margin-bottom: 6px;
+    }
+    
+    .meta-value {
+      font-size: 1.4rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+    }
+    
+    .meta-value.time {
+      color: var(--warning);
+    }
+    
+    .meta-value.odd {
+      color: var(--success);
+      font-size: 1.8rem;
+    }
+    
+    /* Countdown Section */
+    .countdown-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 20px 0;
+    }
+    
+    .countdown-circle {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.08);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      border: 3px solid var(--danger);
+      box-shadow: 0 0 20px rgba(255, 32, 110, 0.3);
+      margin-bottom: 10px;
+    }
+    
     .countdown-circle::before {
       content: '';
       position: absolute;
-      width: 100%;
-      height: 100%;
+      width: calc(100% + 10px);
+      height: calc(100% + 10px);
       border-radius: 50%;
-      border: 3px solid var(--success);
-      border-top-color: transparent;
-      animation: spin 1s linear infinite;
+      border: 3px solid transparent;
+      border-top-color: var(--primary);
+      animation: spin 2s linear infinite;
     }
-
-    .countdown-circle-value {
-      font-size: 1.5rem;
+    
+    #countdown-timer {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--danger);
+      line-height: 1;
+      z-index: 1;
+    }
+    
+    .countdown-label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--danger);
+      margin-top: 5px;
+    }
+    
+    /* Strategy Section */
+    .strategy-section {
+      background: rgba(6, 214, 160, 0.05);
+      border-top: 1px solid rgba(6, 214, 160, 0.1);
+      border-bottom: 1px solid rgba(6, 214, 160, 0.1);
+      margin: 20px 0;
+      padding: 24px;
+      position: relative;
+    }
+    
+    .strategy-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 24px;
+      right: 24px;
+      height: 2px;
+      background: linear-gradient(90deg, var(--success), rgba(6, 214, 160, 0.3));
+    }
+    
+    .strategy-title {
+      font-size: 1rem;
       font-weight: 700;
-      color: var(--light-1);
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--success);
     }
-
-    /* Disable text selection in popup */
-    .signal-popup {
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
+    
+    .strategy-title i {
+      color: var(--success);
     }
-
-    /* Disable background interaction when popup is active */
-    body.popup-active {
-      overflow: hidden;
-      touch-action: none;
+    
+    .strategy-steps {
+      display: grid;
+      gap: 16px;
+    }
+    
+    .strategy-step {
+      display: flex;
+      gap: 12px;
+      font-size: 0.92rem;
+      line-height: 1.5;
+    }
+    
+    .step-number {
+      flex-shrink: 0;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: rgba(6, 214, 160, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--success);
+    }
+    
+    .highlight {
+      font-weight: 700;
+      color: var(--warning);
+    }
+    
+    /* Footer */
+    .signal-footer {
+      text-align: center;
+      padding: 0 24px 24px;
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.6);
+      font-weight: 500;
+      line-height: 1.4;
+    }
+    
+    .footer-title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+      letter-spacing: 0.5px;
+    }
+    
+    .footer-subtitle {
+      font-size: 0.75rem;
+      opacity: 0.6;
+    }
+    
+    /* Responsive */
+    @media (max-width: 480px) {
+      .signal-card {
+        max-width: 90%;
+        border-radius: 16px;
+      }
+      
+      .signal-header {
+        padding: 20px;
+      }
+      
+      .signal-title {
+        font-size: 1.3rem;
+      }
+      
+      .signal-meta {
+        padding: 20px 20px 0;
+      }
+      
+      .meta-value {
+        font-size: 1.2rem;
+      }
+      
+      .meta-value.odd {
+        font-size: 1.5rem;
+      }
+      
+      .countdown-circle {
+        width: 100px;
+        height: 100px;
+      }
+      
+      #countdown-timer {
+        font-size: 1.8rem;
+      }
+      
+      .strategy-section {
+        padding: 20px;
+      }
     }
   </style>
 </head>
@@ -1107,28 +1256,49 @@
     </div>
   </div>
 
-  <!-- New Signal Popup -->
-  <div class="signal-popup-overlay" id="signalPopupOverlay">
-    <div class="signal-popup">
-      <div class="signal-popup-header">
-        <h2 class="signal-popup-title">
-          <i class="fas fa-bell"></i> Signal Guide
-        </h2>
-        <button class="signal-popup-close" id="signalPopupClose">
+  <!-- Premium Signal Popup -->
+  <div class="signal-container" id="signalPopup">
+    <div class="signal-card">
+      <div class="signal-header">
+        <div class="signal-title">
+          <i class="fas fa-bell"></i> PREMIUM SIGNAL
+        </div>
+        <button class="close-btn" onclick="closeSignalPopup()">
           <i class="fas fa-times"></i>
         </button>
       </div>
       
-      <div class="signal-popup-content">
+      <div class="signal-meta">
+        <div class="meta-item">
+          <div class="meta-label">Signal Time</div>
+          <div class="meta-value time" id="signal-time">-</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">Target</div>
+          <div class="meta-value odd" id="signal-odd">-</div>
+        </div>
+      </div>
+      
+      <div class="countdown-section">
         <div class="countdown-circle">
-          <div class="countdown-circle-value" id="signalCountdown">15</div>
+          <div id="countdown-timer">20</div>
+        </div>
+        <div class="countdown-label">SECONDS REMAINING</div>
+      </div>
+      
+      <div class="strategy-section">
+        <div class="strategy-title">
+          <i class="fas fa-chart-line"></i> WINNING STRATEGY
         </div>
         
-        <div class="signal-guide">
-          <div class="signal-guide-content" id="signalGuideContent">
-            <!-- Dynamic content will be inserted here -->
-          </div>
+        <div class="strategy-steps" id="strategy-steps">
+          <!-- Dynamic content will be inserted here -->
         </div>
+      </div>
+      
+      <div class="signal-footer">
+        <div class="footer-title">XTREME AVIATOR SHA512 HASH ULTRA PREDICTOR PRO</div>
+        <div class="footer-subtitle">Advanced AI-powered prediction with 95%+ accuracy</div>
       </div>
     </div>
   </div>
@@ -1175,7 +1345,11 @@
       });
       
       // Initialize signal popup events
-      document.getElementById("signalPopupClose").addEventListener('click', closeSignalPopup);
+      document.getElementById("signalPopup").addEventListener('click', function(e) {
+        if (e.target === this) {
+          closeSignalPopup();
+        }
+      });
       
       // Initialize disclaimer badge
       const disclaimerBadge = document.getElementById("disclaimerBadge");
@@ -1403,14 +1577,17 @@
       const signalId = Date.now();
       activeSignals.push({ id: signalId, time: targetTime, odd });
       
-      // Schedule popup to show 15 seconds before signal time
-      const popupTime = new Date(targetTime.getTime() - 15000);
+      // Schedule popup to show 20 seconds before signal time
+      const popupTime = new Date(targetTime.getTime() - 20000);
       const now = new Date(Date.now() + serverTimeOffset);
       const popupDelay = popupTime - now;
       
       if (popupDelay > 0) {
         setTimeout(() => {
-          showSignalPopup(targetTime, odd, signalId);
+          // Only show popup if the signal time hasn't passed yet
+          if (new Date(Date.now() + serverTimeOffset) < targetTime) {
+            showSignalPopup(targetTime, odd, signalId);
+          }
         }, popupDelay);
       }
       
@@ -1448,46 +1625,44 @@
       }, 1000);
     }
     
-    // New function to show signal popup
+    // Enhanced function to show signal popup
     function showSignalPopup(targetTime, odd, signalId) {
-      const popup = document.getElementById("signalPopupOverlay");
+      const popup = document.getElementById("signalPopup");
+      const timeStr = targetTime.toLocaleTimeString();
       
-      // Generate guide content in Sinhala
-      const formattedTime = targetTime.toLocaleTimeString();
+      // Update popup content
+      document.getElementById("signal-time").textContent = timeStr;
+      document.getElementById("signal-odd").textContent = `${odd}x`;
       
-      const guideContent = `
-        <div style="text-align: center; margin-bottom: 15px;">
-          <p>සංඥාව ප.ව. ${formattedTime} ට සක්‍රිය වනු ඇත.</p>
-          <p>හොඳම ප්‍රතිඵල සඳහා මෙම මාර්ගෝපදේශ අනුගමනය කරන්න.</p>
+      // Generate strategy steps
+      const strategyContent = `
+        <div class="strategy-step">
+          <div class="step-number">1</div>
+          <div>Enter at <span class="highlight">${timeStr}</span> in the next available round</div>
         </div>
-        
-        <div class="signal-guide-step">
-          <i class="fas fa-arrow-right"></i>
-          <div>Entry Time: ${formattedTime} ට පසු ආරම්භ වන Round එකේ සිට ක්‍රීඩා ආරම්භ කරන්න.</div>
+        <div class="strategy-step">
+          <div class="step-number">2</div>
+          <div>Maintain bet until reaching <span class="highlight">${odd}x</span> target</div>
         </div>
-        <div class="signal-guide-step">
-          <i class="fas fa-arrow-right"></i>
-          <div>Target: ${odd}x odd අගය පසුකරන තුරු Bet ක්‍රියාව පවත්වා ගන්න.</div>
+        <div class="strategy-step">
+          <div class="step-number">3</div>
+          <div>Limit to maximum <span class="highlight">3 rounds</span> only</div>
         </div>
-        <div class="signal-guide-step">
-          <i class="fas fa-arrow-right"></i>
-          <div>Attempt Limit: උපරිම Round 03 ක් පමණක්.</div>
+        <div class="strategy-step">
+          <div class="step-number">4</div>
+          <div>Use <span class="highlight">Auto Cashout</span> for consistent results</div>
         </div>
-        <div class="signal-guide-step">
-          <i class="fas fa-arrow-right"></i>
-          <div>Bet Mode: Auto Bet ක්‍රමය යොදා ගන්න.</div>
-        </div>
-        <div class="signal-guide-step">
-          <i class="fas fa-arrow-right"></i>
-          <div>Cash Out: ${odd}x Odd අගය පසුකර යන වහාම Cash Out ක්‍රියාත්මක කරන්න.</div>
+        <div class="strategy-step">
+          <div class="step-number">5</div>
+          <div>Cash out immediately after passing <span class="highlight">${odd}x</span></div>
         </div>
       `;
       
-      document.getElementById("signalGuideContent").innerHTML = guideContent;
+      document.getElementById("strategy-steps").innerHTML = strategyContent;
       
-      // Start 15-second countdown
-      let countdown = 15;
-      document.getElementById("signalCountdown").textContent = countdown;
+      // Start 20-second countdown
+      let countdown = 20;
+      document.getElementById("countdown-timer").textContent = countdown;
       
       if (signalCountdownInterval) {
         clearInterval(signalCountdownInterval);
@@ -1495,7 +1670,7 @@
       
       signalCountdownInterval = setInterval(() => {
         countdown--;
-        document.getElementById("signalCountdown").textContent = countdown;
+        document.getElementById("countdown-timer").textContent = countdown;
         
         if (countdown <= 0) {
           clearInterval(signalCountdownInterval);
@@ -1503,21 +1678,25 @@
         }
       }, 1000);
       
-      // Disable background interaction
-      document.body.classList.add('popup-active');
-      
       // Show popup
       popup.classList.add("active");
+      
+      // Auto-close when signal time arrives
+      const now = new Date(Date.now() + serverTimeOffset);
+      const timeUntilSignal = targetTime - now;
+      
+      if (timeUntilSignal > 0) {
+        setTimeout(() => {
+          closeSignalPopup();
+        }, timeUntilSignal);
+      }
     }
 
-    // New function to close signal popup
+    // Enhanced function to close signal popup
     function closeSignalPopup() {
-      const popup = document.getElementById("signalPopupOverlay");
+      const popup = document.getElementById("signalPopup");
       popup.classList.remove("active");
       activeSignalPopup = null;
-      
-      // Enable background interaction
-      document.body.classList.remove('popup-active');
       
       // Clear countdown interval
       if (signalCountdownInterval) {
@@ -1628,6 +1807,7 @@
     
     function copySignalToClipboard(e, odd, timeStr, confidence) {
       e.preventDefault();
+      e.stopPropagation();
       const template = generateWhatsAppTemplate(odd, timeStr, confidence);
       copyToClipboard(template);
     }
