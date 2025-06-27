@@ -764,7 +764,7 @@
       text-decoration: underline;
     }
 
-    /* Premium Signal Popup Styles (from popup htmlviewer.html) */
+    /* Premium Signal Popup Styles */
     .signal-container {
       position: fixed;
       top: 0;
@@ -1017,65 +1017,335 @@
       color: var(--warning);
     }
     
-    /* Footer */
+    /* Footer - Updated to match RISK SIGNAL style */
     .signal-footer {
       text-align: center;
       padding: 0 24px 24px;
-      font-size: 0.9rem;
+      font-size: 0.8rem;
       color: rgba(255, 255, 255, 0.6);
       font-weight: 500;
       line-height: 1.4;
     }
     
-    .footer-title {
-      font-size: 1rem;
-      font-weight: 600;
-      margin-bottom: 4px;
-      letter-spacing: 0.5px;
+    .footer-message {
+      font-size: 0.8rem;
+      opacity: 0.8;
     }
     
-    .footer-subtitle {
+    /* RISK SIGNAL Popup Styles */
+    .risk-signal-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(8px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease-out;
+    }
+    
+    .risk-signal-container.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+    
+    .risk-signal-card {
+      width: 100%;
+      max-width: 440px;
+      background: linear-gradient(145deg, #1e293b, #0f172a);
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+      overflow: hidden;
+      transform: translateY(20px) scale(0.98);
+      opacity: 0;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2);
+    }
+    
+    .risk-signal-container.active .risk-signal-card {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+    }
+    
+    /* Header Section - Modified for RISK SIGNAL */
+    .risk-signal-header {
+      padding: 24px;
+      background: var(--danger);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .risk-signal-header::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 24px;
+      right: 24px;
+      height: 2px;
+      background: linear-gradient(90deg, var(--danger), rgba(255, 0, 110, 0.3));
+      opacity: 0.3;
+    }
+    
+    .risk-signal-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transform: translateY(5px);
+    }
+    
+    .risk-signal-title i {
+      color: white;
+      font-size: 1.2em;
+    }
+    
+    .risk-close-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.2);
+      border: none;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      transform: translateY(5px);
+    }
+    
+    .risk-close-btn:hover {
+      background: rgba(0, 0, 0, 0.4);
+      transform: translateY(5px) rotate(90deg);
+    }
+    
+    /* Signal Meta Section */
+    .risk-signal-meta {
+      display: flex;
+      justify-content: space-between;
+      padding: 30px 24px 0;
+    }
+    
+    .risk-meta-item {
+      text-align: center;
+      flex: 1;
+    }
+    
+    .risk-meta-label {
       font-size: 0.75rem;
-      opacity: 0.6;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      opacity: 0.7;
+      margin-bottom: 6px;
+    }
+    
+    .risk-meta-value {
+      font-size: 1.4rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+    }
+    
+    .risk-meta-value.time {
+      color: var(--warning);
+    }
+    
+    .risk-meta-value.odd {
+      color: var(--danger);
+      font-size: 1.8rem;
+    }
+    
+    /* Countdown Section - Original blue animation */
+    .risk-countdown-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 20px 0;
+    }
+    
+    .risk-countdown-circle {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.08);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      border: 3px solid var(--danger);
+      box-shadow: 0 0 20px rgba(255, 32, 110, 0.3);
+      margin-bottom: 10px;
+    }
+    
+    .risk-countdown-circle::before {
+      content: '';
+      position: absolute;
+      width: calc(100% + 10px);
+      height: calc(100% + 10px);
+      border-radius: 50%;
+      border: 3px solid transparent;
+      border-top-color: var(--primary); /* Original blue color */
+      animation: spin 2s linear infinite;
+    }
+    
+    #risk-countdown-timer {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--danger);
+      line-height: 1;
+      z-index: 1;
+    }
+    
+    .risk-countdown-label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--danger);
+      margin-top: 5px;
+    }
+    
+    /* Strategy Section */
+    .risk-strategy-section {
+      background: rgba(255, 0, 110, 0.05);
+      border-top: 1px solid rgba(255, 0, 110, 0.1);
+      border-bottom: 1px solid rgba(255, 0, 110, 0.1);
+      margin: 20px 0;
+      padding: 24px;
+      position: relative;
+    }
+    
+    .risk-strategy-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 24px;
+      right: 24px;
+      height: 2px;
+      background: linear-gradient(90deg, var(--danger), rgba(255, 0, 110, 0.3));
+    }
+    
+    .risk-strategy-title {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--danger);
+    }
+    
+    .risk-strategy-title i {
+      color: var(--danger);
+    }
+    
+    .risk-strategy-steps {
+      display: grid;
+      gap: 16px;
+    }
+    
+    .risk-strategy-step {
+      display: flex;
+      gap: 12px;
+      font-size: 0.92rem;
+      line-height: 1.5;
+    }
+    
+    .risk-step-number {
+      flex-shrink: 0;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: rgba(255, 0, 110, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--danger);
+    }
+    
+    .risk-highlight {
+      font-weight: 700;
+      color: var(--warning);
+    }
+    
+    /* Footer - Updated as requested */
+    .risk-signal-footer {
+      text-align: center;
+      padding: 0 24px 24px;
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.6);
+      font-weight: 500;
+      line-height: 1.4;
+    }
+    
+    .risk-footer-message {
+      font-size: 0.8rem;
+      opacity: 0.8;
     }
     
     /* Responsive */
     @media (max-width: 480px) {
-      .signal-card {
+      .signal-card,
+      .risk-signal-card {
         max-width: 90%;
         border-radius: 16px;
       }
       
-      .signal-header {
+      .signal-header,
+      .risk-signal-header {
         padding: 20px;
       }
       
-      .signal-title {
+      .signal-title,
+      .risk-signal-title {
         font-size: 1.3rem;
       }
       
-      .signal-meta {
+      .signal-meta,
+      .risk-signal-meta {
         padding: 20px 20px 0;
       }
       
-      .meta-value {
+      .meta-value,
+      .risk-meta-value {
         font-size: 1.2rem;
       }
       
-      .meta-value.odd {
+      .meta-value.odd,
+      .risk-meta-value.odd {
         font-size: 1.5rem;
       }
       
-      .countdown-circle {
+      .countdown-circle,
+      .risk-countdown-circle {
         width: 100px;
         height: 100px;
       }
       
-      #countdown-timer {
+      #countdown-timer,
+      #risk-countdown-timer {
         font-size: 1.8rem;
       }
       
-      .strategy-section {
+      .strategy-section,
+      .risk-strategy-section {
         padding: 20px;
       }
     }
@@ -1297,8 +1567,53 @@
       </div>
       
       <div class="signal-footer">
-        <div class="footer-title">XTREME AVIATOR SHA512 HASH ULTRA PREDICTOR PRO</div>
-        <div class="footer-subtitle">Advanced AI-powered prediction with 95%+ accuracy</div>
+        <div class="footer-message">THIS SIGNAL IS GENERATED USING THE XTREME AVIATOR SHA512 HASH ULTRA PREDICTOR PRO TOOL WITH AI-POWERED ACCURACY.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RISK SIGNAL Popup -->
+  <div class="risk-signal-container" id="riskSignalPopup">
+    <div class="risk-signal-card">
+      <div class="risk-signal-header">
+        <div class="risk-signal-title">
+          <i class="fas fa-exclamation-triangle"></i> RISK SIGNAL
+        </div>
+        <button class="risk-close-btn" onclick="closeRiskSignalPopup()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      
+      <div class="risk-signal-meta">
+        <div class="risk-meta-item">
+          <div class="risk-meta-label">Signal Time</div>
+          <div class="risk-meta-value time" id="risk-signal-time">-</div>
+        </div>
+        <div class="risk-meta-item">
+          <div class="risk-meta-label">Target</div>
+          <div class="risk-meta-value odd" id="risk-signal-odd">-</div>
+        </div>
+      </div>
+      
+      <div class="risk-countdown-section">
+        <div class="risk-countdown-circle">
+          <div id="risk-countdown-timer">20</div>
+        </div>
+        <div class="risk-countdown-label">SECONDS REMAINING</div>
+      </div>
+      
+      <div class="risk-strategy-section">
+        <div class="risk-strategy-title">
+          <i class="fas fa-chart-line"></i> RISK MANAGEMENT STRATEGY
+        </div>
+        
+        <div class="risk-strategy-steps" id="risk-strategy-steps">
+          <!-- Dynamic content will be inserted here -->
+        </div>
+      </div>
+      
+      <div class="risk-signal-footer">
+        <div class="risk-footer-message">THIS SIGNAL IS GENERATED USING THE XTREME AVIATOR SHA512 HASH ULTRA PREDICTOR PRO TOOL WITH AI-POWERED ACCURACY.</div>
       </div>
     </div>
   </div>
@@ -1306,6 +1621,7 @@
   <audio id="signalSound" src="https://assets.mixkit.co/sfx/preview/mixkit-alarm-digital-clock-beep-989.mp3" preload="auto"></audio>
   <audio id="successSound" src="https://assets.mixkit.co/sfx/preview/mixkit-achievement-bell-600.mp3" preload="auto"></audio>
   <audio id="beepSound" src="https://assets.mixkit.co/sfx/preview/mixkit-positive-interface-beep-221.mp3" preload="auto"></audio>
+  <audio id="warningSound" src="https://assets.mixkit.co/sfx/preview/mixkit-sci-fi-alarm-905.mp3" preload="auto"></audio>
   <textarea id="copyTemplate" style="position: absolute; left: -9999px;"></textarea>
 
   <script>
@@ -1320,6 +1636,7 @@
     let currentSignalIndex = 0;
     let signalEndInterval = null;
     let signalCountdownInterval = null;
+    let riskSignalCountdownInterval = null;
     let disclaimerShown = false;
     
     // Initialize on load
@@ -1348,6 +1665,13 @@
       document.getElementById("signalPopup").addEventListener('click', function(e) {
         if (e.target === this) {
           closeSignalPopup();
+        }
+      });
+      
+      // Initialize risk signal popup events
+      document.getElementById("riskSignalPopup").addEventListener('click', function(e) {
+        if (e.target === this) {
+          closeRiskSignalPopup();
         }
       });
       
@@ -1567,6 +1891,12 @@
       audio.play().catch(e => console.log("Beep sound play failed:", e));
     }
     
+    function playWarningSound() {
+      const audio = document.getElementById("warningSound");
+      audio.currentTime = 0;
+      audio.play().catch(e => console.log("Warning sound play failed:", e));
+    }
+    
     // Countdown and active signal tracking
     function updateCountdown(targetTime, odd) {
       // Clear any existing countdown
@@ -1586,7 +1916,12 @@
         setTimeout(() => {
           // Only show popup if the signal time hasn't passed yet
           if (new Date(Date.now() + serverTimeOffset) < targetTime) {
-            showSignalPopup(targetTime, odd, signalId);
+            // Check if we should show RISK SIGNAL or PREMIUM SIGNAL
+            if (['7', '10', '100'].includes(odd)) {
+              showRiskSignalPopup(targetTime, odd, signalId);
+            } else {
+              showSignalPopup(targetTime, odd, signalId);
+            }
           }
         }, popupDelay);
       }
@@ -1692,6 +2027,124 @@
       }
     }
 
+    // Enhanced function to show RISK signal popup
+    function showRiskSignalPopup(targetTime, odd, signalId) {
+      const popup = document.getElementById("riskSignalPopup");
+      const timeStr = targetTime.toLocaleTimeString();
+      
+      // Update popup content
+      document.getElementById("risk-signal-time").textContent = timeStr;
+      document.getElementById("risk-signal-odd").textContent = `${odd}x`;
+      
+      // Generate risk management strategy steps
+      let strategyContent = '';
+      
+      if (odd === '100') {
+        strategyContent = `
+          <div class="risk-strategy-step">
+            <div class="risk-step-number">1</div>
+            <div><span class="risk-highlight">EXTREME RISK WARNING:</span> This is a rare 100× opportunity</div>
+          </div>
+          <div class="risk-strategy-step">
+            <div class="risk-step-number">2</div>
+            <div>Enter at <span class="risk-highlight">${timeStr}</span> with minimum bet amount</div>
+          </div>
+          <div class="risk-strategy-step">
+            <div class="risk-step-number">3</div>
+            <div>Use <span class="risk-highlight">Auto Cashout at 100×</span> only</div>
+          </div>
+          <div class="risk-strategy-step">
+            <div class="risk-step-number">4</div>
+            <div>Limit to <span class="risk-highlight">1 attempt only</span> per signal</div>
+          </div>
+          <div class="risk-strategy-step">
+            <div class="risk-step-number">5</div>
+            <div>Do not chase losses if the signal fails</div>
+          </div>
+        `;
+      } else if (odd === '10') {
+        strategyContent = `
+          <div class="risk-strategy-step">
+            <div class="risk-step-number">1</div>
+            <div><span class="risk-highlight">HIGH RISK WARNING:</span> This is a 10× signal</div>
+          </div>
+          <div class="risk-strategy-step">
+            <div class="risk-step-number">2</div>
+            <div>Enter at <span class="risk-highlight">${timeStr}</span> with small bet amount</div>
+          </div>
+          <div class="risk-strategy-step">
+            <div class="risk-step-number">3</div>
+            <div>Use <span class="risk-highlight">Auto Cashout at 10×</span></div>
+          </div>
+          <div class="risk-strategy-step">
+            <div class="risk-step-number">4</div>
+            <div>Limit to <span class="risk-highlight">2 attempts</span> per signal</div>
+          </div>
+          <div class="risk-strategy-step">
+            <div class="risk-step-number">5</div>
+            <div>Cash out immediately if multiplier reaches 10×</div>
+          </div>
+        `;
+      } else { // 7x
+        strategyContent = `
+          <div class="risk-strategy-step">
+            <div class="risk-step-number">1</div>
+            <div><span class="risk-highlight">RISK WARNING:</span> This is a 7× signal</div>
+          </div>
+          <div class="risk-strategy-step">
+            <div class="risk-step-number">2</div>
+            <div>Enter at <span class="risk-highlight">${timeStr}</span> with moderate bet amount</div>
+          </div>
+          <div class="risk-strategy-step">
+            <div class="risk-step-number">3</div>
+            <div>Use <span class="risk-highlight">Auto Cashout at 7×</span></div>
+          </div>
+          <div class="risk-strategy-step">
+            <div class="risk-step-number">4</div>
+            <div>Limit to <span class="risk-highlight">3 attempts</span> per signal</div>
+          </div>
+          <div class="risk-strategy-step">
+            <div class="risk-step-number">5</div>
+            <div>Cash out immediately if multiplier reaches 7×</div>
+          </div>
+        `;
+      }
+      
+      document.getElementById("risk-strategy-steps").innerHTML = strategyContent;
+      
+      // Start 20-second countdown
+      let countdown = 20;
+      document.getElementById("risk-countdown-timer").textContent = countdown;
+      
+      if (riskSignalCountdownInterval) {
+        clearInterval(riskSignalCountdownInterval);
+      }
+      
+      riskSignalCountdownInterval = setInterval(() => {
+        countdown--;
+        document.getElementById("risk-countdown-timer").textContent = countdown;
+        
+        if (countdown <= 0) {
+          clearInterval(riskSignalCountdownInterval);
+          closeRiskSignalPopup();
+        }
+      }, 1000);
+      
+      // Show popup and play warning sound
+      popup.classList.add("active");
+      playWarningSound();
+      
+      // Auto-close when signal time arrives
+      const now = new Date(Date.now() + serverTimeOffset);
+      const timeUntilSignal = targetTime - now;
+      
+      if (timeUntilSignal > 0) {
+        setTimeout(() => {
+          closeRiskSignalPopup();
+        }, timeUntilSignal);
+      }
+    }
+
     // Enhanced function to close signal popup
     function closeSignalPopup() {
       const popup = document.getElementById("signalPopup");
@@ -1702,6 +2155,19 @@
       if (signalCountdownInterval) {
         clearInterval(signalCountdownInterval);
         signalCountdownInterval = null;
+      }
+    }
+    
+    // Function to close RISK signal popup
+    function closeRiskSignalPopup() {
+      const popup = document.getElementById("riskSignalPopup");
+      popup.classList.remove("active");
+      activeSignalPopup = null;
+      
+      // Clear countdown interval
+      if (riskSignalCountdownInterval) {
+        clearInterval(riskSignalCountdownInterval);
+        riskSignalCountdownInterval = null;
       }
     }
     
