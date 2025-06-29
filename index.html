@@ -704,35 +704,63 @@
     .actual-multiplier-10 { color: var(--danger); }
     .actual-multiplier-100 { color: var(--extreme); }
 
-    /* Disclaimer badge */
+    /* Updated Disclaimer Badge Animation */
     .disclaimer-badge {
       position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: rgba(255, 0, 110, 0.2);
+      bottom: 25px;
+      right: 25px;
+      background: linear-gradient(145deg, rgba(255, 0, 110, 0.3), rgba(255, 0, 110, 0.4));
       color: var(--danger);
       border-radius: 50%;
-      width: 40px;
-      height: 40px;
+      width: 50px;
+      height: 50px;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
       z-index: 9999;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 5px 20px rgba(255, 0, 110, 0.3);
       transition: all 0.3s ease;
+      font-size: 1.2rem;
+      animation: pulseDanger 2s infinite;
+    }
+
+    @keyframes pulseDanger {
+      0% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 110, 0.4);
+      }
+      70% {
+        box-shadow: 0 0 0 15px rgba(255, 0, 110, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 110, 0);
+      }
     }
 
     .disclaimer-badge:hover {
-      background: rgba(255, 0, 110, 0.3);
+      background: linear-gradient(145deg, rgba(255, 0, 110, 0.4), rgba(255, 0, 110, 0.5));
       transform: scale(1.1);
+      animation: pulseDangerHover 1.5s infinite;
+    }
+
+    @keyframes pulseDangerHover {
+      0% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 110, 0.6), 
+                    0 0 0 10px rgba(255, 0, 110, 0.4),
+                    0 0 0 20px rgba(255, 0, 110, 0.2);
+      }
+      100% {
+        box-shadow: 0 0 0 10px rgba(255, 0, 110, 0), 
+                    0 0 0 20px rgba(255, 0, 110, 0),
+                    0 0 0 30px rgba(255, 0, 110, 0);
+      }
     }
 
     /* Disclaimer popup */
     .disclaimer-popup {
       position: fixed;
-      bottom: 70px;
-      right: 20px;
+      bottom: 80px;
+      right: 25px;
       width: 300px;
       max-width: 90%;
       background: var(--dark-2);
@@ -1579,7 +1607,7 @@
       </div>
       
       <div class="signal-footer">
-        <div class="footer-message">THIS SIGNAL IS GENERATED USING THE XTREME AVIATOR SHA512 HASH ULTRA PREDICTOR PRO TOOL WITH AI-POWERED ACCURACY</div>
+        <div class="footer-message">THIS SIGNAL IS GENERATED USING THE XTREME AVIATOR SHA512 HASH ULTRA PREDICTOR PRO TOOL WITH AI-POWERED ACCURACY.</div>
       </div>
     </div>
   </div>
@@ -1625,7 +1653,7 @@
       </div>
       
       <div class="risk-signal-footer">
-        <div class="risk-footer-message">THIS SIGNAL IS GENERATED USING THE XTREME AVIATOR SHA512 HASH ULTRA PREDICTOR PRO TOOL WITH AI-POWERED ACCURACY</div>
+        <div class="risk-footer-message">THIS SIGNAL IS GENERATED USING THE XTREME AVIATOR SHA512 HASH ULTRA PREDICTOR PRO TOOL WITH AI-POWERED ACCURACY.</div>
       </div>
     </div>
   </div>
