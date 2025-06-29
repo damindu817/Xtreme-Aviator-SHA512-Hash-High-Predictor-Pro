@@ -1389,9 +1389,169 @@
         padding: 20px;
       }
     }
+
+    /* Offline Page Styles */
+    .offline-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--dark-1);
+      z-index: 9999;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+    }
+
+    .offline-overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .offline-container {
+      width: 100%;
+      max-width: 500px;
+      background: var(--dark-2);
+      border-radius: 16px;
+      padding: 40px;
+      text-align: center;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 0, 110, 0.3);
+      transform: scale(0.9);
+      opacity: 0;
+      animation: fadeIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+      position: relative;
+      z-index: 2;
+      backdrop-filter: blur(10px);
+    }
+    
+    @keyframes fadeIn {
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+    
+    .offline-icon {
+      font-size: 80px;
+      color: var(--danger);
+      margin-bottom: 20px;
+    }
+    
+    .offline-title {
+      font-size: 1.8rem;
+      margin-bottom: 15px;
+      color: var(--danger);
+      font-weight: 600;
+    }
+    
+    .offline-message {
+      color: var(--light-2);
+      margin-bottom: 30px;
+      line-height: 1.6;
+    }
+    
+    .retry-btn {
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 14px 28px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 4px 15px rgba(58, 134, 255, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .retry-btn::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(
+        to bottom right,
+        rgba(255,255,255,0) 0%,
+        rgba(255,255,255,0.1) 45%,
+        rgba(255,255,255,0.15) 50%,
+        rgba(255,255,255,0.1) 55%,
+        rgba(255,255,255,0) 100%
+      );
+      transform: rotate(30deg);
+      animation: shine 3s infinite;
+    }
+    
+    @keyframes shine {
+      0% { transform: translateX(-100%) rotate(30deg); }
+      100% { transform: translateX(100%) rotate(30deg); }
+    }
+    
+    .retry-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(58, 134, 255, 0.4);
+    }
+    
+    .retry-btn:active {
+      transform: translateY(0);
+    }
+    
+    .connection-animation {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      opacity: 0.1;
+    }
+    
+    .connection-animation div {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--primary);
+      filter: blur(5px);
+      animation: float 15s infinite linear;
+    }
+    
+    @keyframes float {
+      0% { transform: translate(0, 0) scale(1); opacity: 0; }
+      50% { opacity: 0.3; }
+      100% { transform: translate(random(200) - 100px, random(200) - 100px) scale(0); opacity: 0; }
+    }
   </style>
 </head>
 <body>
+  <!-- Offline Overlay -->
+  <div class="offline-overlay" id="offlineOverlay">
+    <div class="connection-animation" id="connectionAnimation"></div>
+    
+    <div class="offline-container">
+      <div class="offline-icon">
+        <i class="fas fa-unlink"></i>
+      </div>
+      <h1 class="offline-title">CONNECTION LOST</h1>
+      <p class="offline-message">XTREME AVIATOR predictor requires stable internet connection for real-time predictions. Please check your network and try again.</p>
+      <button class="retry-btn" id="retryBtn">
+        <i class="fas fa-sync-alt"></i> RETRY CONNECTION
+      </button>
+    </div>
+  </div>
+
+  <!-- Main App Content -->
   <div class="main-container">
     <div class="header">
       <h1>XTREME AVIATOR SHA512 HASH ULTRA PREDICTOR PRO</h1>
@@ -1521,7 +1681,7 @@
   <!-- Disclaimer Popup -->
   <div class="disclaimer-popup" id="disclaimerPopup">
     <h4>DISCLAIMER!</h4>
-    <p>This tool provides analytical insights based on patterns and probability. Predictions are not guaranteed. Gambling involves risk. Only play with money you can afford to lose.</p>
+    <p>This tool is for entertainment purposes only. Predictions are not guaranteed. Gambling involves risk. Only play with money you can afford to lose.</p>
     <a href="https://damindu817.github.io/DISCLAIMER-/" target="_blank">Click icon for guide & creator contact</a>
   </div>
 
@@ -1684,7 +1844,13 @@
       updateDateTime();
       loadHistory();
       updateStats();
-      syncServerTime(); // Runs in background
+      
+      // Check connection status immediately
+      checkConnection();
+      
+      // Set up connection monitoring
+      window.addEventListener('online', checkConnection);
+      window.addEventListener('offline', checkConnection);
       
       // Auto-focus input field
       document.getElementById("hashInput").focus();
@@ -1730,7 +1896,70 @@
           sessionStorage.setItem('disclaimerShown', 'true');
         }, 5000);
       }
+      
+      // Create floating animation elements for offline page
+      const animationContainer = document.getElementById('connectionAnimation');
+      for (let i = 0; i < 15; i++) {
+        const dot = document.createElement('div');
+        dot.style.left = `${Math.random() * 100}%`;
+        dot.style.top = `${Math.random() * 100}%`;
+        dot.style.animationDelay = `${Math.random() * 15}s`;
+        dot.style.animationDuration = `${10 + Math.random() * 20}s`;
+        animationContainer.appendChild(dot);
+      }
+      
+      // Retry button functionality
+      const retryBtn = document.getElementById('retryBtn');
+      retryBtn.addEventListener('click', function() {
+        const btn = this;
+        const icon = btn.querySelector('i');
+        
+        // Show loading state
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> CONNECTING...';
+        
+        // Simulate connection check
+        setTimeout(() => {
+          if (navigator.onLine) {
+            // Success state
+            btn.innerHTML = '<i class="fas fa-check"></i> CONNECTION RESTORED!';
+            btn.style.background = `linear-gradient(90deg, var(--success), var(--primary))`;
+            
+            // Hide offline overlay
+            document.getElementById('offlineOverlay').classList.remove('active');
+            
+            // Sync server time
+            syncServerTime();
+            
+            // Redirect back to app
+            setTimeout(() => {
+              window.location.reload();
+            }, 1000);
+          } else {
+            // Error state
+            btn.innerHTML = '<i class="fas fa-times"></i> CONNECTION FAILED';
+            btn.style.background = `linear-gradient(90deg, var(--danger), var(--warning))`;
+            
+            // Reset button after delay
+            setTimeout(() => {
+              btn.innerHTML = '<i class="fas fa-sync-alt"></i> RETRY CONNECTION';
+              btn.style.background = `linear-gradient(90deg, var(--primary), var(--secondary))`;
+              btn.disabled = false;
+            }, 1500);
+          }
+        }, 2000);
+      });
     };
+    
+    // Check connection status
+    function checkConnection() {
+      if (navigator.onLine) {
+        document.getElementById('offlineOverlay').classList.remove('active');
+        syncServerTime(); // Sync time when connection is restored
+      } else {
+        document.getElementById('offlineOverlay').classList.add('active');
+      }
+    }
     
     // Show disclaimer popup
     function showDisclaimer() {
