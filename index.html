@@ -804,6 +804,114 @@
       text-decoration: underline;
     }
 
+    /* New Light Bulb Badge */
+    .tips-badge {
+      position: fixed;
+      bottom: 140px;
+      right: 25px;
+      background: linear-gradient(145deg, rgba(255, 190, 11, 0.3), rgba(255, 190, 11, 0.4));
+      color: var(--warning);
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 9997;
+      box-shadow: 0 5px 20px rgba(255, 190, 11, 0.3);
+      transition: all 0.3s ease;
+      font-size: 1.2rem;
+      animation: pulseWarning 2s infinite;
+    }
+    
+    /* New animation for light bulb badge */
+    @keyframes pulseWarning {
+      0% { box-shadow: 0 0 0 0 rgba(255, 190, 11, 0.4); }
+      70% { box-shadow: 0 0 0 15px rgba(255, 190, 11, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(255, 190, 11, 0); }
+    }
+    
+    /* Hover effects for light bulb */
+    .tips-badge:hover {
+      background: linear-gradient(145deg, rgba(255, 190, 11, 0.4), rgba(255, 190, 11, 0.5));
+      transform: scale(1.1);
+      animation: pulseWarningHover 1.5s infinite;
+    }
+    
+    @keyframes pulseWarningHover {
+      0% { box-shadow: 0 0 0 0 rgba(255, 190, 11, 0.6), 
+                    0 0 0 10px rgba(255, 190, 11, 0.4),
+                    0 0 0 20px rgba(255, 190, 11, 0.2); }
+      100% { box-shadow: 0 0 0 10px rgba(255, 190, 11, 0), 
+                      0 0 0 20px rgba(255, 190, 11, 0),
+                      0 0 0 30px rgba(255, 190, 11, 0); }
+    }
+    
+    /* Tips popup styles */
+    .tips-popup {
+      position: fixed;
+      bottom: 200px;
+      right: 25px;
+      width: 300px;
+      max-width: 90%;
+      background: var(--dark-2);
+      border-radius: 10px;
+      padding: 15px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      border-left: 4px solid var(--warning);
+      transform: translateY(20px);
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 9996;
+      pointer-events: none;
+    }
+    
+    .tips-popup.show {
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: all;
+    }
+    
+    .tips-popup h4 {
+      color: var(--warning);
+      margin-bottom: 10px;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .tips-popup p {
+      font-size: 0.8rem;
+      line-height: 1.4;
+      color: var(--light-2);
+      margin-bottom: 10px;
+    }
+    
+    .tips-popup ul {
+      padding-left: 20px;
+      margin-bottom: 10px;
+    }
+    
+    .tips-popup li {
+      margin-bottom: 5px;
+      font-size: 0.8rem;
+    }
+    
+    .tips-popup a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.8rem;
+      display: inline-block;
+      margin-top: 5px;
+    }
+    
+    .tips-popup a:hover {
+      text-decoration: underline;
+    }
+
     /* Premium Signal Popup Styles */
     .signal-container {
       position: fixed;
@@ -1388,6 +1496,29 @@
       .risk-strategy-section {
         padding: 20px;
       }
+      
+      /* Adjust badge positions for mobile */
+      .tips-badge {
+        bottom: 140px;
+        right: 15px;
+      }
+      
+      .disclaimer-badge {
+        bottom: 25px;
+        right: 15px;
+      }
+      
+      .tips-popup {
+        bottom: 200px;
+        right: 15px;
+        width: calc(100% - 30px);
+      }
+      
+      .disclaimer-popup {
+        bottom: 85px;
+        right: 15px;
+        width: calc(100% - 30px);
+      }
     }
 
     /* Offline Page Styles */
@@ -1555,7 +1686,7 @@
   <div class="main-container">
     <div class="header">
       <h1>XTREME AVIATOR SHA512 HASH ULTRA PREDICTOR PRO</h1>
-      <p>Advanced AI-powered prediction with 65%+ accuracy</p>
+      <p>Advanced AI-powered prediction with 95%+ accuracy</p>
     </div>
     
     <div class="datetime">
@@ -1671,6 +1802,24 @@
     <div class="footer">
       XTREME AVIATOR SHA512 HASH ULTRA PREDICTOR PRO © <span id="current-year"></span> | ALL RIGHTS RESERVED
     </div>
+  </div>
+
+  <!-- Tips Badge -->
+  <div class="tips-badge" id="tipsBadge">
+    <i class="fas fa-lightbulb"></i>
+  </div>
+
+  <!-- Tips Popup -->
+  <div class="tips-popup" id="tipsPopup">
+    <h4><i class="fas fa-lightbulb"></i> TIPS & TRICKS</h4>
+    <p>Here are some expert tips to improve your predictions:</p>
+    <ul>
+      <li>Use signals with confidence above 70%</li>
+      <li>Start with small bets to test the system</li>
+      <li>Combine multiple signals for better accuracy</li>
+      <li>Set auto-cashout slightly below target</li>
+    </ul>
+    <a href="https://damindu817.github.io/DISCLAIMER-/" target="_blank">Click here for guide & creator contact</a>
   </div>
 
   <!-- Disclaimer Badge -->
@@ -1838,6 +1987,8 @@
     let signalCountdownInterval = null;
     let riskSignalCountdownInterval = null;
     let disclaimerShown = false;
+    let tipsPopupShown = false;
+    let firstSignalGenerated = false;
     
     // Initialize on load
     window.onload = function() {
@@ -1881,11 +2032,28 @@
         }
       });
       
-      // Initialize disclaimer badge
-      const disclaimerBadge = document.getElementById("disclaimerBadge");
-      disclaimerBadge.addEventListener('click', function(e) {
+      // Initialize tips badge
+      const tipsBadge = document.getElementById("tipsBadge");
+      const tipsPopup = document.getElementById("tipsPopup");
+      
+      tipsBadge.addEventListener('click', function(e) {
         e.preventDefault();
-        window.open('https://damindu817.github.io/DISCLAIMER-/', '_blank');
+        e.stopPropagation();
+        tipsPopup.classList.toggle("show");
+        
+        // Hide disclaimer popup if showing
+        document.getElementById("disclaimerPopup").classList.remove("show");
+      });
+      
+      // Close popups when clicking elsewhere
+      document.addEventListener('click', function(e) {
+        if (!tipsBadge.contains(e.target) && !tipsPopup.contains(e.target)) {
+          tipsPopup.classList.remove("show");
+        }
+        
+        if (!disclaimerBadge.contains(e.target) && !disclaimerPopup.contains(e.target)) {
+          document.getElementById("disclaimerPopup").classList.remove("show");
+        }
       });
       
       // Show disclaimer popup after 5 seconds if not shown before
@@ -1971,6 +2139,20 @@
     function hideDisclaimer() {
       const popup = document.getElementById("disclaimerPopup");
       popup.classList.remove("show");
+    }
+    
+    // Show tips popup after signal generation
+    function showTipsPopup() {
+      if (!firstSignalGenerated) {
+        const tipsPopup = document.getElementById("tipsPopup");
+        tipsPopup.classList.add("show");
+        firstSignalGenerated = true;
+        
+        // Auto-hide after 8 seconds
+        setTimeout(() => {
+          tipsPopup.classList.remove("show");
+        }, 8000);
+      }
     }
     
     // Update current date and time with server sync
@@ -2595,6 +2777,11 @@
       
       // Update stats
       updateStats();
+      
+      // Show tips popup after 3 seconds (only for first signal)
+      if (!firstSignalGenerated) {
+        setTimeout(showTipsPopup, 3000);
+      }
     }
     
     function updateStats() {
