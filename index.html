@@ -646,21 +646,6 @@
       color: var(--danger);
     }
     
-    /* Loading spinner */
-    .spinner {
-      width: 20px;
-      height: 20px;
-      border: 3px solid rgba(255, 255, 255, 0.3);
-      border-radius: 50%;
-      border-top-color: var(--primary);
-      animation: spin 1s ease-in-out infinite;
-      display: inline-block;
-    }
-    
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-    
     /* Tooltip */
     .tooltip {
       position: relative;
@@ -1664,216 +1649,12 @@
       100% { transform: translate(random(200) - 100px, random(200) - 100px) scale(0); opacity: 0; }
     }
 
-    /* Loading Overlay Styles */
-    .loading-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: var(--dark-1);
-      z-index: 99999;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      opacity: 1;
-      transition: opacity 0.5s ease;
-    }
-
-    .loading-content {
-      text-align: center;
-    }
-
-    /* Animation Container Styles */
-    .animation-container {
-      width: 150px;
-      height: 150px;
-      position: relative;
-      margin-bottom: 20px;
-    }
-  
-    .loading-spinner {
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      border: 4px solid rgba(58, 134, 255, 0.1);
-      border-top-color: var(--primary);
-      border-right-color: var(--secondary);
-      border-bottom-color: var(--danger);
-      animation: spin 1.5s linear infinite;
-      position: absolute;
-      top: 0;
-      left: 0;
-    }
-  
-    .loading-pulse {
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      background: rgba(58, 134, 255, 0.05);
-      position: absolute;
-      top: 0;
-      left: 0;
-      animation: pulse 2s ease-out infinite;
-    }
-  
-    .loading-orbits {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 20px;
-      height: 20px;
-    }
-  
-    .orbit {
-      position: absolute;
-      border-radius: 50%;
-      background: var(--primary);
-      opacity: 0;
-      animation: orbit 3s linear infinite;
-    }
-  
-    .orbit-1 {
-      width: 10px;
-      height: 10px;
-      background: var(--success);
-      animation-delay: 0s;
-    }
-  
-    .orbit-2 {
-      width: 8px;
-      height: 8px;
-      background: var(--warning);
-      animation-delay: 0.5s;
-    }
-  
-    .orbit-3 {
-      width: 6px;
-      height: 6px;
-      background: var(--danger);
-      animation-delay: 1s;
-    }
-  
-    .loading-particles {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -1;
-    }
-  
-    .particle {
-      position: absolute;
-      border-radius: 50%;
-      background: var(--primary);
-      filter: blur(1px);
-      opacity: 0;
-      animation: float 15s infinite linear;
-    }
-  
-    .particle-1 {
-      width: 8px;
-      height: 8px;
-      background: var(--primary);
-      top: 20%;
-      left: 10%;
-      animation-delay: 0s;
-      animation-duration: 20s;
-    }
-  
-    .particle-2 {
-      width: 6px;
-      height: 6px;
-      background: var(--secondary);
-      top: 70%;
-      left: 80%;
-      animation-delay: 2s;
-      animation-duration: 25s;
-    }
-  
-    .particle-3 {
-      width: 4px;
-      height: 4px;
-      background: var(--danger);
-      top: 40%;
-      left: 30%;
-      animation-delay: 4s;
-      animation-duration: 15s;
-    }
-  
-    .particle-4 {
-      width: 5px;
-      height: 5px;
-      background: var(--success);
-      top: 80%;
-      left: 40%;
-      animation-delay: 1s;
-      animation-duration: 30s;
-    }
-  
-    .particle-5 {
-      width: 7px;
-      height: 7px;
-      background: var(--warning);
-      top: 30%;
-      left: 70%;
-      animation-delay: 3s;
-      animation-duration: 18s;
-    }
-  
     @keyframes spin {
       to { transform: rotate(360deg); }
-    }
-  
-    @keyframes pulse {
-      0% { transform: scale(0.8); opacity: 0.5; }
-      50% { transform: scale(1.1); opacity: 0.2; }
-      100% { transform: scale(0.8); opacity: 0.5; }
-    }
-  
-    @keyframes orbit {
-      0% { transform: translate(0, 0); opacity: 1; }
-      25% { transform: translate(50px, -30px); opacity: 0.8; }
-      50% { transform: translate(100px, 0); opacity: 0.6; }
-      75% { transform: translate(50px, 30px); opacity: 0.8; }
-      100% { transform: translate(0, 0); opacity: 1; }
-    }
-  
-    @keyframes float {
-      0% { transform: translate(0, 0) scale(1); opacity: 0; }
-      50% { opacity: 0.3; }
-      100% { transform: translate(100vw, -100vh) scale(0); opacity: 0; }
     }
   </style>
 </head>
 <body>
-  <!-- Loading Overlay -->
-  <div class="loading-overlay" id="loadingOverlay">
-    <div class="loading-content">
-      <div class="animation-container">
-        <div class="loading-spinner"></div>
-        <div class="loading-pulse"></div>
-        <div class="loading-orbits">
-          <div class="orbit orbit-1"></div>
-          <div class="orbit orbit-2"></div>
-          <div class="orbit orbit-3"></div>
-        </div>
-      </div>
-      
-      <!-- Floating particles -->
-      <div class="loading-particles">
-        <div class="particle particle-1"></div>
-        <div class="particle particle-2"></div>
-        <div class="particle particle-3"></div>
-        <div class="particle particle-4"></div>
-        <div class="particle particle-5"></div>
-      </div>
-    </div>
-  </div>
-
   <!-- Offline Overlay -->
   <div class="offline-overlay" id="offlineOverlay">
     <div class="connection-animation" id="connectionAnimation"></div>
@@ -2201,14 +1982,7 @@
     
     // Initialize on load
     window.onload = function() {
-      // Show loading animation for 6 seconds
-      setTimeout(() => {
-        document.getElementById('loadingOverlay').style.opacity = '0';
-        setTimeout(() => {
-          document.getElementById('loadingOverlay').style.display = 'none';
-          initializeApp();
-        }, 500);
-      }, 6000);
+      initializeApp();
     };
 
     function initializeApp() {
