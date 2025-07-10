@@ -14,7 +14,8 @@
       user-select: none;
       margin: 0;
       padding: 0;
-      overflow-x: hidden;
+      overflow: hidden;
+      height: 100vh;
     }
     
     /* Allow selection only in input fields */
@@ -40,6 +41,7 @@
       --accent: #3a86ff;
       --extreme: #ff00ff;
       --nav-height: 60px;
+      --header-height: 80px;
     }
     
     * {
@@ -53,12 +55,93 @@
       background: linear-gradient(135deg, var(--dark-1), var(--dark-2));
       color: var(--light-1);
       line-height: 1.6;
-      min-height: 100vh;
-      padding-bottom: var(--nav-height);
       touch-action: manipulation;
     }
     
-    /* New Navigation Bar */
+    /* Hide scrollbars but keep scrolling */
+    ::-webkit-scrollbar {
+      display: none;
+      width: 0;
+      background: transparent;
+    }
+    * {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    
+    /* App container structure */
+    .app-container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      position: relative;
+    }
+    
+    /* Fixed Header */
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: var(--header-height);
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      padding: 10px 20px;
+      text-align: center;
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    
+    .header h1 {
+      font-weight: 800;
+      font-size: 1.4rem;
+      margin-bottom: 2px;
+      line-height: 1.2;
+    }
+    
+    .header p {
+      opacity: 0.9;
+      font-size: 0.8rem;
+    }
+    
+    /* Scrollable content area */
+    .scroll-container {
+      position: fixed;
+      top: var(--header-height);
+      bottom: var(--nav-height);
+      left: 0;
+      right: 0;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Main content container */
+    .main-container {
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+      background: var(--dark-2);
+      border-radius: 16px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      position: relative;
+    }
+    
+    .datetime {
+      display: flex;
+      justify-content: space-between;
+      background: rgba(0, 0, 0, 0.2);
+      padding: 10px 20px;
+      font-size: 0.9rem;
+    }
+    
+    .content {
+      padding: 15px;
+    }
+    
+    /* Fixed Navigation Bar */
     .nav-bar {
       position: fixed;
       bottom: 0;
@@ -95,49 +178,6 @@
     
     .nav-item:hover {
       background: var(--dark-3);
-    }
-    
-    .main-container {
-      width: 100%;
-      max-width: 900px;
-      margin: 0 auto;
-      background: var(--dark-2);
-      border-radius: 16px;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-      overflow: hidden;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      position: relative;
-      margin-bottom: 20px;
-    }
-    
-    .header {
-      background: linear-gradient(90deg, var(--primary), var(--secondary));
-      padding: 20px;
-      text-align: center;
-    }
-    
-    .header h1 {
-      font-weight: 600;
-      font-size: 1.8rem;
-      margin-bottom: 5px;
-      line-height: 1.3;
-    }
-    
-    .header p {
-      opacity: 0.9;
-      font-size: 0.9rem;
-    }
-    
-    .datetime {
-      display: flex;
-      justify-content: space-between;
-      background: rgba(0, 0, 0, 0.2);
-      padding: 10px 20px;
-      font-size: 0.9rem;
-    }
-    
-    .content {
-      padding: 25px;
     }
     
     /* Tab Content */
@@ -537,15 +577,6 @@
       color: var(--extreme);
     }
     
-    .footer {
-      text-align: center;
-      padding: 15px;
-      font-size: 0.8rem;
-      color: var(--light-2);
-      opacity: 0.7;
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
-    }
-    
     /* Notification Tab Styles */
     .notification-tab {
       padding: 15px;
@@ -623,75 +654,256 @@
       font-size: 1.2rem;
     }
     
-    @media (max-width: 768px) {
-      .odd-buttons {
-        grid-template-columns: repeat(3, 1fr);
-      }
-      
-      .history-item {
-        grid-template-columns: 1fr 1fr;
-      }
-      
-      .history-details {
-        grid-column: span 2;
-        text-align: left;
-        margin-top: 8px;
-      }
+    /* Tooltip */
+    .tooltip {
+      position: relative;
+      display: inline-block;
+    }
+    
+    .tooltip .tooltiptext {
+      visibility: hidden;
+      width: 200px;
+      background-color: var(--dark-1);
+      color: var(--light-1);
+      text-align: center;
+      border-radius: 6px;
+      padding: 8px;
+      position: absolute;
+      z-index: 1;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      margin-top: 5px;
+      opacity: 0;
+      transition: opacity 0.3s;
+      font-size: 0.8rem;
+      border: 1px solid var(--dark-3);
+    }
+    
+    .tooltip:hover .tooltiptext {
+      visibility: visible;
+      opacity: 1;
+    }
 
-      .copy-btn {
-        position: static;
-        margin-top: 10px;
-        width: 100%;
-        justify-content: center;
-        margin-left: 0;
-      }
-      
-      .stats-container {
-        grid-template-columns: 1fr;
-      }
+    /* New styles for actual multiplier display */
+    .actual-multiplier {
+      margin-left: 8px;
+      font-size: 0.8em;
     }
     
-    @media (max-width: 480px) {
-      .header h1 {
-        font-size: 1.4rem;
-        padding-top: 10px;
+    .actual-multiplier-2 { color: var(--success); }
+    .actual-multiplier-3 { color: var(--warning); }
+    .actual-multiplier-4 { color: #ff9e00; }
+    .actual-multiplier-7 { color: var(--secondary); }
+    .actual-multiplier-10 { color: var(--danger); }
+    .actual-multiplier-100 { color: var(--extreme); }
+
+    /* Updated Disclaimer Badge Animation */
+    .disclaimer-badge {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      background: linear-gradient(145deg, rgba(255, 0, 110, 0.3), rgba(255, 0, 110, 0.4));
+      color: var(--danger);
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 9999;
+      box-shadow: 0 5px 20px rgba(255, 0, 110, 0.3);
+      transition: all 0.3s ease;
+      font-size: 1.2rem;
+      animation: pulseDanger 2s infinite;
+    }
+
+    @keyframes pulseDanger {
+      0% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 110, 0.4);
       }
-      
-      .header p {
-        font-size: 0.8rem;
+      70% {
+        box-shadow: 0 0 0 15px rgba(255, 0, 110, 0);
       }
-      
-      .content {
-        padding: 20px 15px;
-      }
-      
-      .input-actions {
-        flex-direction: column;
-      }
-      
-      .odd-buttons {
-        grid-template-columns: repeat(2, 1fr);
-      }
-      
-      .nav-item span {
-        display: none;
-      }
-      
-      .nav-item i {
-        font-size: 1.4rem;
-        margin-bottom: 0;
+      100% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 110, 0);
       }
     }
-    
-    /* Animation for active signal */
-    @keyframes pulse {
-      0% { box-shadow: 0 0 0 0 rgba(6, 214, 160, 0.4); }
-      70% { box-shadow: 0 0 0 10px rgba(6, 214, 160, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(6, 214, 160, 0); }
+
+    .disclaimer-badge:hover {
+      background: linear-gradient(145deg, rgba(255, 0, 110, 0.4), rgba(255, 0, 110, 0.5));
+      transform: scale(1.1);
+      animation: pulseDangerHover 1.5s infinite;
+    }
+
+    @keyframes pulseDangerHover {
+      0% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 110, 0.6), 
+                    0 0 0 10px rgba(255, 0, 110, 0.4),
+                    0 0 0 20px rgba(255, 0, 110, 0.2);
+      }
+      100% {
+        box-shadow: 0 0 0 10px rgba(255, 0, 110, 0), 
+                    0 0 0 20px rgba(255, 0, 110, 0),
+                    0 0 0 30px rgba(255, 0, 110, 0);
+      }
+    }
+
+    /* Disclaimer popup */
+    .disclaimer-popup {
+      position: fixed;
+      bottom: 85px;
+      right: 25px;
+      width: 300px;
+      max-width: 90%;
+      background: var(--dark-2);
+      border-radius: 10px;
+      padding: 15px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      border-left: 4px solid var(--danger);
+      transform: translateY(20px);
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 9998;
+      pointer-events: none;
+    }
+
+    .disclaimer-popup.show {
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .disclaimer-popup h4 {
+      color: var(--danger);
+      margin-bottom: 10px;
+      font-size: 1rem;
+    }
+
+    .disclaimer-popup p {
+      font-size: 0.8rem;
+      line-height: 1.4;
+      color: var(--light-2);
+      margin-bottom: 10px;
+    }
+
+    .disclaimer-popup a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .disclaimer-popup a:hover {
+      text-decoration: underline;
+    }
+
+    /* New Light Bulb Badge */
+    .tips-badge {
+      position: fixed;
+      bottom: 180px;
+      right: 25px;
+      background: linear-gradient(145deg, rgba(255, 190, 11, 0.3), rgba(255, 190, 11, 0.4));
+      color: var(--warning);
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 9997;
+      box-shadow: 0 5px 20px rgba(255, 190, 11, 0.3);
+      transition: all 0.3s ease;
+      font-size: 1.2rem;
+      animation: pulseWarning 2s infinite;
     }
     
-    .active-signal {
-      animation: pulse 2s infinite;
+    /* New animation for light bulb badge */
+    @keyframes pulseWarning {
+      0% { box-shadow: 0 0 0 0 rgba(255, 190, 11, 0.4); }
+      70% { box-shadow: 0 0 0 15px rgba(255, 190, 11, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(255, 190, 11, 0); }
+    }
+    
+    /* Hover effects for light bulb */
+    .tips-badge:hover {
+      background: linear-gradient(145deg, rgba(255, 190, 11, 0.4), rgba(255, 190, 11, 0.5));
+      transform: scale(1.1);
+      animation: pulseWarningHover 1.5s infinite;
+    }
+    
+    @keyframes pulseWarningHover {
+      0% { box-shadow: 0 0 0 0 rgba(255, 190, 11, 0.6), 
+                    0 0 0 10px rgba(255, 190, 11, 0.4),
+                    0 0 0 20px rgba(255, 190, 11, 0.2); }
+      100% { box-shadow: 0 0 0 10px rgba(255, 190, 11, 0), 
+                      0 0 0 20px rgba(255, 190, 11, 0),
+                      0 0 0 30px rgba(255, 190, 11, 0); }
+    }
+    
+    /* Tips popup styles */
+    .tips-popup {
+      position: fixed;
+      bottom: 240px;
+      right: 25px;
+      width: 300px;
+      max-width: 90%;
+      background: var(--dark-2);
+      border-radius: 10px;
+      padding: 15px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      border-left: 4px solid var(--warning);
+      transform: translateY(20px);
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 9996;
+      pointer-events: none;
+    }
+    
+    .tips-popup.show {
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: all;
+    }
+    
+    .tips-popup h4 {
+      color: var(--warning);
+      margin-bottom: 10px;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .tips-popup p {
+      font-size: 0.8rem;
+      line-height: 1.4;
+      color: var(--light-2);
+      margin-bottom: 10px;
+    }
+    
+    .tips-popup ul {
+      padding-left: 20px;
+      margin-bottom: 10px;
+    }
+    
+    .tips-popup li {
+      margin-bottom: 5px;
+      font-size: 0.8rem;
+    }
+    
+    .tips-popup a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.8rem;
+      display: inline-block;
+      margin-top: 5px;
+    }
+    
+    .tips-popup a:hover {
+      text-decoration: underline;
     }
 
     /* Custom Dialog Styles */
@@ -785,255 +997,15 @@
       color: var(--danger);
     }
     
-    /* Tooltip */
-    .tooltip {
-      position: relative;
-      display: inline-block;
+    /* Animation for active signal */
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(6, 214, 160, 0.4); }
+      70% { box-shadow: 0 0 0 10px rgba(6, 214, 160, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(6, 214, 160, 0); }
     }
     
-    .tooltip .tooltiptext {
-      visibility: hidden;
-      width: 200px;
-      background-color: var(--dark-1);
-      color: var(--light-1);
-      text-align: center;
-      border-radius: 6px;
-      padding: 8px;
-      position: absolute;
-      z-index: 1;
-      bottom: 125%;
-      left: 50%;
-      transform: translateX(-50%);
-      opacity: 0;
-      transition: opacity 0.3s;
-      font-size: 0.8rem;
-      border: 1px solid var(--dark-3);
-    }
-    
-    .tooltip:hover .tooltiptext {
-      visibility: visible;
-      opacity: 1;
-    }
-
-    /* New styles for actual multiplier display */
-    .actual-multiplier {
-      margin-left: 8px;
-      font-size: 0.8em;
-    }
-    
-    .actual-multiplier-2 { color: var(--success); }
-    .actual-multiplier-3 { color: var(--warning); }
-    .actual-multiplier-4 { color: #ff9e00; }
-    .actual-multiplier-7 { color: var(--secondary); }
-    .actual-multiplier-10 { color: var(--danger); }
-    .actual-multiplier-100 { color: var(--extreme); }
-
-    /* Updated Disclaimer Badge Animation */
-    .disclaimer-badge {
-      position: fixed;
-      bottom: 80px;
-      right: 25px;
-      background: linear-gradient(145deg, rgba(255, 0, 110, 0.3), rgba(255, 0, 110, 0.4));
-      color: var(--danger);
-      border-radius: 50%;
-      width: 50px;
-      height: 50px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      z-index: 9999;
-      box-shadow: 0 5px 20px rgba(255, 0, 110, 0.3);
-      transition: all 0.3s ease;
-      font-size: 1.2rem;
-      animation: pulseDanger 2s infinite;
-    }
-
-    @keyframes pulseDanger {
-      0% {
-        box-shadow: 0 0 0 0 rgba(255, 0, 110, 0.4);
-      }
-      70% {
-        box-shadow: 0 0 0 15px rgba(255, 0, 110, 0);
-      }
-      100% {
-        box-shadow: 0 0 0 0 rgba(255, 0, 110, 0);
-      }
-    }
-
-    .disclaimer-badge:hover {
-      background: linear-gradient(145deg, rgba(255, 0, 110, 0.4), rgba(255, 0, 110, 0.5));
-      transform: scale(1.1);
-      animation: pulseDangerHover 1.5s infinite;
-    }
-
-    @keyframes pulseDangerHover {
-      0% {
-        box-shadow: 0 0 0 0 rgba(255, 0, 110, 0.6), 
-                    0 0 0 10px rgba(255, 0, 110, 0.4),
-                    0 0 0 20px rgba(255, 0, 110, 0.2);
-      }
-      100% {
-        box-shadow: 0 0 0 10px rgba(255, 0, 110, 0), 
-                    0 0 0 20px rgba(255, 0, 110, 0),
-                    0 0 0 30px rgba(255, 0, 110, 0);
-      }
-    }
-
-    /* Disclaimer popup */
-    .disclaimer-popup {
-      position: fixed;
-      bottom: 140px;
-      right: 25px;
-      width: 300px;
-      max-width: 90%;
-      background: var(--dark-2);
-      border-radius: 10px;
-      padding: 15px;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-      border-left: 4px solid var(--danger);
-      transform: translateY(20px);
-      opacity: 0;
-      transition: all 0.3s ease;
-      z-index: 9998;
-      pointer-events: none;
-    }
-
-    .disclaimer-popup.show {
-      transform: translateY(0);
-      opacity: 1;
-      pointer-events: all;
-    }
-
-    .disclaimer-popup h4 {
-      color: var(--danger);
-      margin-bottom: 10px;
-      font-size: 1rem;
-    }
-
-    .disclaimer-popup p {
-      font-size: 0.8rem;
-      line-height: 1.4;
-      color: var(--light-2);
-      margin-bottom: 10px;
-    }
-
-    .disclaimer-popup a {
-      color: var(--primary);
-      text-decoration: none;
-      font-weight: 500;
-    }
-
-    .disclaimer-popup a:hover {
-      text-decoration: underline;
-    }
-
-    /* New Light Bulb Badge */
-    .tips-badge {
-      position: fixed;
-      bottom: 140px;
-      right: 25px;
-      background: linear-gradient(145deg, rgba(255, 190, 11, 0.3), rgba(255, 190, 11, 0.4));
-      color: var(--warning);
-      border-radius: 50%;
-      width: 50px;
-      height: 50px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      z-index: 9997;
-      box-shadow: 0 5px 20px rgba(255, 190, 11, 0.3);
-      transition: all 0.3s ease;
-      font-size: 1.2rem;
-      animation: pulseWarning 2s infinite;
-    }
-    
-    /* New animation for light bulb badge */
-    @keyframes pulseWarning {
-      0% { box-shadow: 0 0 0 0 rgba(255, 190, 11, 0.4); }
-      70% { box-shadow: 0 0 0 15px rgba(255, 190, 11, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(255, 190, 11, 0); }
-    }
-    
-    /* Hover effects for light bulb */
-    .tips-badge:hover {
-      background: linear-gradient(145deg, rgba(255, 190, 11, 0.4), rgba(255, 190, 11, 0.5));
-      transform: scale(1.1);
-      animation: pulseWarningHover 1.5s infinite;
-    }
-    
-    @keyframes pulseWarningHover {
-      0% { box-shadow: 0 0 0 0 rgba(255, 190, 11, 0.6), 
-                    0 0 0 10px rgba(255, 190, 11, 0.4),
-                    0 0 0 20px rgba(255, 190, 11, 0.2); }
-      100% { box-shadow: 0 0 0 10px rgba(255, 190, 11, 0), 
-                      0 0 0 20px rgba(255, 190, 11, 0),
-                      0 0 0 30px rgba(255, 190, 11, 0); }
-    }
-    
-    /* Tips popup styles */
-    .tips-popup {
-      position: fixed;
-      bottom: 200px;
-      right: 25px;
-      width: 300px;
-      max-width: 90%;
-      background: var(--dark-2);
-      border-radius: 10px;
-      padding: 15px;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-      border-left: 4px solid var(--warning);
-      transform: translateY(20px);
-      opacity: 0;
-      transition: all 0.3s ease;
-      z-index: 9996;
-      pointer-events: none;
-    }
-    
-    .tips-popup.show {
-      transform: translateY(0);
-      opacity: 1;
-      pointer-events: all;
-    }
-    
-    .tips-popup h4 {
-      color: var(--warning);
-      margin-bottom: 10px;
-      font-size: 1rem;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    
-    .tips-popup p {
-      font-size: 0.8rem;
-      line-height: 1.4;
-      color: var(--light-2);
-      margin-bottom: 10px;
-    }
-    
-    .tips-popup ul {
-      padding-left: 20px;
-      margin-bottom: 10px;
-    }
-    
-    .tips-popup li {
-      margin-bottom: 5px;
-      font-size: 0.8rem;
-    }
-    
-    .tips-popup a {
-      color: var(--primary);
-      text-decoration: none;
-      font-weight: 500;
-      font-size: 0.8rem;
-      display: inline-block;
-      margin-top: 5px;
-    }
-    
-    .tips-popup a:hover {
-      text-decoration: underline;
+    .active-signal {
+      animation: pulse 2s infinite;
     }
 
     /* Premium Signal Popup Styles */
@@ -1289,21 +1261,6 @@
       color: var(--warning);
     }
     
-    /* Footer - Updated to match RISK SIGNAL style */
-    .signal-footer {
-      text-align: center;
-      padding: 0 24px 24px;
-      font-size: 0.8rem;
-      color: rgba(255, 255, 255, 0.6);
-      font-weight: 500;
-      line-height: 1.4;
-    }
-    
-    .footer-message {
-      font-size: 0.8rem;
-      opacity: 0.8;
-    }
-    
     /* RISK SIGNAL Popup Styles */
     .risk-signal-container {
       position: fixed;
@@ -1557,94 +1514,6 @@
       color: var(--warning);
     }
     
-    /* Footer - Updated as requested */
-    .risk-signal-footer {
-      text-align: center;
-      padding: 0 24px 24px;
-      font-size: 0.8rem;
-      color: rgba(255, 255, 255, 0.6);
-      font-weight: 500;
-      line-height: 1.4;
-    }
-    
-    .risk-footer-message {
-      font-size: 0.8rem;
-      opacity: 0.8;
-    }
-    
-    /* Responsive */
-    @media (max-width: 480px) {
-      .signal-card,
-      .risk-signal-card {
-        max-width: 90%;
-        border-radius: 16px;
-      }
-      
-      .signal-header,
-      .risk-signal-header {
-        padding: 20px;
-      }
-      
-      .signal-title,
-      .risk-signal-title {
-        font-size: 1.3rem;
-      }
-      
-      .signal-meta,
-      .risk-signal-meta {
-        padding: 20px 20px 0;
-      }
-      
-      .meta-value,
-      .risk-meta-value {
-        font-size: 1.2rem;
-      }
-      
-      .meta-value.odd,
-      .risk-meta-value.odd {
-        font-size: 1.5rem;
-      }
-      
-      .countdown-circle,
-      .risk-countdown-circle {
-        width: 100px;
-        height: 100px;
-      }
-      
-      #countdown-timer,
-      #risk-countdown-timer {
-        font-size: 1.8rem;
-      }
-      
-      .strategy-section,
-      .risk-strategy-section {
-        padding: 20px;
-      }
-      
-      /* Adjust badge positions for mobile */
-      .tips-badge {
-        bottom: 140px;
-        right: 15px;
-      }
-      
-      .disclaimer-badge {
-        bottom: 80px;
-        right: 15px;
-      }
-      
-      .tips-popup {
-        bottom: 200px;
-        right: 15px;
-        width: calc(100% - 30px);
-      }
-      
-      .disclaimer-popup {
-        bottom: 140px;
-        right: 15px;
-        width: calc(100% - 30px);
-      }
-    }
-
     /* Offline Page Styles */
     .offline-overlay {
       position: fixed;
@@ -1791,6 +1660,89 @@
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .odd-buttons {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      
+      .history-item {
+        grid-template-columns: 1fr 1fr;
+      }
+      
+      .history-details {
+        grid-column: span 2;
+        text-align: left;
+        margin-top: 8px;
+      }
+
+      .copy-btn {
+        position: static;
+        margin-top: 10px;
+        width: 100%;
+        justify-content: center;
+        margin-left: 0;
+      }
+      
+      .stats-container {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .header h1 {
+        font-size: 1.2rem;
+      }
+      
+      .header p {
+        font-size: 0.7rem;
+      }
+      
+      .content {
+        padding: 15px 10px;
+      }
+      
+      .input-actions {
+        flex-direction: column;
+      }
+      
+      .odd-buttons {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      
+      .nav-item span {
+        display: none;
+      }
+      
+      .nav-item i {
+        font-size: 1.4rem;
+        margin-bottom: 0;
+      }
+      
+      /* Adjust badge positions for mobile */
+      .tips-badge {
+        bottom: 140px;
+        right: 15px;
+      }
+      
+      .disclaimer-badge {
+        bottom: 25px;
+        right: 15px;
+      }
+      
+      .tips-popup {
+        bottom: 200px;
+        right: 15px;
+        width: calc(100% - 30px);
+      }
+      
+      .disclaimer-popup {
+        bottom: 85px;
+        right: 15px;
+        width: calc(100% - 30px);
+      }
+    }
   </style>
 </head>
 <body>
@@ -1810,224 +1762,227 @@
     </div>
   </div>
 
-  <!-- Main App Content -->
-  <div class="main-container">
+  <!-- App Structure -->
+  <div class="app-container">
+    <!-- Fixed Header -->
     <div class="header">
       <h1>XTREME AVIATOR SHA512 HASH ULTRA PREDICTOR PRO</h1>
       <p>Advanced AI-powered prediction with 70%+ accuracy</p>
     </div>
     
-    <div class="datetime">
-      <div id="current-date"></div>
-      <div id="current-time"></div>
+    <!-- Scrollable Content Area -->
+    <div class="scroll-container">
+      <!-- Main Content Container -->
+      <div class="main-container">
+        <div class="datetime">
+          <div id="current-date"></div>
+          <div id="current-time"></div>
+        </div>
+        
+        <div class="content">
+          <!-- Predictor Tab -->
+          <div class="tab-content active" id="predictorTab">
+            <div class="input-group">
+              <label for="hashInput">Enter SHA512 Hash <span class="tooltip"><i class="fas fa-info-circle"></i><span class="tooltiptext">Must be 128-character hexadecimal string (0-9, a-f)</span></span></label>
+              <input type="text" id="hashInput" placeholder="Paste your hash here..." autocomplete="off" autocorrect="off" spellcheck="false">
+              <div class="input-actions">
+                <button class="paste-btn" id="pasteHashInput">
+                  <i class="fas fa-paste"></i> Paste Hash
+                </button>
+                <button class="clear-btn" id="clearHashInput">
+                  <i class="fas fa-broom"></i> Clear
+                </button>
+              </div>
+            </div>
+            
+            <div class="stats-container">
+              <div class="stat-card success">
+                <h4>Success Rate</h4>
+                <div class="value" id="success-rate">-</div>
+              </div>
+              <div class="stat-card warning">
+                <h4>Avg. Delay</h4>
+                <div class="value" id="avg-delay">-</div>
+              </div>
+              <div class="stat-card">
+                <h4>Total Predictions</h4>
+                <div class="value" id="total-predictions">-</div>
+              </div>
+            </div>
+            
+            <div class="odd-buttons">
+              <button class="odd-btn" onclick="predict('2')" id="odd-2">
+                <span>2x</span>
+                <span>Low Risk</span>
+                <div class="confidence-bar" id="confidence-2" style="width: 0%"></div>
+              </button>
+              <button class="odd-btn" onclick="predict('3')" id="odd-3">
+                <span>3x</span>
+                <span>Balanced</span>
+                <div class="confidence-bar" id="confidence-3" style="width: 0%"></div>
+              </button>
+              <button class="odd-btn" onclick="predict('4')" id="odd-4">
+                <span>4x</span>
+                <span>Moderate</span>
+                <div class="confidence-bar" id="confidence-4" style="width: 0%"></div>
+              </button>
+              <button class="odd-btn" onclick="predict('7')" id="odd-7">
+                <span>7x</span>
+                <span>High Risk</span>
+                <div class="confidence-bar" id="confidence-7" style="width: 0%"></div>
+              </button>
+              <button class="odd-btn" onclick="predict('10')" id="odd-10">
+                <span>10x</span>
+                <span>Very High Risk</span>
+                <div class="confidence-bar" id="confidence-10" style="width: 0%"></div>
+              </button>
+              <button class="odd-btn" onclick="predict('100')" id="odd-100">
+                <span>100x</span>
+                <span>Extreme Risk</span>
+                <div class="confidence-bar" id="confidence-100" style="width: 0%"></div>
+              </button>
+            </div>
+            
+            <div class="results" id="output">
+              <div class="result-item">
+                <span class="label">Target Multiplier:</span>
+                <span class="value" id="result-odd">-</span>
+              </div>
+              <div class="result-item">
+                <span class="label">Hash Entropy:</span>
+                <span class="value" id="result-entropy">-</span>
+              </div>
+              <div class="result-item">
+                <span class="label">Hash Score:</span>
+                <span class="value" id="result-score">-</span>
+              </div>
+              <div class="result-item">
+                <span class="label">Confidence Level:</span>
+                <span class="value" id="result-confidence">-</span>
+              </div>
+              <div class="result-item">
+                <span class="label">Estimated Delay:</span>
+                <span class="value" id="result-delay">-</span>
+              </div>
+              <div class="result-item">
+                <span class="label">Next Signal Time:</span>
+                <span class="value" id="result-time">-</span>
+              </div>
+              <button class="copy-result-btn" id="copyResultBtn" onclick="copyResultToClipboard(event)" disabled>
+                <i class="fas fa-copy"></i> Copy Signal
+              </button>
+            </div>
+            
+            <div class="countdown" id="countdown">No active signals. Create a new prediction.</div>
+          </div>
+          
+          <!-- History Tab -->
+          <div class="tab-content" id="historyTab">
+            <div class="history-tab">
+              <div class="history-header">
+                <h3><i class="fas fa-history"></i> Prediction History</h3>
+                <button class="history-clear-btn" onclick="showClearDialog()">
+                  <i class="fas fa-trash-alt"></i> Clear
+                </button>
+              </div>
+              <div class="history-list" id="historyLog"></div>
+            </div>
+          </div>
+          
+          <!-- Notification Tab -->
+          <div class="tab-content" id="notificationTab">
+            <div class="notification-tab">
+              <div class="notification-item">
+                <div class="notification-title">
+                  <i class="fas fa-bell"></i> New Update Available
+                </div>
+                <div class="notification-time">
+                  <i class="far fa-clock"></i> Just now
+                </div>
+                <div class="notification-message">
+                  Version 2.3.0 is now available with improved prediction algorithms and better accuracy. Update now for the best experience.
+                </div>
+              </div>
+              
+              <div class="notification-item">
+                <div class="notification-title">
+                  <i class="fas fa-star"></i> Premium Features
+                </div>
+                <div class="notification-time">
+                  <i class="far fa-clock"></i> 2 hours ago
+                </div>
+                <div class="notification-message">
+                  Unlock premium features including advanced analytics, higher accuracy predictions, and exclusive signals.
+                </div>
+              </div>
+              
+              <div class="notification-item">
+                <div class="notification-title">
+                  <i class="fas fa-trophy"></i> Winning Strategy
+                </div>
+                <div class="notification-time">
+                  <i class="far fa-clock"></i> 1 day ago
+                </div>
+                <div class="notification-message">
+                  Check out our latest winning strategy guide for maximizing your profits with the predictor tool.
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Support Tab -->
+          <div class="tab-content" id="supportTab">
+            <div class="support-tab">
+              <div class="support-card">
+                <h3><i class="fas fa-question-circle"></i> Need Help?</h3>
+                <button class="support-btn" onclick="window.open('https://damindu817.github.io/Aviator-Sha512-Hash-Professional-Strategy-Guide/','_blank')">
+                  <i class="fas fa-book"></i> User Guide
+                </button>
+                <button class="support-btn" onclick="window.open('https://damindu817.github.io/DISCLAIMER-/','_blank')">
+                  <i class="fas fa-exclamation-triangle"></i> Disclaimer
+                </button>
+                <button class="support-btn" onclick="window.open('mailto:support@aviatorpredictor.com')">
+                  <i class="fas fa-envelope"></i> Contact Support
+                </button>
+                <button class="support-btn" onclick="window.open('https://wa.me/1234567890')">
+                  <i class="fab fa-whatsapp"></i> WhatsApp Support
+                </button>
+              </div>
+              
+              <div class="support-card">
+                <h3><i class="fas fa-crown"></i> Premium</h3>
+                <button class="support-btn" onclick="showPremiumDialog()">
+                  <i class="fas fa-star"></i> Upgrade to Premium
+                </button>
+                <button class="support-btn" onclick="showPremiumFeatures()">
+                  <i class="fas fa-gem"></i> Premium Features
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
     
-    <div class="content">
-      <!-- Predictor Tab -->
-      <div class="tab-content active" id="predictorTab">
-        <div class="input-group">
-          <label for="hashInput">Enter SHA512 Hash <span class="tooltip"><i class="fas fa-info-circle"></i><span class="tooltiptext">Must be 128-character hexadecimal string (0-9, a-f)</span></span></label>
-          <input type="text" id="hashInput" placeholder="Paste your hash here..." autocomplete="off" autocorrect="off" spellcheck="false">
-          <div class="input-actions">
-            <button class="paste-btn" id="pasteHashInput">
-              <i class="fas fa-paste"></i> Paste Hash
-            </button>
-            <button class="clear-btn" id="clearHashInput">
-              <i class="fas fa-broom"></i> Clear
-            </button>
-          </div>
-        </div>
-        
-        <div class="stats-container">
-          <div class="stat-card success">
-            <h4>Success Rate</h4>
-            <div class="value" id="success-rate">-</div>
-          </div>
-          <div class="stat-card warning">
-            <h4>Avg. Delay</h4>
-            <div class="value" id="avg-delay">-</div>
-          </div>
-          <div class="stat-card">
-            <h4>Total Predictions</h4>
-            <div class="value" id="total-predictions">-</div>
-          </div>
-        </div>
-        
-        <div class="odd-buttons">
-          <button class="odd-btn" onclick="predict('2')" id="odd-2">
-            <span>2x</span>
-            <span>Low Risk</span>
-            <div class="confidence-bar" id="confidence-2" style="width: 0%"></div>
-          </button>
-          <button class="odd-btn" onclick="predict('3')" id="odd-3">
-            <span>3x</span>
-            <span>Balanced</span>
-            <div class="confidence-bar" id="confidence-3" style="width: 0%"></div>
-          </button>
-          <button class="odd-btn" onclick="predict('4')" id="odd-4">
-            <span>4x</span>
-            <span>Moderate</span>
-            <div class="confidence-bar" id="confidence-4" style="width: 0%"></div>
-          </button>
-          <button class="odd-btn" onclick="predict('7')" id="odd-7">
-            <span>7x</span>
-            <span>High Risk</span>
-            <div class="confidence-bar" id="confidence-7" style="width: 0%"></div>
-          </button>
-          <button class="odd-btn" onclick="predict('10')" id="odd-10">
-            <span>10x</span>
-            <span>Very High Risk</span>
-            <div class="confidence-bar" id="confidence-10" style="width: 0%"></div>
-          </button>
-          <button class="odd-btn" onclick="predict('100')" id="odd-100">
-            <span>100x</span>
-            <span>Extreme Risk</span>
-            <div class="confidence-bar" id="confidence-100" style="width: 0%"></div>
-          </button>
-        </div>
-        
-        <div class="results" id="output">
-          <div class="result-item">
-            <span class="label">Target Multiplier:</span>
-            <span class="value" id="result-odd">-</span>
-          </div>
-          <div class="result-item">
-            <span class="label">Hash Entropy:</span>
-            <span class="value" id="result-entropy">-</span>
-          </div>
-          <div class="result-item">
-            <span class="label">Hash Score:</span>
-            <span class="value" id="result-score">-</span>
-          </div>
-          <div class="result-item">
-            <span class="label">Confidence Level:</span>
-            <span class="value" id="result-confidence">-</span>
-          </div>
-          <div class="result-item">
-            <span class="label">Estimated Delay:</span>
-            <span class="value" id="result-delay">-</span>
-          </div>
-          <div class="result-item">
-            <span class="label">Next Signal Time:</span>
-            <span class="value" id="result-time">-</span>
-          </div>
-          <button class="copy-result-btn" id="copyResultBtn" onclick="copyResultToClipboard(event)" disabled>
-            <i class="fas fa-copy"></i> Copy Signal
-          </button>
-        </div>
-        
-        <div class="countdown" id="countdown">No active signals. Create a new prediction.</div>
-      </div>
-      
-      <!-- History Tab -->
-      <div class="tab-content" id="historyTab">
-        <div class="history-tab">
-          <div class="history-header">
-            <h3><i class="fas fa-history"></i> Prediction History</h3>
-            <button class="history-clear-btn" onclick="showClearDialog()">
-              <i class="fas fa-trash-alt"></i> Clear
-            </button>
-          </div>
-          <div class="history-list" id="historyLog"></div>
-        </div>
-      </div>
-      
-      <!-- Notification Tab -->
-      <div class="tab-content" id="notificationTab">
-        <div class="notification-tab">
-          <div class="notification-item">
-            <div class="notification-title">
-              <i class="fas fa-bell"></i> New Update Available
-            </div>
-            <div class="notification-time">
-              <i class="far fa-clock"></i> Just now
-            </div>
-            <div class="notification-message">
-              Version 2.3.0 is now available with improved prediction algorithms and better accuracy. Update now for the best experience.
-            </div>
-          </div>
-          
-          <div class="notification-item">
-            <div class="notification-title">
-              <i class="fas fa-star"></i> Premium Features
-            </div>
-            <div class="notification-time">
-              <i class="far fa-clock"></i> 2 hours ago
-            </div>
-            <div class="notification-message">
-              Unlock premium features including advanced analytics, higher accuracy predictions, and exclusive signals.
-            </div>
-          </div>
-          
-          <div class="notification-item">
-            <div class="notification-title">
-              <i class="fas fa-trophy"></i> Winning Strategy
-            </div>
-            <div class="notification-time">
-              <i class="far fa-clock"></i> 1 day ago
-            </div>
-            <div class="notification-message">
-              Check out our latest winning strategy guide for maximizing your profits with the predictor tool.
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <!-- Support Tab -->
-      <div class="tab-content" id="supportTab">
-        <div class="support-tab">
-          <div class="support-card">
-            <h3><i class="fas fa-question-circle"></i> Need Help?</h3>
-            <button class="support-btn" onclick="window.open('https://damindu817.github.io/Aviator-Sha512-Hash-Professional-Strategy-Guide/','_blank')">
-              <i class="fas fa-book"></i> User Guide
-            </button>
-            <button class="support-btn" onclick="window.open('https://damindu817.github.io/DISCLAIMER-/','_blank')">
-              <i class="fas fa-exclamation-triangle"></i> Disclaimer
-            </button>
-            <button class="support-btn" onclick="window.open('mailto:support@aviatorpredictor.com')">
-              <i class="fas fa-envelope"></i> Contact Support
-            </button>
-            <button class="support-btn" onclick="window.open('https://wa.me/1234567890')">
-              <i class="fab fa-whatsapp"></i> WhatsApp Support
-            </button>
-          </div>
-          
-          <div class="support-card">
-            <h3><i class="fas fa-crown"></i> Premium</h3>
-            <button class="support-btn" onclick="showPremiumDialog()">
-              <i class="fas fa-star"></i> Upgrade to Premium
-            </button>
-            <button class="support-btn" onclick="showPremiumFeatures()">
-              <i class="fas fa-gem"></i> Premium Features
-            </button>
-          </div>
-        </div>
-      </div>
+    <!-- Fixed Navigation Bar -->
+    <div class="nav-bar">
+      <a href="#" class="nav-item active" onclick="switchTab('predictorTab', this)">
+        <i class="fas fa-chart-line"></i>
+        <span>PREDICTOR</span>
+      </a>
+      <a href="#" class="nav-item" onclick="switchTab('historyTab', this)">
+        <i class="fas fa-history"></i>
+        <span>HISTORY</span>
+      </a>
+      <a href="#" class="nav-item" onclick="switchTab('notificationTab', this)">
+        <i class="fas fa-bell"></i>
+        <span>NOTIFICATION</span>
+      </a>
+      <a href="#" class="nav-item" onclick="switchTab('supportTab', this)">
+        <i class="fas fa-headset"></i>
+        <span>SUPPORT</span>
+      </a>
     </div>
-    
-    <div class="footer">
-      XTREME AVIATOR SHA512 HASH ULTRA PREDICTOR PRO © <span id="current-year"></span> | ALL RIGHTS RESERVED
-    </div>
-  </div>
-
-  <!-- Navigation Bar -->
-  <div class="nav-bar">
-    <a href="#" class="nav-item active" onclick="switchTab('predictorTab', this)">
-      <i class="fas fa-chart-line"></i>
-      <span>PREDICTOR</span>
-    </a>
-    <a href="#" class="nav-item" onclick="switchTab('historyTab', this)">
-      <i class="fas fa-history"></i>
-      <span>HISTORY</span>
-    </a>
-    <a href="#" class="nav-item" onclick="switchTab('notificationTab', this)">
-      <i class="fas fa-bell"></i>
-      <span>NOTIFICATION</span>
-    </a>
-    <a href="#" class="nav-item" onclick="switchTab('supportTab', this)">
-      <i class="fas fa-headset"></i>
-      <span>SUPPORT</span>
-    </a>
   </div>
 
   <!-- Tips Badge -->
@@ -2164,10 +2119,6 @@
           <!-- Dynamic content will be inserted here -->
         </div>
       </div>
-      
-      <div class="signal-footer">
-        <div class="footer-message">THIS SIGNAL IS GENERATED USING THE XTREME AVIATOR SHA512 HASH ULTRA PREDICTOR PRO TOOL WITH AI-POWERED ACCURACY.</div>
-      </div>
     </div>
   </div>
 
@@ -2209,10 +2160,6 @@
         <div class="risk-strategy-steps" id="risk-strategy-steps">
           <!-- Dynamic content will be inserted here -->
         </div>
-      </div>
-      
-      <div class="risk-signal-footer">
-        <div class="risk-footer-message">THIS SIGNAL IS GENERATED USING THE XTREME AVIATOR SHA512 HASH ULTRA PREDICTOR PRO TOOL WITH AI-POWERED ACCURACY.</div>
       </div>
     </div>
   </div>
@@ -2392,7 +2339,7 @@
       clickedElement.classList.add('active');
       
       // Scroll to top
-      window.scrollTo(0, 0);
+      document.querySelector('.scroll-container').scrollTo(0, 0);
     }
     
     // Check connection status
@@ -2453,7 +2400,6 @@
         weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' 
       });
       document.getElementById("current-time").textContent = now.toLocaleTimeString();
-      document.getElementById("current-year").textContent = now.getFullYear();
     }
     
     setInterval(updateDateTime, 1000);
