@@ -12,6 +12,9 @@
       -moz-user-select: none;
       -ms-user-select: none;
       user-select: none;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
     }
     
     /* Allow selection only in input fields */
@@ -36,6 +39,7 @@
       --light-2: #e9ecef;
       --accent: #3a86ff;
       --extreme: #ff00ff;
+      --nav-height: 60px;
     }
     
     * {
@@ -50,22 +54,60 @@
       color: var(--light-1);
       line-height: 1.6;
       min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
+      padding-bottom: var(--nav-height);
       touch-action: manipulation;
+    }
+    
+    /* New Navigation Bar */
+    .nav-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: var(--nav-height);
+      background: var(--dark-2);
+      display: flex;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      z-index: 100;
+    }
+    
+    .nav-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--light-2);
+      text-decoration: none;
+      font-size: 0.7rem;
+      transition: all 0.3s ease;
+    }
+    
+    .nav-item i {
+      font-size: 1.2rem;
+      margin-bottom: 4px;
+    }
+    
+    .nav-item.active {
+      color: var(--primary);
+      background: rgba(58, 134, 255, 0.1);
+    }
+    
+    .nav-item:hover {
+      background: var(--dark-3);
     }
     
     .main-container {
       width: 100%;
       max-width: 900px;
+      margin: 0 auto;
       background: var(--dark-2);
       border-radius: 16px;
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
       overflow: hidden;
       border: 1px solid rgba(255, 255, 255, 0.05);
       position: relative;
+      margin-bottom: 20px;
     }
     
     .header {
@@ -98,6 +140,16 @@
       padding: 25px;
     }
     
+    /* Tab Content */
+    .tab-content {
+      display: none;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    /* Predictor Tab */
     .input-group {
       margin-bottom: 20px;
       position: relative;
@@ -294,8 +346,9 @@
       border-left: 4px solid var(--extreme);
     }
     
-    .history-container {
-      margin-top: 30px;
+    /* History Tab Styles */
+    .history-tab {
+      padding: 15px;
     }
     
     .history-header {
@@ -328,7 +381,7 @@
       background: var(--dark-3);
       border-radius: 10px;
       overflow: hidden;
-      max-height: 300px;
+      max-height: calc(100vh - 250px);
       overflow-y: auto;
     }
     
@@ -493,6 +546,83 @@
       border-top: 1px solid rgba(255, 255, 255, 0.05);
     }
     
+    /* Notification Tab Styles */
+    .notification-tab {
+      padding: 15px;
+    }
+    
+    .notification-item {
+      background: var(--dark-3);
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-left: 4px solid var(--primary);
+    }
+    
+    .notification-title {
+      font-weight: 600;
+      margin-bottom: 5px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .notification-time {
+      font-size: 0.8rem;
+      color: var(--light-2);
+      margin-bottom: 10px;
+    }
+    
+    .notification-message {
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+    
+    /* Support Tab Styles */
+    .support-tab {
+      padding: 15px;
+    }
+    
+    .support-card {
+      background: var(--dark-3);
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 15px;
+    }
+    
+    .support-card h3 {
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .support-btn {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      background: rgba(58, 134, 255, 0.2);
+      color: var(--primary);
+      border: none;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .support-btn:hover {
+      background: rgba(58, 134, 255, 0.3);
+    }
+    
+    .support-btn i {
+      font-size: 1.2rem;
+    }
+    
     @media (max-width: 768px) {
       .odd-buttons {
         grid-template-columns: repeat(3, 1fr);
@@ -541,6 +671,15 @@
       
       .odd-buttons {
         grid-template-columns: repeat(2, 1fr);
+      }
+      
+      .nav-item span {
+        display: none;
+      }
+      
+      .nav-item i {
+        font-size: 1.4rem;
+        margin-bottom: 0;
       }
     }
     
@@ -692,7 +831,7 @@
     /* Updated Disclaimer Badge Animation */
     .disclaimer-badge {
       position: fixed;
-      bottom: 25px;
+      bottom: 80px;
       right: 25px;
       background: linear-gradient(145deg, rgba(255, 0, 110, 0.3), rgba(255, 0, 110, 0.4));
       color: var(--danger);
@@ -744,7 +883,7 @@
     /* Disclaimer popup */
     .disclaimer-popup {
       position: fixed;
-      bottom: 80px;
+      bottom: 140px;
       right: 25px;
       width: 300px;
       max-width: 90%;
@@ -1489,7 +1628,7 @@
       }
       
       .disclaimer-badge {
-        bottom: 25px;
+        bottom: 80px;
         right: 15px;
       }
       
@@ -1500,7 +1639,7 @@
       }
       
       .disclaimer-popup {
-        bottom: 85px;
+        bottom: 140px;
         right: 15px;
         width: calc(100% - 30px);
       }
@@ -1684,113 +1823,211 @@
     </div>
     
     <div class="content">
-      <div class="input-group">
-        <label for="hashInput">Enter SHA512 Hash <span class="tooltip"><i class="fas fa-info-circle"></i><span class="tooltiptext">Must be 128-character hexadecimal string (0-9, a-f)</span></span></label>
-        <input type="text" id="hashInput" placeholder="Paste your hash here..." autocomplete="off" autocorrect="off" spellcheck="false">
-        <div class="input-actions">
-          <button class="paste-btn" id="pasteHashInput">
-            <i class="fas fa-paste"></i> Paste Hash
+      <!-- Predictor Tab -->
+      <div class="tab-content active" id="predictorTab">
+        <div class="input-group">
+          <label for="hashInput">Enter SHA512 Hash <span class="tooltip"><i class="fas fa-info-circle"></i><span class="tooltiptext">Must be 128-character hexadecimal string (0-9, a-f)</span></span></label>
+          <input type="text" id="hashInput" placeholder="Paste your hash here..." autocomplete="off" autocorrect="off" spellcheck="false">
+          <div class="input-actions">
+            <button class="paste-btn" id="pasteHashInput">
+              <i class="fas fa-paste"></i> Paste Hash
+            </button>
+            <button class="clear-btn" id="clearHashInput">
+              <i class="fas fa-broom"></i> Clear
+            </button>
+          </div>
+        </div>
+        
+        <div class="stats-container">
+          <div class="stat-card success">
+            <h4>Success Rate</h4>
+            <div class="value" id="success-rate">-</div>
+          </div>
+          <div class="stat-card warning">
+            <h4>Avg. Delay</h4>
+            <div class="value" id="avg-delay">-</div>
+          </div>
+          <div class="stat-card">
+            <h4>Total Predictions</h4>
+            <div class="value" id="total-predictions">-</div>
+          </div>
+        </div>
+        
+        <div class="odd-buttons">
+          <button class="odd-btn" onclick="predict('2')" id="odd-2">
+            <span>2x</span>
+            <span>Low Risk</span>
+            <div class="confidence-bar" id="confidence-2" style="width: 0%"></div>
           </button>
-          <button class="clear-btn" id="clearHashInput">
-            <i class="fas fa-broom"></i> Clear
+          <button class="odd-btn" onclick="predict('3')" id="odd-3">
+            <span>3x</span>
+            <span>Balanced</span>
+            <div class="confidence-bar" id="confidence-3" style="width: 0%"></div>
           </button>
-        </div>
-      </div>
-      
-      <div class="stats-container">
-        <div class="stat-card success">
-          <h4>Success Rate</h4>
-          <div class="value" id="success-rate">-</div>
-        </div>
-        <div class="stat-card warning">
-          <h4>Avg. Delay</h4>
-          <div class="value" id="avg-delay">-</div>
-        </div>
-        <div class="stat-card">
-          <h4>Total Predictions</h4>
-          <div class="value" id="total-predictions">-</div>
-        </div>
-      </div>
-      
-      <div class="odd-buttons">
-        <button class="odd-btn" onclick="predict('2')" id="odd-2">
-          <span>2x</span>
-          <span>Low Risk</span>
-          <div class="confidence-bar" id="confidence-2" style="width: 0%"></div>
-        </button>
-        <button class="odd-btn" onclick="predict('3')" id="odd-3">
-          <span>3x</span>
-          <span>Balanced</span>
-          <div class="confidence-bar" id="confidence-3" style="width: 0%"></div>
-        </button>
-        <button class="odd-btn" onclick="predict('4')" id="odd-4">
-          <span>4x</span>
-          <span>Moderate</span>
-          <div class="confidence-bar" id="confidence-4" style="width: 0%"></div>
-        </button>
-        <button class="odd-btn" onclick="predict('7')" id="odd-7">
-          <span>7x</span>
-          <span>High Risk</span>
-          <div class="confidence-bar" id="confidence-7" style="width: 0%"></div>
-        </button>
-        <button class="odd-btn" onclick="predict('10')" id="odd-10">
-          <span>10x</span>
-          <span>Very High Risk</span>
-          <div class="confidence-bar" id="confidence-10" style="width: 0%"></div>
-        </button>
-        <button class="odd-btn" onclick="predict('100')" id="odd-100">
-          <span>100x</span>
-          <span>Extreme Risk</span>
-          <div class="confidence-bar" id="confidence-100" style="width: 0%"></div>
-        </button>
-      </div>
-      
-      <div class="results" id="output">
-        <div class="result-item">
-          <span class="label">Target Multiplier:</span>
-          <span class="value" id="result-odd">-</span>
-        </div>
-        <div class="result-item">
-          <span class="label">Hash Entropy:</span>
-          <span class="value" id="result-entropy">-</span>
-        </div>
-        <div class="result-item">
-          <span class="label">Hash Score:</span>
-          <span class="value" id="result-score">-</span>
-        </div>
-        <div class="result-item">
-          <span class="label">Confidence Level:</span>
-          <span class="value" id="result-confidence">-</span>
-        </div>
-        <div class="result-item">
-          <span class="label">Estimated Delay:</span>
-          <span class="value" id="result-delay">-</span>
-        </div>
-        <div class="result-item">
-          <span class="label">Next Signal Time:</span>
-          <span class="value" id="result-time">-</span>
-        </div>
-        <button class="copy-result-btn" id="copyResultBtn" onclick="copyResultToClipboard(event)" disabled>
-          <i class="fas fa-copy"></i> Copy Signal
-        </button>
-      </div>
-      
-      <div class="countdown" id="countdown">No active signals. Create a new prediction.</div>
-      
-      <div class="history-container">
-        <div class="history-header">
-          <h3><i class="fas fa-history"></i> Prediction History</h3>
-          <button class="history-clear-btn" onclick="showClearDialog()">
-            <i class="fas fa-trash-alt"></i> Clear
+          <button class="odd-btn" onclick="predict('4')" id="odd-4">
+            <span>4x</span>
+            <span>Moderate</span>
+            <div class="confidence-bar" id="confidence-4" style="width: 0%"></div>
+          </button>
+          <button class="odd-btn" onclick="predict('7')" id="odd-7">
+            <span>7x</span>
+            <span>High Risk</span>
+            <div class="confidence-bar" id="confidence-7" style="width: 0%"></div>
+          </button>
+          <button class="odd-btn" onclick="predict('10')" id="odd-10">
+            <span>10x</span>
+            <span>Very High Risk</span>
+            <div class="confidence-bar" id="confidence-10" style="width: 0%"></div>
+          </button>
+          <button class="odd-btn" onclick="predict('100')" id="odd-100">
+            <span>100x</span>
+            <span>Extreme Risk</span>
+            <div class="confidence-bar" id="confidence-100" style="width: 0%"></div>
           </button>
         </div>
-        <div class="history-list" id="historyLog"></div>
+        
+        <div class="results" id="output">
+          <div class="result-item">
+            <span class="label">Target Multiplier:</span>
+            <span class="value" id="result-odd">-</span>
+          </div>
+          <div class="result-item">
+            <span class="label">Hash Entropy:</span>
+            <span class="value" id="result-entropy">-</span>
+          </div>
+          <div class="result-item">
+            <span class="label">Hash Score:</span>
+            <span class="value" id="result-score">-</span>
+          </div>
+          <div class="result-item">
+            <span class="label">Confidence Level:</span>
+            <span class="value" id="result-confidence">-</span>
+          </div>
+          <div class="result-item">
+            <span class="label">Estimated Delay:</span>
+            <span class="value" id="result-delay">-</span>
+          </div>
+          <div class="result-item">
+            <span class="label">Next Signal Time:</span>
+            <span class="value" id="result-time">-</span>
+          </div>
+          <button class="copy-result-btn" id="copyResultBtn" onclick="copyResultToClipboard(event)" disabled>
+            <i class="fas fa-copy"></i> Copy Signal
+          </button>
+        </div>
+        
+        <div class="countdown" id="countdown">No active signals. Create a new prediction.</div>
+      </div>
+      
+      <!-- History Tab -->
+      <div class="tab-content" id="historyTab">
+        <div class="history-tab">
+          <div class="history-header">
+            <h3><i class="fas fa-history"></i> Prediction History</h3>
+            <button class="history-clear-btn" onclick="showClearDialog()">
+              <i class="fas fa-trash-alt"></i> Clear
+            </button>
+          </div>
+          <div class="history-list" id="historyLog"></div>
+        </div>
+      </div>
+      
+      <!-- Notification Tab -->
+      <div class="tab-content" id="notificationTab">
+        <div class="notification-tab">
+          <div class="notification-item">
+            <div class="notification-title">
+              <i class="fas fa-bell"></i> New Update Available
+            </div>
+            <div class="notification-time">
+              <i class="far fa-clock"></i> Just now
+            </div>
+            <div class="notification-message">
+              Version 2.3.0 is now available with improved prediction algorithms and better accuracy. Update now for the best experience.
+            </div>
+          </div>
+          
+          <div class="notification-item">
+            <div class="notification-title">
+              <i class="fas fa-star"></i> Premium Features
+            </div>
+            <div class="notification-time">
+              <i class="far fa-clock"></i> 2 hours ago
+            </div>
+            <div class="notification-message">
+              Unlock premium features including advanced analytics, higher accuracy predictions, and exclusive signals.
+            </div>
+          </div>
+          
+          <div class="notification-item">
+            <div class="notification-title">
+              <i class="fas fa-trophy"></i> Winning Strategy
+            </div>
+            <div class="notification-time">
+              <i class="far fa-clock"></i> 1 day ago
+            </div>
+            <div class="notification-message">
+              Check out our latest winning strategy guide for maximizing your profits with the predictor tool.
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Support Tab -->
+      <div class="tab-content" id="supportTab">
+        <div class="support-tab">
+          <div class="support-card">
+            <h3><i class="fas fa-question-circle"></i> Need Help?</h3>
+            <button class="support-btn" onclick="window.open('https://damindu817.github.io/Aviator-Sha512-Hash-Professional-Strategy-Guide/','_blank')">
+              <i class="fas fa-book"></i> User Guide
+            </button>
+            <button class="support-btn" onclick="window.open('https://damindu817.github.io/DISCLAIMER-/','_blank')">
+              <i class="fas fa-exclamation-triangle"></i> Disclaimer
+            </button>
+            <button class="support-btn" onclick="window.open('mailto:support@aviatorpredictor.com')">
+              <i class="fas fa-envelope"></i> Contact Support
+            </button>
+            <button class="support-btn" onclick="window.open('https://wa.me/1234567890')">
+              <i class="fab fa-whatsapp"></i> WhatsApp Support
+            </button>
+          </div>
+          
+          <div class="support-card">
+            <h3><i class="fas fa-crown"></i> Premium</h3>
+            <button class="support-btn" onclick="showPremiumDialog()">
+              <i class="fas fa-star"></i> Upgrade to Premium
+            </button>
+            <button class="support-btn" onclick="showPremiumFeatures()">
+              <i class="fas fa-gem"></i> Premium Features
+            </button>
+          </div>
+        </div>
       </div>
     </div>
     
     <div class="footer">
       XTREME AVIATOR SHA512 HASH ULTRA PREDICTOR PRO © <span id="current-year"></span> | ALL RIGHTS RESERVED
     </div>
+  </div>
+
+  <!-- Navigation Bar -->
+  <div class="nav-bar">
+    <a href="#" class="nav-item active" onclick="switchTab('predictorTab', this)">
+      <i class="fas fa-chart-line"></i>
+      <span>PREDICTOR</span>
+    </a>
+    <a href="#" class="nav-item" onclick="switchTab('historyTab', this)">
+      <i class="fas fa-history"></i>
+      <span>HISTORY</span>
+    </a>
+    <a href="#" class="nav-item" onclick="switchTab('notificationTab', this)">
+      <i class="fas fa-bell"></i>
+      <span>NOTIFICATION</span>
+    </a>
+    <a href="#" class="nav-item" onclick="switchTab('supportTab', this)">
+      <i class="fas fa-headset"></i>
+      <span>SUPPORT</span>
+    </a>
   </div>
 
   <!-- Tips Badge -->
@@ -1860,6 +2097,30 @@
       <div class="dialog-message" id="successMessage">Prediction signal created successfully!</div>
       <div class="dialog-buttons">
         <button class="dialog-btn dialog-btn-confirm" onclick="hideSuccessDialog()" style="background: var(--success);">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Premium Dialog -->
+  <div class="dialog-overlay" id="premiumDialog">
+    <div class="dialog-box">
+      <div class="dialog-title">
+        <i class="fas fa-crown" style="color: var(--warning);"></i>
+        <span>Premium Features</span>
+      </div>
+      <div class="dialog-message">
+        <ul style="padding-left: 20px; margin-bottom: 15px;">
+          <li>Higher accuracy predictions</li>
+          <li>Exclusive signals</li>
+          <li>Advanced analytics</li>
+          <li>Priority support</li>
+          <li>No ads</li>
+        </ul>
+        <p>Upgrade now to unlock all premium features!</p>
+      </div>
+      <div class="dialog-buttons">
+        <button class="dialog-btn dialog-btn-cancel" onclick="hidePremiumDialog()">Later</button>
+        <button class="dialog-btn dialog-btn-confirm" onclick="window.open('https://damindu817.github.io/Aviator-Sha512-Hash-Professional-Strategy-Guide/','_blank')" style="background: var(--warning);">Upgrade</button>
       </div>
     </div>
   </div>
@@ -2113,6 +2374,27 @@
       });
     }
     
+    // Tab switching function
+    function switchTab(tabId, clickedElement) {
+      // Hide all tab contents
+      document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      
+      // Show selected tab content
+      document.getElementById(tabId).classList.add('active');
+      
+      // Update active nav item
+      document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.remove('active');
+      });
+      
+      clickedElement.classList.add('active');
+      
+      // Scroll to top
+      window.scrollTo(0, 0);
+    }
+    
     // Check connection status
     function checkConnection() {
       if (navigator.onLine) {
@@ -2147,6 +2429,21 @@
           tipsPopup.classList.remove("show");
         }, 8000);
       }
+    }
+    
+    // Show premium dialog
+    function showPremiumDialog() {
+      document.getElementById("premiumDialog").classList.add("active");
+    }
+    
+    // Hide premium dialog
+    function hidePremiumDialog() {
+      document.getElementById("premiumDialog").classList.remove("active");
+    }
+    
+    // Show premium features
+    function showPremiumFeatures() {
+      showPremiumDialog();
     }
     
     // Update current date and time with server sync
