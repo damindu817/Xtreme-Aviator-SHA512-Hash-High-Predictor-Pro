@@ -1722,12 +1722,12 @@
       
       /* Adjust badge positions for mobile */
       .tips-badge {
-        bottom: 140px;
+        bottom: 150px;
         right: 15px;
       }
       
       .disclaimer-badge {
-        bottom: 25px;
+        bottom: 80px;
         right: 15px;
       }
       
@@ -1738,9 +1738,16 @@
       }
       
       .disclaimer-popup {
-        bottom: 85px;
+        bottom: 130px;
         right: 15px;
         width: calc(100% - 30px);
+      }
+      
+      /* Fix for signal popups on mobile */
+      .signal-card, .risk-signal-card {
+        width: calc(100% - 30px);
+        margin: 0 15px;
+        max-width: none;
       }
     }
   </style>
@@ -2012,7 +2019,7 @@
   <div class="disclaimer-popup" id="disclaimerPopup">
     <h4>DISCLAIMER!</h4>
     <p>This tool provides analytical insights based on patterns and probability. Predictions are not guaranteed. Gambling involves risk. Only play with money you can afford to lose.</p>
-    <a href="https://damindu817.github.io/DISCLAIMER-/" target="_blank">Click icon for guide & creator contact</a>
+    <a href="https://damindi817.github.io/DISCLAIMER-/" target="_blank">Click icon for guide & creator contact</a>
   </div>
 
   <!-- Custom Dialogs -->
