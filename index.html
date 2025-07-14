@@ -87,7 +87,7 @@
       background: linear-gradient(90deg, var(--primary), var(--secondary));
       padding: 10px 20px;
       text-align: center;
-      z-index: 100;
+      z-index: 1000;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -114,6 +114,7 @@
       right: 0;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
+      z-index: 1; /* Lower than header/nav */
     }
     
     /* Main content container - UPDATED border-radius */
@@ -151,7 +152,7 @@
       background: var(--dark-2);
       display: flex;
       border-top: 1px solid rgba(255, 255, 255, 0.05);
-      z-index: 100;
+      z-index: 1000;
     }
     
     .nav-item {
@@ -701,7 +702,7 @@
     /* Updated Disclaimer Badge Animation */
     .disclaimer-badge {
       position: fixed;
-      bottom: 25px;
+      bottom: 80px;
       right: 25px;
       background: linear-gradient(145deg, rgba(255, 0, 110, 0.3), rgba(255, 0, 110, 0.4));
       color: var(--danger);
@@ -753,7 +754,7 @@
     /* Disclaimer popup */
     .disclaimer-popup {
       position: fixed;
-      bottom: 85px;
+      bottom: 140px;
       right: 25px;
       width: 300px;
       max-width: 90%;
@@ -801,7 +802,7 @@
     /* New Light Bulb Badge */
     .tips-badge {
       position: fixed;
-      bottom: 230px; /* Increased from 180px to 230px to move it higher */
+      bottom: 150px;
       right: 25px;
       background: linear-gradient(145deg, rgba(255, 190, 11, 0.3), rgba(255, 190, 11, 0.4));
       color: var(--warning);
@@ -812,21 +813,19 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      z-index: 9997;
+      z-index: 800; /* Lower than signal limit overlay */
       box-shadow: 0 5px 20px rgba(255, 190, 11, 0.3);
       transition: all 0.3s ease;
       font-size: 1.2rem;
       animation: pulseWarning 2s infinite;
     }
     
-    /* New animation for light bulb badge */
     @keyframes pulseWarning {
       0% { box-shadow: 0 0 0 0 rgba(255, 190, 11, 0.4); }
       70% { box-shadow: 0 0 0 15px rgba(255, 190, 11, 0); }
       100% { box-shadow: 0 0 0 0 rgba(255, 190, 11, 0); }
     }
     
-    /* Hover effects for light bulb */
     .tips-badge:hover {
       background: linear-gradient(145deg, rgba(255, 190, 11, 0.4), rgba(255, 190, 11, 0.5));
       transform: scale(1.1);
@@ -845,7 +844,7 @@
     /* Tips popup styles */
     .tips-popup {
       position: fixed;
-      bottom: 290px; /* Increased from 240px to 290px to match the new badge position */
+      bottom: 210px;
       right: 25px;
       width: 300px;
       max-width: 90%;
@@ -857,7 +856,7 @@
       transform: translateY(20px);
       opacity: 0;
       transition: all 0.3s ease;
-      z-index: 9996;
+      z-index: 799; /* Below tips badge */
       pointer-events: none;
     }
     
@@ -1261,6 +1260,15 @@
       color: var(--warning);
     }
     
+    /* Footer note for signal popup */
+    .signal-footer-note {
+      font-size: 0.7rem;
+      text-align: center;
+      color: var(--light-2);
+      padding: 10px 24px 24px;
+      opacity: 0.7;
+    }
+    
     /* RISK SIGNAL Popup Styles */
     .risk-signal-container {
       position: fixed;
@@ -1428,7 +1436,7 @@
       height: calc(100% + 10px);
       border-radius: 50%;
       border: 3px solid transparent;
-      border-top-color: var(--primary); /* Original blue color */
+      border-top-color: var(--primary);
       animation: spin 2s linear infinite;
     }
     
@@ -1512,6 +1520,15 @@
     .risk-highlight {
       font-weight: 700;
       color: var(--warning);
+    }
+    
+    /* Footer note for risk signal popup */
+    .risk-signal-footer-note {
+      font-size: 0.7rem;
+      text-align: center;
+      color: var(--light-2);
+      padding: 10px 24px 24px;
+      opacity: 0.7;
     }
     
     /* Offline Page Styles */
@@ -1657,8 +1674,119 @@
       100% { transform: translate(random(200) - 100px, random(200) - 100px) scale(0); opacity: 0; }
     }
 
-    @keyframes spin {
-      to { transform: rotate(360deg); }
+    /* Signal Limit Popup Styles */
+    .signal-limit-overlay {
+      position: fixed;
+      top: var(--header-height);
+      left: 0;
+      right: 0;
+      bottom: var(--nav-height);
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 900; /* Between header/nav (1000) and main content (1) */
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    
+    .signal-limit-overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+    
+    .signal-limit-popup {
+      width: 90%;
+      max-width: 400px;
+      background: var(--dark-2);
+      border-radius: 12px;
+      padding: 0;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      transform: translateY(20px);
+      transition: transform 0.3s ease;
+      overflow: hidden;
+    }
+    
+    .signal-limit-overlay.active .signal-limit-popup {
+      transform: translateY(0);
+    }
+    
+    .signal-limit-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 15px 20px;
+      color: var(--danger);
+      background: rgba(255, 0, 110, 0.1);
+      border-bottom: 1px solid rgba(255, 0, 110, 0.2);
+    }
+    
+    .signal-limit-header i {
+      font-size: 1.5rem;
+    }
+    
+    .signal-limit-header h3 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      margin: 0;
+    }
+    
+    .signal-limit-content {
+      padding: 20px;
+    }
+    
+    .signal-limit-message {
+      margin-bottom: 20px;
+      color: var(--light-2);
+      line-height: 1.5;
+      font-size: 0.9rem;
+      text-align: center;
+    }
+    
+    .signal-limit-message p {
+      margin-bottom: 10px;
+    }
+    
+    .signal-limit-buttons {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    
+    .signal-limit-btn {
+      flex: 1;
+      padding: 10px 15px;
+      border-radius: 8px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    
+    .signal-limit-cancel {
+      background: var(--dark-3);
+      color: var(--light-1);
+      border: 1px solid var(--dark-3);
+    }
+    
+    .signal-limit-cancel:hover {
+      background: var(--dark-1);
+    }
+    
+    .signal-limit-exit {
+      background: var(--danger);
+      color: white;
+      border: 1px solid var(--danger);
+    }
+    
+    .signal-limit-exit:hover {
+      background: #e00064;
     }
     
     /* Responsive adjustments */
@@ -1749,6 +1877,21 @@
         margin: 0 15px;
         max-width: none;
       }
+      
+      /* Signal limit popup adjustments */
+      .signal-limit-popup {
+        width: calc(100% - 30px);
+      }
+      
+      .signal-limit-buttons {
+        flex-direction: column;
+      }
+      
+      /* Adjust footer note text size for mobile */
+      .signal-footer-note, .risk-signal-footer-note {
+        font-size: 0.65rem;
+        padding: 10px 15px 15px;
+      }
     }
   </style>
 </head>
@@ -1766,6 +1909,30 @@
       <button class="retry-btn" id="retryBtn">
         <i class="fas fa-sync-alt"></i> RETRY CONNECTION
       </button>
+    </div>
+  </div>
+
+  <!-- Signal Limit Popup -->
+  <div class="signal-limit-overlay" id="signalLimitOverlay">
+    <div class="signal-limit-popup">
+      <div class="signal-limit-header">
+        <i class="fas fa-exclamation-triangle"></i>
+        <h3>SIGNAL LIMIT REACHED</h3>
+      </div>
+      <div class="signal-limit-content">
+        <div class="signal-limit-message">
+          <p>You have already generated 5 signals. Continuously generating more signals increases the risk of pattern detection by the game algorithm.</p>
+          <p>For optimal performance and to avoid detection, we recommend restarting your session or taking a break.</p>
+        </div>
+        <div class="signal-limit-buttons">
+          <button class="signal-limit-btn signal-limit-cancel" id="signalLimitCancel">
+            <i class="fas fa-undo"></i> Cancel
+          </button>
+          <button class="signal-limit-btn signal-limit-exit" id="signalLimitExit">
+            <i class="fas fa-sign-out-alt"></i> Exit Tool
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -2126,6 +2293,10 @@
           <!-- Dynamic content will be inserted here -->
         </div>
       </div>
+      
+      <div class="signal-footer-note">
+        This signal is generated using the XTREME AVIATOR SHA512 HASH ULTRA PREDICTOR PRO tool with AI-powered accuracy
+      </div>
     </div>
   </div>
 
@@ -2168,6 +2339,10 @@
           <!-- Dynamic content will be inserted here -->
         </div>
       </div>
+      
+      <div class="risk-signal-footer-note">
+        This signal is generated using the XTREME AVIATOR SHA512 HASH ULTRA PREDICTOR PRO tool with AI-powered accuracy
+      </div>
     </div>
   </div>
 
@@ -2194,6 +2369,10 @@
     let tipsPopupShown = false;
     let firstSignalGenerated = false;
     let signalResultReceived = false;
+    let signalCount = 0;
+    let popupSuppressed = false;
+    let signalLimitShown = false;
+    let popupDismissed = false;
     
     // Initialize on load
     window.onload = function() {
@@ -2326,6 +2505,39 @@
           }
         }, 2000);
       });
+      
+      // Signal limit popup event handlers
+      document.getElementById("signalLimitCancel").addEventListener("click", function() {
+        popupSuppressed = true;
+        popupDismissed = true;
+        document.getElementById("signalLimitOverlay").classList.remove("active");
+      });
+      
+      document.getElementById("signalLimitExit").addEventListener("click", function() {
+        // Close the app or redirect
+        try {
+          if (window.navigator && window.navigator.app && window.navigator.app.exitApp) {
+            // For Cordova apps
+            window.navigator.app.exitApp();
+          } else if (window.close) {
+            // For web apps
+            window.close();
+          } else {
+            // Fallback - redirect to home page
+            window.location.href = 'about:blank';
+          }
+        } catch (e) {
+          // If window.close() doesn't work, redirect to home page
+          window.location.href = 'about:blank';
+        }
+      });
+      
+      // Prevent closing by clicking outside
+      document.getElementById("signalLimitOverlay").addEventListener("click", function(e) {
+        if (e.target === this) {
+          e.stopPropagation();
+        }
+      });
     }
     
     // Tab switching function
@@ -2347,6 +2559,9 @@
       
       // Scroll to top
       document.querySelector('.scroll-container').scrollTo(0, 0);
+      
+      // Hide signal limit popup when switching tabs
+      document.getElementById("signalLimitOverlay").classList.remove("active");
     }
     
     // Check connection status
@@ -3186,6 +3401,17 @@
       if (!hash || hash.length !== 128 || !/^[a-f0-9]+$/.test(hash)) {
         showErrorDialog("Invalid SHA512 hash. Must be exactly 128 hexadecimal characters (0-9, a-f).");
         return;
+      }
+      
+      // Check signal limit (only in predictor tab)
+      const activeTab = document.querySelector('.tab-content.active');
+      if (activeTab && activeTab.id === 'predictorTab' && !popupDismissed) {
+        signalCount++;
+        if (signalCount > 5) {
+          signalLimitShown = true;
+          document.getElementById("signalLimitOverlay").classList.add("active");
+          return;
+        }
       }
       
       selectedOdd = oddStr;
