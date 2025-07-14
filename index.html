@@ -702,7 +702,7 @@
     /* Updated Disclaimer Badge Animation */
     .disclaimer-badge {
       position: fixed;
-      bottom: 80px;
+      bottom: 25px;
       right: 25px;
       background: linear-gradient(145deg, rgba(255, 0, 110, 0.3), rgba(255, 0, 110, 0.4));
       color: var(--danger);
@@ -754,7 +754,7 @@
     /* Disclaimer popup */
     .disclaimer-popup {
       position: fixed;
-      bottom: 140px;
+      bottom: 85px;
       right: 25px;
       width: 300px;
       max-width: 90%;
@@ -802,7 +802,7 @@
     /* New Light Bulb Badge */
     .tips-badge {
       position: fixed;
-      bottom: 150px;
+      bottom: 230px;
       right: 25px;
       background: linear-gradient(145deg, rgba(255, 190, 11, 0.3), rgba(255, 190, 11, 0.4));
       color: var(--warning);
@@ -844,7 +844,7 @@
     /* Tips popup styles */
     .tips-popup {
       position: fixed;
-      bottom: 210px;
+      bottom: 290px;
       right: 25px;
       width: 300px;
       max-width: 90%;
@@ -1178,6 +1178,11 @@
       animation: spin 2s linear infinite;
     }
     
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
     #countdown-timer {
       font-size: 2.2rem;
       font-weight: 800;
@@ -1258,15 +1263,6 @@
     .highlight {
       font-weight: 700;
       color: var(--warning);
-    }
-    
-    /* Footer note for signal popup */
-    .signal-footer-note {
-      font-size: 0.7rem;
-      text-align: center;
-      color: var(--light-2);
-      padding: 10px 24px 24px;
-      opacity: 0.7;
     }
     
     /* RISK SIGNAL Popup Styles */
@@ -1522,15 +1518,6 @@
       color: var(--warning);
     }
     
-    /* Footer note for risk signal popup */
-    .risk-signal-footer-note {
-      font-size: 0.7rem;
-      text-align: center;
-      color: var(--light-2);
-      padding: 10px 24px 24px;
-      opacity: 0.7;
-    }
-    
     /* Offline Page Styles */
     .offline-overlay {
       position: fixed;
@@ -1783,10 +1770,37 @@
       background: var(--danger);
       color: white;
       border: 1px solid var(--danger);
+      position: relative;
+      overflow: hidden;
     }
     
     .signal-limit-exit:hover {
       background: #e00064;
+    }
+    
+    .signal-limit-exit::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255,255,255,0.1);
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
+    }
+    
+    .signal-limit-exit.active {
+      pointer-events: none;
+    }
+    
+    .signal-limit-exit.active::after {
+      animation: exitProgress 15s linear forwards;
+    }
+    
+    @keyframes exitProgress {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(0); }
     }
     
     /* Responsive adjustments */
@@ -1885,12 +1899,6 @@
       
       .signal-limit-buttons {
         flex-direction: column;
-      }
-      
-      /* Adjust footer note text size for mobile */
-      .signal-footer-note, .risk-signal-footer-note {
-        font-size: 0.65rem;
-        padding: 10px 15px 15px;
       }
     }
   </style>
@@ -2293,10 +2301,6 @@
           <!-- Dynamic content will be inserted here -->
         </div>
       </div>
-      
-      <div class="signal-footer-note">
-        This signal is generated using the XTREME AVIATOR SHA512 HASH ULTRA PREDICTOR PRO tool with AI-powered accuracy
-      </div>
     </div>
   </div>
 
@@ -2339,10 +2343,6 @@
           <!-- Dynamic content will be inserted here -->
         </div>
       </div>
-      
-      <div class="risk-signal-footer-note">
-        This signal is generated using the XTREME AVIATOR SHA512 HASH ULTRA PREDICTOR PRO tool with AI-powered accuracy
-      </div>
     </div>
   </div>
 
@@ -2373,6 +2373,9 @@
     let popupSuppressed = false;
     let signalLimitShown = false;
     let popupDismissed = false;
+    let exitToolCountdown = null;
+    let exitToolRemainingTime = 15;
+    let exitToolInterval = null;
     
     // Initialize on load
     window.onload = function() {
@@ -2514,22 +2517,7 @@
       });
       
       document.getElementById("signalLimitExit").addEventListener("click", function() {
-        // Close the app or redirect
-        try {
-          if (window.navigator && window.navigator.app && window.navigator.app.exitApp) {
-            // For Cordova apps
-            window.navigator.app.exitApp();
-          } else if (window.close) {
-            // For web apps
-            window.close();
-          } else {
-            // Fallback - redirect to home page
-            window.location.href = 'about:blank';
-          }
-        } catch (e) {
-          // If window.close() doesn't work, redirect to home page
-          window.location.href = 'about:blank';
-        }
+        startExitToolCountdown();
       });
       
       // Prevent closing by clicking outside
@@ -2538,6 +2526,74 @@
           e.stopPropagation();
         }
       });
+      
+      // Check for any pending exit tool countdown on page load
+      checkPendingExitCountdown();
+    }
+    
+    // Start exit tool countdown
+    function startExitToolCountdown() {
+      const exitBtn = document.getElementById("signalLimitExit");
+      exitBtn.classList.add("active");
+      exitBtn.innerHTML = `<i class="fas fa-sign-out-alt"></i> Exiting in ${exitToolRemainingTime}s`;
+      
+      exitToolInterval = setInterval(() => {
+        exitToolRemainingTime--;
+        exitBtn.innerHTML = `<i class="fas fa-sign-out-alt"></i> Exiting in ${exitToolRemainingTime}s`;
+        
+        if (exitToolRemainingTime <= 0) {
+          clearInterval(exitToolInterval);
+          exitToolCountdown = null;
+          exitToolRemainingTime = 15;
+          
+          // Save to localStorage that we're exiting
+          localStorage.setItem('exitToolInitiated', 'false');
+          
+          // Close the app or redirect
+          try {
+            if (window.navigator && window.navigator.app && window.navigator.app.exitApp) {
+              // For Cordova apps
+              window.navigator.app.exitApp();
+            } else if (window.close) {
+              // For web apps
+              window.close();
+            } else {
+              // Fallback - redirect to support tab
+              switchTab('supportTab', document.querySelector('.nav-item[onclick*="supportTab"]'));
+            }
+          } catch (e) {
+            // If window.close() doesn't work, redirect to support tab
+            switchTab('supportTab', document.querySelector('.nav-item[onclick*="supportTab"]'));
+          }
+          document.getElementById("signalLimitOverlay").classList.remove("active");
+        }
+      }, 1000);
+      
+      // Save to localStorage that we're initiating exit
+      localStorage.setItem('exitToolInitiated', 'true');
+      localStorage.setItem('exitToolRemaining', exitToolRemainingTime.toString());
+      localStorage.setItem('exitToolStartTime', Date.now().toString());
+    }
+    
+    // Check for pending exit countdown on page load
+    function checkPendingExitCountdown() {
+      const exitInitiated = localStorage.getItem('exitToolInitiated') === 'true';
+      const startTime = parseInt(localStorage.getItem('exitToolStartTime') || '0');
+      const remainingTime = parseInt(localStorage.getItem('exitToolRemaining') || '15');
+      
+      if (exitInitiated) {
+        const elapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
+        exitToolRemainingTime = Math.max(0, remainingTime - elapsedSeconds);
+        
+        if (exitToolRemainingTime > 0) {
+          // Show the popup again with remaining time
+          document.getElementById("signalLimitOverlay").classList.add("active");
+          startExitToolCountdown();
+        } else {
+          // Clear the flag if time has already elapsed
+          localStorage.setItem('exitToolInitiated', 'false');
+        }
+      }
     }
     
     // Tab switching function
