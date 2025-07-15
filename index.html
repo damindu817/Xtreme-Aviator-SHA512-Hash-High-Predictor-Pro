@@ -1795,12 +1795,23 @@
     }
     
     .signal-limit-exit.active::after {
-      animation: exitProgress 15s linear forwards;
+      animation: exitProgress 900s linear forwards;
     }
     
     @keyframes exitProgress {
       0% { transform: translateX(-100%); }
       100% { transform: translateX(0); }
+    }
+    
+    /* Signal Footer Text */
+    .signal-footer-text {
+      padding: 15px 24px;
+      font-size: 0.7rem;
+      text-align: center;
+      color: var(--light-2);
+      opacity: 0.7;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      margin-top: -10px;
     }
     
     /* Responsive adjustments */
@@ -1829,6 +1840,11 @@
       
       .stats-container {
         grid-template-columns: 1fr;
+      }
+      
+      .signal-footer-text {
+        font-size: 0.65rem;
+        padding: 10px 15px;
       }
     }
     
@@ -1899,6 +1915,11 @@
       
       .signal-limit-buttons {
         flex-direction: column;
+      }
+      
+      .signal-footer-text {
+        font-size: 0.6rem;
+        padding: 8px 12px;
       }
     }
   </style>
@@ -2301,6 +2322,10 @@
           <!-- Dynamic content will be inserted here -->
         </div>
       </div>
+      
+      <div class="signal-footer-text">
+        This signal is generated using the XTREME AVIATOR SHA512 HASH ULTRA PREDICTOR PRO tool with AI-powered accuracy.
+      </div>
     </div>
   </div>
 
@@ -2343,6 +2368,10 @@
           <!-- Dynamic content will be inserted here -->
         </div>
       </div>
+      
+      <div class="signal-footer-text">
+        This signal is generated using the XTREME AVIATOR SHA512 HASH ULTRA PREDICTOR PRO tool with AI-powered accuracy.
+      </div>
     </div>
   </div>
 
@@ -2374,7 +2403,7 @@
     let signalLimitShown = false;
     let popupDismissed = false;
     let exitToolCountdown = null;
-    let exitToolRemainingTime = 15;
+    let exitToolRemainingTime = 900; // Changed from 15 to 900 (15 minutes)
     let exitToolInterval = null;
     
     // Initialize on load
@@ -2544,7 +2573,7 @@
         if (exitToolRemainingTime <= 0) {
           clearInterval(exitToolInterval);
           exitToolCountdown = null;
-          exitToolRemainingTime = 15;
+          exitToolRemainingTime = 900;
           
           // Save to localStorage that we're exiting
           localStorage.setItem('exitToolInitiated', 'false');
@@ -2579,7 +2608,7 @@
     function checkPendingExitCountdown() {
       const exitInitiated = localStorage.getItem('exitToolInitiated') === 'true';
       const startTime = parseInt(localStorage.getItem('exitToolStartTime') || '0');
-      const remainingTime = parseInt(localStorage.getItem('exitToolRemaining') || '15');
+      const remainingTime = parseInt(localStorage.getItem('exitToolRemaining') || '900');
       
       if (exitInitiated) {
         const elapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
