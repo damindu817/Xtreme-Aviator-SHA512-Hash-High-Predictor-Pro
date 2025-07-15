@@ -2543,6 +2543,7 @@
         popupSuppressed = true;
         popupDismissed = true;
         document.getElementById("signalLimitOverlay").classList.remove("active");
+        localStorage.setItem('signalLimitDismissed', 'true');
       });
       
       document.getElementById("signalLimitExit").addEventListener("click", function() {
@@ -2563,8 +2564,15 @@
     // Start exit tool countdown
     function startExitToolCountdown() {
       const exitBtn = document.getElementById("signalLimitExit");
+      const startTime = Date.now();
+      
       exitBtn.classList.add("active");
       exitBtn.innerHTML = `<i class="fas fa-sign-out-alt"></i> Time Until Re-Enable ${exitToolRemainingTime}s`;
+      
+      // Save to localStorage that we're initiating exit
+      localStorage.setItem('exitToolInitiated', 'true');
+      localStorage.setItem('exitToolRemaining', exitToolRemainingTime.toString());
+      localStorage.setItem('exitToolStartTime', startTime.toString());
       
       exitToolInterval = setInterval(() => {
         exitToolRemainingTime--;
@@ -2575,8 +2583,10 @@
           exitToolCountdown = null;
           exitToolRemainingTime = 900;
           
-          // Save to localStorage that we're exiting
+          // Clear the localStorage flags
           localStorage.setItem('exitToolInitiated', 'false');
+          localStorage.removeItem('exitToolRemaining');
+          localStorage.removeItem('exitToolStartTime');
           
           // Close the app or redirect
           try {
@@ -2597,22 +2607,18 @@
           document.getElementById("signalLimitOverlay").classList.remove("active");
         }
       }, 1000);
-      
-      // Save to localStorage that we're initiating exit
-      localStorage.setItem('exitToolInitiated', 'true');
-      localStorage.setItem('exitToolRemaining', exitToolRemainingTime.toString());
-      localStorage.setItem('exitToolStartTime', Date.now().toString());
     }
     
     // Check for pending exit countdown on page load
     function checkPendingExitCountdown() {
       const exitInitiated = localStorage.getItem('exitToolInitiated') === 'true';
       const startTime = parseInt(localStorage.getItem('exitToolStartTime') || '0');
-      const remainingTime = parseInt(localStorage.getItem('exitToolRemaining') || '900');
+      const storedRemaining = parseInt(localStorage.getItem('exitToolRemaining') || '900');
       
-      if (exitInitiated) {
-        const elapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
-        exitToolRemainingTime = Math.max(0, remainingTime - elapsedSeconds);
+      if (exitInitiated && startTime && storedRemaining) {
+        const now = Date.now();
+        const elapsedSeconds = Math.floor((now - startTime) / 1000);
+        exitToolRemainingTime = Math.max(0, storedRemaining - elapsedSeconds);
         
         if (exitToolRemainingTime > 0) {
           // Show the popup again with remaining time
@@ -2621,7 +2627,15 @@
         } else {
           // Clear the flag if time has already elapsed
           localStorage.setItem('exitToolInitiated', 'false');
+          localStorage.removeItem('exitToolRemaining');
+          localStorage.removeItem('exitToolStartTime');
         }
+      }
+      
+      // Check if signal limit was dismissed
+      const signalLimitDismissed = localStorage.getItem('signalLimitDismissed') === 'true';
+      if (signalLimitDismissed) {
+        popupDismissed = true;
       }
     }
     
@@ -3492,7 +3506,7 @@
       const activeTab = document.querySelector('.tab-content.active');
       if (activeTab && activeTab.id === 'predictorTab' && !popupDismissed) {
         signalCount++;
-        if (signalCount > 5) {
+        if (signalCount > 5 && !popupSuppressed) {
           signalLimitShown = true;
           document.getElementById("signalLimitOverlay").classList.add("active");
           return;
