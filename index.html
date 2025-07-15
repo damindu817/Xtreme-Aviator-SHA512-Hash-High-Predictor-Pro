@@ -1955,10 +1955,10 @@
         </div>
         <div class="signal-limit-buttons">
           <button class="signal-limit-btn signal-limit-cancel" id="signalLimitCancel">
-            <i class="fas fa-undo"></i> Cancel
+            <i class="fas fa-undo"></i> Continue
           </button>
           <button class="signal-limit-btn signal-limit-exit" id="signalLimitExit">
-            <i class="fas fa-sign-out-alt"></i> Exit Tool
+            <i class="fas fa-sign-out-alt"></i> Pause Predictions
           </button>
         </div>
       </div>
@@ -2324,7 +2324,7 @@
       </div>
       
       <div class="signal-footer-text">
-        This signal is generated using the XTREME AVIATOR SHA512 HASH ULTRA PREDICTOR PRO tool with AI-powered accuracy.
+        This signal is generated using the XTREME AVIATOR SHA512 HASH ULTRA PREDICTOR PRO tool with AI-powered accuracy
       </div>
     </div>
   </div>
@@ -2370,7 +2370,7 @@
       </div>
       
       <div class="signal-footer-text">
-        This signal is generated using the XTREME AVIATOR SHA512 HASH ULTRA PREDICTOR PRO tool with AI-powered accuracy.
+        This signal is generated using the XTREME AVIATOR SHA512 HASH ULTRA PREDICTOR PRO tool with AI-powered accuracy
       </div>
     </div>
   </div>
@@ -2564,11 +2564,11 @@
     function startExitToolCountdown() {
       const exitBtn = document.getElementById("signalLimitExit");
       exitBtn.classList.add("active");
-      exitBtn.innerHTML = `<i class="fas fa-sign-out-alt"></i> Exiting in ${exitToolRemainingTime}s`;
+      exitBtn.innerHTML = `<i class="fas fa-sign-out-alt"></i> Time Until Re-Enable ${exitToolRemainingTime}s`;
       
       exitToolInterval = setInterval(() => {
         exitToolRemainingTime--;
-        exitBtn.innerHTML = `<i class="fas fa-sign-out-alt"></i> Exiting in ${exitToolRemainingTime}s`;
+        exitBtn.innerHTML = `<i class="fas fa-sign-out-alt"></i> Time Until Re-Enable ${exitToolRemainingTime}s`;
         
         if (exitToolRemainingTime <= 0) {
           clearInterval(exitToolInterval);
