@@ -392,6 +392,70 @@
       padding: 15px;
     }
     
+    /* Upcoming Signals Section */
+    .upcoming-signals {
+      background: var(--dark-3);
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-left: 4px solid var(--primary);
+    }
+    
+    .upcoming-signals h3 {
+      font-size: 1rem;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--primary);
+    }
+    
+    .signal-countdowns {
+      display: grid;
+      gap: 10px;
+    }
+    
+    .signal-countdown {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 8px;
+    }
+    
+    .signal-countdown .signal-odd {
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      min-width: 30px;
+      text-align: center;
+    }
+    
+    .signal-countdown .signal-odd[data-odd="2"] { background: rgba(6, 214, 160, 0.2); color: var(--success); }
+    .signal-countdown .signal-odd[data-odd="3"] { background: rgba(255, 190, 11, 0.2); color: var(--warning); }
+    .signal-countdown .signal-odd[data-odd="4"] { background: rgba(255, 158, 0, 0.2); color: #ff9e00; }
+    .signal-countdown .signal-odd[data-odd="7"] { background: rgba(131, 56, 236, 0.2); color: var(--secondary); }
+    .signal-countdown .signal-odd[data-odd="10"] { background: rgba(255, 0, 110, 0.2); color: var(--danger); }
+    .signal-countdown .signal-odd[data-odd="100"] { background: rgba(255, 0, 255, 0.2); color: var(--extreme); }
+    
+    .signal-countdown .signal-time {
+      font-size: 0.9rem;
+      color: var(--light-2);
+    }
+    
+    .signal-countdown .countdown-timer {
+      font-family: monospace;
+      font-weight: 600;
+      color: var(--warning);
+      background: rgba(0, 0, 0, 0.3);
+      padding: 3px 8px;
+      border-radius: 4px;
+      min-width: 50px;
+      text-align: center;
+    }
+    
     .history-header {
       display: flex;
       justify-content: space-between;
@@ -1921,6 +1985,17 @@
         font-size: 0.6rem;
         padding: 8px 12px;
       }
+      
+      /* Upcoming signals adjustments */
+      .signal-countdown {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+      }
+      
+      .signal-countdown .countdown-timer {
+        align-self: flex-end;
+      }
     }
   </style>
 </head>
@@ -2082,6 +2157,24 @@
           <!-- History Tab -->
           <div class="tab-content" id="historyTab">
             <div class="history-tab">
+              <!-- Upcoming Signals Section -->
+              <div class="upcoming-signals">
+                <h3><i class="fas fa-clock"></i> Upcoming Signals</h3>
+                <div class="signal-countdowns" id="signalCountdowns">
+                  <!-- Demo data - will be replaced by actual signals from history -->
+                  <div class="signal-countdown">
+                    <span class="signal-odd" data-odd="2">2x</span>
+                    <span class="signal-time">11:45:30 AM</span>
+                    <span class="countdown-timer">05:22</span>
+                  </div>
+                  <div class="signal-countdown">
+                    <span class="signal-odd" data-odd="7">7x</span>
+                    <span class="signal-time">12:15:45 PM</span>
+                    <span class="countdown-timer">52:15</span>
+                  </div>
+                </div>
+              </div>
+              
               <div class="history-header">
                 <h3><i class="fas fa-history"></i> Prediction History</h3>
                 <button class="history-clear-btn" onclick="showClearDialog()">
@@ -2403,14 +2496,8 @@
     let signalLimitShown = false;
     let popupDismissed = false;
     let exitToolCountdown = null;
-    let exitToolRemainingTime = 900; // 15 minutes in seconds
+    let exitToolRemainingTime = 900; // Changed from 15 to 900 (15 minutes)
     let exitToolInterval = null;
-    
-    // Constants for signal limit
-    const SIGNAL_LIMIT = 5;
-    const COOLDOWN_DURATION = 900; // 15 minutes in seconds
-    const SIGNAL_PAUSE_START_KEY = 'signalPauseStart';
-    const CONTINUE_GRANTED_KEY = 'manualContinueGranted';
     
     // Initialize on load
     window.onload = function() {
@@ -2422,7 +2509,7 @@
       loadHistory();
       updateStats();
       
-      // Check connection status
+      // Check connection status immediately
       checkConnection();
       
       // Set up connection monitoring
@@ -2546,9 +2633,10 @@
       
       // Signal limit popup event handlers
       document.getElementById("signalLimitCancel").addEventListener("click", function() {
-        // Set session flag to allow signals for this session
-        sessionStorage.setItem(CONTINUE_GRANTED_KEY, 'true');
+        popupSuppressed = true;
+        popupDismissed = true;
         document.getElementById("signalLimitOverlay").classList.remove("active");
+        localStorage.setItem('signalLimitDismissed', 'true');
       });
       
       document.getElementById("signalLimitExit").addEventListener("click", function() {
@@ -2565,43 +2653,102 @@
       // Check for any pending exit tool countdown on page load
       checkPendingExitCountdown();
       
-      // Load signal count from localStorage
-      const savedSignalCount = localStorage.getItem('signalCount');
-      if (savedSignalCount) {
-        signalCount = parseInt(savedSignalCount);
+      // Initialize upcoming signals display
+      updateUpcomingSignals();
+      setInterval(updateUpcomingSignals, 1000);
+      
+      // Add demo data if no history exists
+      if (!localStorage.getItem('aviatorHistory')) {
+        initializeDemoData();
       }
     }
     
-    // Check if we're in cooldown period
-    function isInCooldown() {
-      const start = localStorage.getItem(SIGNAL_PAUSE_START_KEY);
-      if (!start) return false;
+    // Function to update upcoming signals display
+    function updateUpcomingSignals() {
+      const now = new Date(Date.now() + serverTimeOffset);
+      const history = JSON.parse(localStorage.getItem('aviatorHistory')) || [];
+      const container = document.getElementById('signalCountdowns');
       
-      const elapsed = Math.floor((Date.now() - parseInt(start)) / 1000);
-      return elapsed < COOLDOWN_DURATION;
+      // Filter upcoming signals (not yet passed)
+      const upcoming = history.filter(item => {
+        const signalTime = new Date(parseInt(item.timestamp));
+        return signalTime > now;
+      }).sort((a, b) => a.timestamp - b.timestamp); // Sort by time ascending
+      
+      // Limit to 3 nearest signals
+      const displaySignals = upcoming.slice(0, 3);
+      
+      if (displaySignals.length === 0) {
+        container.innerHTML = '<div class="no-signals">No upcoming signals. Create a new prediction.</div>';
+        return;
+      }
+      
+      container.innerHTML = '';
+      
+      displaySignals.forEach(signal => {
+        const signalTime = new Date(parseInt(signal.timestamp));
+        const diff = Math.floor((signalTime - now) / 1000);
+        
+        if (diff <= 0) return; // Skip if time has passed
+        
+        const minutes = Math.floor(diff / 60);
+        const seconds = diff % 60;
+        const timeStr = signalTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        
+        const countdownEl = document.createElement('div');
+        countdownEl.className = 'signal-countdown';
+        countdownEl.innerHTML = `
+          <span class="signal-odd" data-odd="${signal.odd}">${signal.odd}x</span>
+          <span class="signal-time">${timeStr}</span>
+          <span class="countdown-timer">${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}</span>
+        `;
+        
+        container.appendChild(countdownEl);
+      });
     }
     
-    // Check if continue was granted for this session
-    function isContinueGranted() {
-      return sessionStorage.getItem(CONTINUE_GRANTED_KEY) === 'true';
-    }
-    
-    // Check if we should show the signal limit popup
-    function shouldShowSignalLimit() {
-      if (isContinueGranted()) return false;
-      if (isInCooldown()) return true;
-      return signalCount >= SIGNAL_LIMIT;
+    // Function to initialize demo data
+    function initializeDemoData() {
+      const now = new Date(Date.now() + serverTimeOffset);
+      const demoHistory = [];
+      
+      // Create 5 demo signals with random times in the next 2 hours
+      for (let i = 0; i < 5; i++) {
+        const minutesToAdd = Math.floor(Math.random() * 120) + 1;
+        const signalTime = new Date(now.getTime() + minutesToAdd * 60000);
+        const odd = [2, 3, 4, 7, 10, 100][Math.floor(Math.random() * 6)];
+        
+        demoHistory.push({
+          id: Date.now() + i,
+          time: now.toLocaleTimeString(),
+          odd: odd.toString(),
+          signalTime: signalTime.toLocaleTimeString(),
+          score: Math.floor(Math.random() * 50) + 30,
+          entropy: (Math.random() * 0.5 + 3.8).toFixed(2),
+          delay: minutesToAdd * 60,
+          confidence: Math.floor(Math.random() * 30) + 60,
+          timestamp: signalTime.getTime(),
+          wasSuccessful: null,
+          actualMultiplier: null
+        });
+      }
+      
+      localStorage.setItem('aviatorHistory', JSON.stringify(demoHistory));
+      loadHistory(); // Refresh the display
     }
     
     // Start exit tool countdown
     function startExitToolCountdown() {
       const exitBtn = document.getElementById("signalLimitExit");
-      
-      // Save the start time to localStorage
-      localStorage.setItem(SIGNAL_PAUSE_START_KEY, Date.now().toString());
+      const startTime = Date.now();
       
       exitBtn.classList.add("active");
       exitBtn.innerHTML = `<i class="fas fa-sign-out-alt"></i> Time Until Re-Enable ${exitToolRemainingTime}s`;
+      
+      // Save to localStorage that we're initiating exit
+      localStorage.setItem('exitToolInitiated', 'true');
+      localStorage.setItem('exitToolRemaining', exitToolRemainingTime.toString());
+      localStorage.setItem('exitToolStartTime', startTime.toString());
       
       exitToolInterval = setInterval(() => {
         exitToolRemainingTime--;
@@ -2610,14 +2757,12 @@
         if (exitToolRemainingTime <= 0) {
           clearInterval(exitToolInterval);
           exitToolCountdown = null;
-          exitToolRemainingTime = COOLDOWN_DURATION;
+          exitToolRemainingTime = 900;
           
           // Clear the localStorage flags
-          localStorage.removeItem(SIGNAL_PAUSE_START_KEY);
-          
-          // Reset signal count
-          signalCount = 0;
-          localStorage.setItem('signalCount', '0');
+          localStorage.setItem('exitToolInitiated', 'false');
+          localStorage.removeItem('exitToolRemaining');
+          localStorage.removeItem('exitToolStartTime');
           
           // Close the app or redirect
           try {
@@ -2642,17 +2787,31 @@
     
     // Check for pending exit countdown on page load
     function checkPendingExitCountdown() {
-      const startTime = localStorage.getItem(SIGNAL_PAUSE_START_KEY);
-      if (!startTime) return;
+      const exitInitiated = localStorage.getItem('exitToolInitiated') === 'true';
+      const startTime = parseInt(localStorage.getItem('exitToolStartTime') || '0');
+      const storedRemaining = parseInt(localStorage.getItem('exitToolRemaining') || '900');
       
-      const elapsed = Math.floor((Date.now() - parseInt(startTime)) / 1000);
-      if (elapsed < COOLDOWN_DURATION) {
-        exitToolRemainingTime = COOLDOWN_DURATION - elapsed;
-        document.getElementById("signalLimitOverlay").classList.add("active");
-        startExitToolCountdown();
-      } else {
-        // Cooldown expired, clear the flag
-        localStorage.removeItem(SIGNAL_PAUSE_START_KEY);
+      if (exitInitiated && startTime && storedRemaining) {
+        const now = Date.now();
+        const elapsedSeconds = Math.floor((now - startTime) / 1000);
+        exitToolRemainingTime = Math.max(0, storedRemaining - elapsedSeconds);
+        
+        if (exitToolRemainingTime > 0) {
+          // Show the popup again with remaining time
+          document.getElementById("signalLimitOverlay").classList.add("active");
+          startExitToolCountdown();
+        } else {
+          // Clear the flag if time has already elapsed
+          localStorage.setItem('exitToolInitiated', 'false');
+          localStorage.removeItem('exitToolRemaining');
+          localStorage.removeItem('exitToolStartTime');
+        }
+      }
+      
+      // Check if signal limit was dismissed
+      const signalLimitDismissed = localStorage.getItem('signalLimitDismissed') === 'true';
+      if (signalLimitDismissed) {
+        popupDismissed = true;
       }
     }
     
@@ -3521,12 +3680,10 @@
       
       // Check signal limit (only in predictor tab)
       const activeTab = document.querySelector('.tab-content.active');
-      if (activeTab && activeTab.id === 'predictorTab') {
+      if (activeTab && activeTab.id === 'predictorTab' && !popupDismissed) {
         signalCount++;
-        localStorage.setItem('signalCount', signalCount.toString());
-        
-        // Check if we should show the signal limit popup
-        if (shouldShowSignalLimit()) {
+        if (signalCount > 5 && !popupSuppressed) {
+          signalLimitShown = true;
           document.getElementById("signalLimitOverlay").classList.add("active");
           return;
         }
