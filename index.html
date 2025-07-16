@@ -2398,18 +2398,19 @@
     let tipsPopupShown = false;
     let firstSignalGenerated = false;
     let signalResultReceived = false;
+    let signalCount = 0;
+    let popupSuppressed = false;
+    let signalLimitShown = false;
+    let popupDismissed = false;
+    let exitToolCountdown = null;
+    let exitToolRemainingTime = 900; // 15 minutes in seconds
+    let exitToolInterval = null;
     
     // Constants for signal limit
     const SIGNAL_LIMIT = 5;
     const COOLDOWN_DURATION = 900; // 15 minutes in seconds
-    const localKeys = {
-      pauseStart: 'signalPauseStart',
-      manualContinue: 'manualContinueGranted',
-      signalCount: 'signalCount',
-      exitToolInitiated: 'exitToolInitiated',
-      exitToolRemaining: 'exitToolRemaining',
-      exitToolStartTime: 'exitToolStartTime'
-    };
+    const SIGNAL_PAUSE_START_KEY = 'signalPauseStart';
+    const CONTINUE_GRANTED_KEY = 'manualContinueGranted';
     
     // Initialize on load
     window.onload = function() {
@@ -2421,7 +2422,7 @@
       loadHistory();
       updateStats();
       
-      // Check connection status immediately
+      // Check connection status
       checkConnection();
       
       // Set up connection monitoring
@@ -2545,13 +2546,13 @@
       
       // Signal limit popup event handlers
       document.getElementById("signalLimitCancel").addEventListener("click", function() {
-        allowContinueInSession();
+        // Set session flag to allow signals for this session
+        sessionStorage.setItem(CONTINUE_GRANTED_KEY, 'true');
         document.getElementById("signalLimitOverlay").classList.remove("active");
       });
       
       document.getElementById("signalLimitExit").addEventListener("click", function() {
-        startCooldown();
-        document.getElementById("signalLimitOverlay").classList.remove("active");
+        startExitToolCountdown();
       });
       
       // Prevent closing by clicking outside
@@ -2563,60 +2564,95 @@
       
       // Check for any pending exit tool countdown on page load
       checkPendingExitCountdown();
+      
+      // Load signal count from localStorage
+      const savedSignalCount = localStorage.getItem('signalCount');
+      if (savedSignalCount) {
+        signalCount = parseInt(savedSignalCount);
+      }
     }
     
-    // Signal limit functions
+    // Check if we're in cooldown period
     function isInCooldown() {
-      const start = localStorage.getItem(localKeys.pauseStart);
+      const start = localStorage.getItem(SIGNAL_PAUSE_START_KEY);
       if (!start) return false;
-      return (Date.now() - parseInt(start)) < COOLDOWN_DURATION * 1000;
-    }
-    
-    function shouldShowPopup(currentSignalCount) {
-      if (sessionStorage.getItem(localKeys.manualContinue) === 'true') return false;
-      return currentSignalCount >= SIGNAL_LIMIT;
-    }
-    
-    function startCooldown() {
-      localStorage.setItem(localKeys.pauseStart, Date.now().toString());
-      sessionStorage.removeItem(localKeys.manualContinue);
-      localStorage.setItem(localKeys.signalCount, '0');
       
-      // Show the popup with countdown
+      const elapsed = Math.floor((Date.now() - parseInt(start)) / 1000);
+      return elapsed < COOLDOWN_DURATION;
+    }
+    
+    // Check if continue was granted for this session
+    function isContinueGranted() {
+      return sessionStorage.getItem(CONTINUE_GRANTED_KEY) === 'true';
+    }
+    
+    // Check if we should show the signal limit popup
+    function shouldShowSignalLimit() {
+      if (isContinueGranted()) return false;
+      if (isInCooldown()) return true;
+      return signalCount >= SIGNAL_LIMIT;
+    }
+    
+    // Start exit tool countdown
+    function startExitToolCountdown() {
       const exitBtn = document.getElementById("signalLimitExit");
-      exitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Starting Cooldown...';
       
-      setTimeout(() => {
-        window.location.reload();
+      // Save the start time to localStorage
+      localStorage.setItem(SIGNAL_PAUSE_START_KEY, Date.now().toString());
+      
+      exitBtn.classList.add("active");
+      exitBtn.innerHTML = `<i class="fas fa-sign-out-alt"></i> Time Until Re-Enable ${exitToolRemainingTime}s`;
+      
+      exitToolInterval = setInterval(() => {
+        exitToolRemainingTime--;
+        exitBtn.innerHTML = `<i class="fas fa-sign-out-alt"></i> Time Until Re-Enable ${exitToolRemainingTime}s`;
+        
+        if (exitToolRemainingTime <= 0) {
+          clearInterval(exitToolInterval);
+          exitToolCountdown = null;
+          exitToolRemainingTime = COOLDOWN_DURATION;
+          
+          // Clear the localStorage flags
+          localStorage.removeItem(SIGNAL_PAUSE_START_KEY);
+          
+          // Reset signal count
+          signalCount = 0;
+          localStorage.setItem('signalCount', '0');
+          
+          // Close the app or redirect
+          try {
+            if (window.navigator && window.navigator.app && window.navigator.app.exitApp) {
+              // For Cordova apps
+              window.navigator.app.exitApp();
+            } else if (window.close) {
+              // For web apps
+              window.close();
+            } else {
+              // Fallback - redirect to support tab
+              switchTab('supportTab', document.querySelector('.nav-item[onclick*="supportTab"]'));
+            }
+          } catch (e) {
+            // If window.close() doesn't work, redirect to support tab
+            switchTab('supportTab', document.querySelector('.nav-item[onclick*="supportTab"]'));
+          }
+          document.getElementById("signalLimitOverlay").classList.remove("active");
+        }
       }, 1000);
     }
     
-    function allowContinueInSession() {
-      sessionStorage.setItem(localKeys.manualContinue, 'true');
-    }
-    
+    // Check for pending exit countdown on page load
     function checkPendingExitCountdown() {
-      const exitInitiated = localStorage.getItem(localKeys.exitToolInitiated) === 'true';
-      const startTime = parseInt(localStorage.getItem(localKeys.exitToolStartTime) || '0');
-      const storedRemaining = parseInt(localStorage.getItem(localKeys.exitToolRemaining) || COOLDOWN_DURATION.toString());
+      const startTime = localStorage.getItem(SIGNAL_PAUSE_START_KEY);
+      if (!startTime) return;
       
-      if (exitInitiated && startTime && storedRemaining) {
-        const now = Date.now();
-        const elapsedSeconds = Math.floor((now - startTime) / 1000);
-        const remainingTime = Math.max(0, storedRemaining - elapsedSeconds);
-        
-        if (remainingTime > 0) {
-          // Show the popup again with remaining time
-          document.getElementById("signalLimitOverlay").classList.add("active");
-          const exitBtn = document.getElementById("signalLimitExit");
-          exitBtn.innerHTML = `<i class="fas fa-sign-out-alt"></i> Time Until Re-Enable ${remainingTime}s`;
-        } else {
-          // Clear the flag if time has already elapsed
-          localStorage.setItem(localKeys.exitToolInitiated, 'false');
-          localStorage.removeItem(localKeys.exitToolRemaining);
-          localStorage.removeItem(localKeys.exitToolStartTime);
-          localStorage.setItem(localKeys.signalCount, '0');
-        }
+      const elapsed = Math.floor((Date.now() - parseInt(startTime)) / 1000);
+      if (elapsed < COOLDOWN_DURATION) {
+        exitToolRemainingTime = COOLDOWN_DURATION - elapsed;
+        document.getElementById("signalLimitOverlay").classList.add("active");
+        startExitToolCountdown();
+      } else {
+        // Cooldown expired, clear the flag
+        localStorage.removeItem(SIGNAL_PAUSE_START_KEY);
       }
     }
     
@@ -3486,13 +3522,11 @@
       // Check signal limit (only in predictor tab)
       const activeTab = document.querySelector('.tab-content.active');
       if (activeTab && activeTab.id === 'predictorTab') {
-        // Get current signal count
-        let signalCount = parseInt(localStorage.getItem(localKeys.signalCount) || '0');
         signalCount++;
-        localStorage.setItem(localKeys.signalCount, signalCount.toString());
+        localStorage.setItem('signalCount', signalCount.toString());
         
-        // Check if we should show the popup
-        if (shouldShowPopup(signalCount) && !isInCooldown()) {
+        // Check if we should show the signal limit popup
+        if (shouldShowSignalLimit()) {
           document.getElementById("signalLimitOverlay").classList.add("active");
           return;
         }
@@ -3529,6 +3563,7 @@
       firstSignalGenerated = true;
     }
     
+    // Function to record actual results (call this after a round completes)
     function recordResult(signalId, actualMultiplier) {
       const history = JSON.parse(localStorage.getItem('aviatorHistory')) || [];
       const signalIndex = history.findIndex(item => item.id == signalId);
