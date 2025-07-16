@@ -2403,8 +2403,12 @@
     let signalLimitShown = false;
     let popupDismissed = false;
     let exitToolCountdown = null;
-    let exitToolRemainingTime = 900; // Changed from 15 to 900 (15 minutes)
+    let exitToolRemainingTime = 900; // 15 minutes in seconds
     let exitToolInterval = null;
+    
+    // Constants for signal limit
+    const SIGNAL_LIMIT = 5;
+    const COOLDOWN_DURATION = 900; // 15 minutes in seconds
     
     // Initialize on load
     window.onload = function() {
@@ -2559,6 +2563,12 @@
       
       // Check for any pending exit tool countdown on page load
       checkPendingExitCountdown();
+      
+      // Load signal count from localStorage
+      const savedSignalCount = localStorage.getItem('signalCount');
+      if (savedSignalCount) {
+        signalCount = parseInt(savedSignalCount);
+      }
     }
     
     // Start exit tool countdown
@@ -2581,12 +2591,16 @@
         if (exitToolRemainingTime <= 0) {
           clearInterval(exitToolInterval);
           exitToolCountdown = null;
-          exitToolRemainingTime = 900;
+          exitToolRemainingTime = COOLDOWN_DURATION;
           
           // Clear the localStorage flags
           localStorage.setItem('exitToolInitiated', 'false');
           localStorage.removeItem('exitToolRemaining');
           localStorage.removeItem('exitToolStartTime');
+          
+          // Reset signal count
+          signalCount = 0;
+          localStorage.setItem('signalCount', '0');
           
           // Close the app or redirect
           try {
@@ -2613,7 +2627,7 @@
     function checkPendingExitCountdown() {
       const exitInitiated = localStorage.getItem('exitToolInitiated') === 'true';
       const startTime = parseInt(localStorage.getItem('exitToolStartTime') || '0');
-      const storedRemaining = parseInt(localStorage.getItem('exitToolRemaining') || '900');
+      const storedRemaining = parseInt(localStorage.getItem('exitToolRemaining') || COOLDOWN_DURATION);
       
       if (exitInitiated && startTime && storedRemaining) {
         const now = Date.now();
@@ -3504,9 +3518,11 @@
       
       // Check signal limit (only in predictor tab)
       const activeTab = document.querySelector('.tab-content.active');
-      if (activeTab && activeTab.id === 'predictorTab' && !popupDismissed) {
+      if (activeTab && activeTab.id === 'predictorTab') {
         signalCount++;
-        if (signalCount > 5 && !popupSuppressed) {
+        localStorage.setItem('signalCount', signalCount.toString());
+        
+        if (signalCount > SIGNAL_LIMIT && !popupDismissed) {
           signalLimitShown = true;
           document.getElementById("signalLimitOverlay").classList.add("active");
           return;
