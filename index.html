@@ -164,6 +164,7 @@
       text-decoration: none;
       font-size: 0.7rem;
       transition: all 0.3s ease;
+      position: relative;
     }
     
     .nav-item i {
@@ -178,6 +179,24 @@
     
     .nav-item:hover {
       background: var(--dark-3);
+    }
+    
+    /* Notification badge */
+    .notification-badge {
+      position: absolute;
+      top: 5px;
+      right: 15px;
+      background: var(--danger);
+      color: white;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.6rem;
+      font-weight: bold;
+      pointer-events: none;
     }
     
     /* Tab Content */
@@ -577,7 +596,7 @@
       color: var(--extreme);
     }
     
-    /* Notification Tab Styles */
+    /* Notification Tab Styles - UPDATED */
     .notification-tab {
       padding: 15px;
     }
@@ -588,6 +607,17 @@
       padding: 15px;
       margin-bottom: 15px;
       border-left: 4px solid var(--primary);
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.3s ease;
+      animation: fadeIn 0.3s forwards;
+    }
+    
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
     
     .notification-title {
@@ -607,6 +637,31 @@
     .notification-message {
       font-size: 0.9rem;
       line-height: 1.5;
+    }
+    
+    /* Notification type colors */
+    .notification-algorithm_update {
+      border-left-color: var(--primary);
+    }
+    
+    .notification-algorithm_update .notification-title i {
+      color: var(--primary);
+    }
+    
+    .notification-bug_fix {
+      border-left-color: var(--danger);
+    }
+    
+    .notification-bug_fix .notification-title i {
+      color: var(--danger);
+    }
+    
+    .notification-general {
+      border-left-color: var(--warning);
+    }
+    
+    .notification-general .notification-title i {
+      color: var(--warning);
     }
     
     /* Support Tab Styles */
@@ -1888,42 +1943,8 @@
           
           <!-- Notification Tab -->
           <div class="tab-content" id="notificationTab">
-            <div class="notification-tab">
-              <div class="notification-item">
-                <div class="notification-title">
-                  <i class="fas fa-bell"></i> New Update Available
-                </div>
-                <div class="notification-time">
-                  <i class="far fa-clock"></i> Just now
-                </div>
-                <div class="notification-message">
-                  Version 2.3.0 is now available with improved prediction algorithms and better accuracy. Update now for the best experience.
-                </div>
-              </div>
-              
-              <div class="notification-item">
-                <div class="notification-title">
-                  <i class="fas fa-star"></i> Premium Features
-                </div>
-                <div class="notification-time">
-                  <i class="far fa-clock"></i> 2 hours ago
-                </div>
-                <div class="notification-message">
-                  Unlock premium features including advanced analytics, higher accuracy predictions, and exclusive signals.
-                </div>
-              </div>
-              
-              <div class="notification-item">
-                <div class="notification-title">
-                  <i class="fas fa-trophy"></i> Winning Strategy
-                </div>
-                <div class="notification-time">
-                  <i class="far fa-clock"></i> 1 day ago
-                </div>
-                <div class="notification-message">
-                  Check out our latest winning strategy guide for maximizing your profits with the predictor tool.
-                </div>
-              </div>
+            <div class="notification-tab" id="notificationTabContent">
+              <!-- Dynamic content will be inserted here -->
             </div>
           </div>
           
@@ -1971,9 +1992,10 @@
         <i class="fas fa-history"></i>
         <span>HISTORY</span>
       </a>
-      <a href="#" class="nav-item" onclick="switchTab('notificationTab', this)">
+      <a href="#" class="nav-item" onclick="switchTab('notificationTab', this)" id="notificationNavItem">
         <i class="fas fa-bell"></i>
         <span>NOTIFICATION</span>
+        <div class="notification-badge" id="notificationBadge" style="display: none;"></div>
       </a>
       <a href="#" class="nav-item" onclick="switchTab('supportTab', this)">
         <i class="fas fa-headset"></i>
@@ -2192,6 +2214,10 @@
     let tipsPopupShown = false;
     let firstSignalGenerated = false;
     let signalResultReceived = false;
+    let notificationCheckInterval = null;
+    let lastNotificationETag = '';
+    let lastNotificationModified = '';
+    let unseenNotifications = 0;
     
     // Initialize on load
     window.onload = function() {
@@ -2306,6 +2332,9 @@
             // Sync server time
             syncServerTime();
             
+            // Start notification checking
+            startNotificationChecking();
+            
             // Redirect back to app
             setTimeout(() => {
               window.location.reload();
@@ -2324,9 +2353,191 @@
           }
         }, 2000);
       });
+      
+      // Start checking for notifications
+      startNotificationChecking();
+      
+      // Load initial notifications
+      loadNotifications();
     }
     
-    // Tab switching function
+    // Start checking for notifications
+    function startNotificationChecking() {
+      if (notificationCheckInterval) {
+        clearInterval(notificationCheckInterval);
+      }
+      
+      // Check every 15 seconds
+      notificationCheckInterval = setInterval(checkForNewNotifications, 15000);
+    }
+    
+    // Check for new notifications
+    async function checkForNewNotifications() {
+      try {
+        const response = await fetch('notifications.json', {
+          method: 'HEAD'
+        });
+        
+        const currentETag = response.headers.get('ETag');
+        const currentModified = response.headers.get('Last-Modified');
+        
+        if (currentETag !== lastNotificationETag || currentModified !== lastNotificationModified) {
+          // There are changes, load the new notifications
+          loadNotifications();
+          lastNotificationETag = currentETag;
+          lastNotificationModified = currentModified;
+        }
+      } catch (e) {
+        console.error("Failed to check for notifications:", e);
+      }
+    }
+    
+    // Load notifications from JSON file
+    async function loadNotifications() {
+      try {
+        const response = await fetch('notifications.json');
+        const notifications = await response.json();
+        
+        // Store the ETag and Last-Modified headers for future checks
+        lastNotificationETag = response.headers.get('ETag');
+        lastNotificationModified = response.headers.get('Last-Modified');
+        
+        // Get the last seen notification time from localStorage
+        const lastSeen = localStorage.getItem('lastSeenNotification') || '0';
+        
+        // Count unseen notifications
+        unseenNotifications = notifications.filter(n => {
+          const notifTime = new Date(n.timestamp).getTime();
+          return notifTime > parseInt(lastSeen);
+        }).length;
+        
+        // Update badge
+        updateNotificationBadge();
+        
+        // Render notifications
+        renderNotifications(notifications);
+      } catch (e) {
+        console.error("Failed to load notifications:", e);
+        
+        // If the file doesn't exist, use default notifications
+        const defaultNotifications = [
+          {
+            "title": "Algorithm Updated",
+            "message": "100x prediction සඳහා නව ඇල්ගොරිතමය යාවත්කාලීන කරන ලදි.",
+            "type": "algorithm_update",
+            "timestamp": new Date().toISOString()
+          },
+          {
+            "title": "Bug Fixed",
+            "message": "Timer ක්‍රියාවලියේ සිදුවූ දෝෂයක් නිවැරදි කරන ලදි.",
+            "type": "bug_fix",
+            "timestamp": new Date(Date.now() - 3600000).toISOString()
+          },
+          {
+            "title": "Welcome Message",
+            "message": "නව තොරතුරු සහ උපදෙස් සඳහා Telegram channel එක සෙවීම නිවැරදියි.",
+            "type": "general",
+            "timestamp": new Date(Date.now() - 86400000).toISOString()
+          }
+        ];
+        
+        renderNotifications(defaultNotifications);
+      }
+    }
+    
+    // Update notification badge
+    function updateNotificationBadge() {
+      const badge = document.getElementById('notificationBadge');
+      
+      if (unseenNotifications > 0) {
+        badge.style.display = 'flex';
+        badge.textContent = unseenNotifications > 9 ? '9+' : unseenNotifications;
+      } else {
+        badge.style.display = 'none';
+      }
+    }
+    
+    // Render notifications in the UI
+    function renderNotifications(notifications) {
+      const container = document.getElementById('notificationTabContent');
+      container.innerHTML = '';
+      
+      // Sort by timestamp (newest first)
+      notifications.sort((a, b) => {
+        return new Date(b.timestamp) - new Date(a.timestamp);
+      });
+      
+      notifications.forEach(notification => {
+        const item = document.createElement('div');
+        item.className = `notification-item notification-${notification.type}`;
+        
+        // Get icon based on type
+        let icon, iconClass;
+        switch(notification.type) {
+          case 'algorithm_update':
+            icon = '⚙️';
+            iconClass = 'fas fa-cogs';
+            break;
+          case 'bug_fix':
+            icon = '🐞';
+            iconClass = 'fas fa-bug';
+            break;
+          default:
+            icon = '🔔';
+            iconClass = 'fas fa-bell';
+        }
+        
+        // Format time
+        const timeStr = formatRelativeTime(new Date(notification.timestamp));
+        
+        item.innerHTML = `
+          <div class="notification-title">
+            <i class="${iconClass}"></i> ${notification.title}
+          </div>
+          <div class="notification-time">
+            <i class="far fa-clock"></i> ${timeStr}
+          </div>
+          <div class="notification-message">
+            ${notification.message}
+          </div>
+        `;
+        
+        container.appendChild(item);
+      });
+    }
+    
+    // Format time as "X time ago"
+    function formatRelativeTime(date) {
+      const now = new Date();
+      const diff = now - date;
+      
+      const minute = 60 * 1000;
+      const hour = 60 * minute;
+      const day = 24 * hour;
+      const month = 30 * day;
+      const year = 365 * day;
+      
+      if (diff < minute) {
+        return "Just now";
+      } else if (diff < hour) {
+        const minutes = Math.floor(diff / minute);
+        return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+      } else if (diff < day) {
+        const hours = Math.floor(diff / hour);
+        return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+      } else if (diff < month) {
+        const days = Math.floor(diff / day);
+        return `${days} day${days > 1 ? 's' : ''} ago`;
+      } else if (diff < year) {
+        const months = Math.floor(diff / month);
+        return `${months} month${months > 1 ? 's' : ''} ago`;
+      } else {
+        const years = Math.floor(diff / year);
+        return `${years} year${years > 1 ? 's' : ''} ago`;
+      }
+    }
+    
+    // Tab switching function - UPDATED to handle notification badge
     function switchTab(tabId, clickedElement) {
       // Hide all tab contents
       document.querySelectorAll('.tab-content').forEach(tab => {
@@ -2343,8 +2554,22 @@
       
       clickedElement.classList.add('active');
       
+      // If switching to notification tab, mark notifications as seen
+      if (tabId === 'notificationTab') {
+        markNotificationsAsSeen();
+      }
+      
       // Scroll to top
       document.querySelector('.scroll-container').scrollTo(0, 0);
+    }
+    
+    // Mark notifications as seen
+    function markNotificationsAsSeen() {
+      unseenNotifications = 0;
+      updateNotificationBadge();
+      
+      // Store the current time as last seen
+      localStorage.setItem('lastSeenNotification', Date.now().toString());
     }
     
     // Check connection status
