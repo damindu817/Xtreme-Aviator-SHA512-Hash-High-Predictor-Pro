@@ -1,32 +1,12 @@
 [
   {
-    "title": "Algorithm Updated",
-    "message": "100x prediction සඳහා නව ඇල්ගොරිතමය යාවත්කාලීන කරන ලදි.",
+    "title": "Algorithm Upgrade",
+    "message": "2× සහ 3× ගුණක පුරෝකථන ඇල්ගොරිතම යාවත්කාලීන කරන ලදී. දැන් 78%+ නිරවද්යතාවයක් සහිතව ක්‍රියාත්මක වේ.",
     "type": "algorithm_update",
-    "timestamp": "2023-11-15T09:30:00Z"
-  },
-  {
-    "title": "Bug Fixed",
-    "message": "Timer ක්‍රියාවලියේ සිදුවූ දෝෂයක් නිවැරදි කරන ලදි.",
-    "type": "bug_fix",
-    "timestamp": "2023-11-14T14:15:00Z"
-  },
-  {
-    "title": "Welcome Message",
-    "message": "නව තොරතුරු සහ උපදෙස් සඳහා Telegram channel එක සෙවීම නිවැරදියි.",
-    "type": "general",
-    "timestamp": "2023-11-10T08:00:00Z"
-  },
-  {
-    "title": "New Feature",
-    "message": "ප්‍රතිඵල ඉතිහාසය අලුතින් යාවත්කාලීන කර ඇත.",
-    "type": "feature_update",
-    "timestamp": "2023-11-16T10:45:00Z"
-  },
-  {
-    "title": "Maintenance Notice",
-    "message": "පද්ධතිය 2023-11-20 02:00 සිට 04:00 දක්වා නඩත්තුව සඳහා අක්‍රිය වේ.",
-    "type": "maintenance",
-    "timestamp": "2023-11-18T18:00:00Z"
+    "timestamp": "2023-11-20T14:30:00Z",
+    "badge": {
+      "text": "UPGRADED",
+      "color": "#3a86ff"
+    }
   }
 ]
