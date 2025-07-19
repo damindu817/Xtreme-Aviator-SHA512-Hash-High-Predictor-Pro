@@ -114,21 +114,19 @@
       right: 0;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
-      padding: 0 0 20px 0;
     }
     
-    /* Tab content sections */
-    .tab-content {
-      display: none;
+    /* Main content container - UPDATED border-radius */
+    .main-container {
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
       background: var(--dark-2);
-      margin: 15px;
-      border-radius: 12px;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      border-radius: 0 0 16px 16px; /* Only rounded corners at bottom */
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
       border: 1px solid rgba(255, 255, 255, 0.05);
-    }
-    
-    .tab-content.active {
-      display: block;
+      position: relative;
     }
     
     .datetime {
@@ -137,7 +135,6 @@
       background: rgba(0, 0, 0, 0.2);
       padding: 10px 20px;
       font-size: 0.9rem;
-      border-radius: 12px 12px 0 0;
     }
     
     .content {
@@ -200,6 +197,15 @@
       font-size: 0.6rem;
       font-weight: bold;
       pointer-events: none;
+    }
+    
+    /* Tab Content */
+    .tab-content {
+      display: none;
+    }
+    
+    .tab-content.active {
+      display: block;
     }
     
     /* Predictor Tab */
@@ -590,7 +596,7 @@
       color: var(--extreme);
     }
     
-    /* Notification Tab Styles */
+    /* Notification Tab Styles - UPDATED */
     .notification-tab {
       padding: 15px;
     }
@@ -850,7 +856,7 @@
     /* New Light Bulb Badge */
     .tips-badge {
       position: fixed;
-      bottom: 230px;
+      bottom: 230px; /* Increased from 180px to 230px to move it higher */
       right: 25px;
       background: linear-gradient(145deg, rgba(255, 190, 11, 0.3), rgba(255, 190, 11, 0.4));
       color: var(--warning);
@@ -868,12 +874,14 @@
       animation: pulseWarning 2s infinite;
     }
     
+    /* New animation for light bulb badge */
     @keyframes pulseWarning {
       0% { box-shadow: 0 0 0 0 rgba(255, 190, 11, 0.4); }
       70% { box-shadow: 0 0 0 15px rgba(255, 190, 11, 0); }
       100% { box-shadow: 0 0 0 0 rgba(255, 190, 11, 0); }
     }
     
+    /* Hover effects for light bulb */
     .tips-badge:hover {
       background: linear-gradient(145deg, rgba(255, 190, 11, 0.4), rgba(255, 190, 11, 0.5));
       transform: scale(1.1);
@@ -892,7 +900,7 @@
     /* Tips popup styles */
     .tips-popup {
       position: fixed;
-      bottom: 290px;
+      bottom: 290px; /* Increased from 240px to 290px to match the new badge position */
       right: 25px;
       width: 300px;
       max-width: 90%;
@@ -1287,11 +1295,11 @@
       color: var(--warning);
     }
     
-    /* Signal Footer Section */
+    /* Signal Footer Section - UPDATED */
     .signal-footer {
       padding: 10px 24px 15px;
       text-align: center;
-      font-size: 0.7rem;
+      font-size: 0.7rem; /* Reduced from 0.8rem */
       color: var(--light-2);
       opacity: 0.8;
       line-height: 1.3;
@@ -1423,7 +1431,7 @@
       font-size: 1.8rem;
     }
     
-    /* Countdown Section */
+    /* Countdown Section - Original blue animation */
     .risk-countdown-section {
       display: flex;
       flex-direction: column;
@@ -1453,7 +1461,7 @@
       height: calc(100% + 10px);
       border-radius: 50%;
       border: 3px solid transparent;
-      border-top-color: var(--primary);
+      border-top-color: var(--primary); /* Original blue color */
       animation: spin 2s linear infinite;
     }
     
@@ -1529,11 +1537,11 @@
       color: var(--warning);
     }
     
-    /* Risk Signal Footer Section */
+    /* Risk Signal Footer Section - UPDATED */
     .risk-signal-footer {
       padding: 10px 24px 15px;
       text-align: center;
-      font-size: 0.7rem;
+      font-size: 0.7rem; /* Reduced from 0.8rem */
       color: var(--light-2);
       opacity: 0.8;
       line-height: 1.3;
@@ -1713,10 +1721,6 @@
       .stats-container {
         grid-template-columns: 1fr;
       }
-      
-      .tab-content {
-        margin: 10px;
-      }
     }
     
     @media (max-width: 480px) {
@@ -1728,7 +1732,7 @@
         font-size: 0.7rem;
       }
       
-      .content, .history-tab, .notification-tab, .support-tab {
+      .content {
         padding: 15px 10px;
       }
       
@@ -1784,10 +1788,6 @@
         padding: 8px 15px 12px;
         font-size: 0.65rem;
       }
-      
-      .tab-content {
-        margin: 8px;
-      }
     }
 
     /* New style for failed signal message */
@@ -1824,156 +1824,159 @@
     
     <!-- Scrollable Content Area -->
     <div class="scroll-container">
-      <!-- Predictor Tab -->
-      <div class="tab-content active" id="predictorTab">
+      <!-- Main Content Container -->
+      <div class="main-container">
         <div class="datetime">
           <div id="current-date"></div>
           <div id="current-time"></div>
         </div>
         
         <div class="content">
-          <div class="input-group">
-            <label for="hashInput">Enter SHA512 Hash <span class="tooltip"><i class="fas fa-info-circle"></i><span class="tooltiptext">Must be 128-character hexadecimal string (0-9, a-f)</span></span></label>
-            <input type="text" id="hashInput" placeholder="Paste your hash here..." autocomplete="off" autocorrect="off" spellcheck="false">
-            <div class="input-actions">
-              <button class="paste-btn" id="pasteHashInput">
-                <i class="fas fa-paste"></i> Paste Hash
+          <!-- Predictor Tab -->
+          <div class="tab-content active" id="predictorTab">
+            <div class="input-group">
+              <label for="hashInput">Enter SHA512 Hash <span class="tooltip"><i class="fas fa-info-circle"></i><span class="tooltiptext">Must be 128-character hexadecimal string (0-9, a-f)</span></span></label>
+              <input type="text" id="hashInput" placeholder="Paste your hash here..." autocomplete="off" autocorrect="off" spellcheck="false">
+              <div class="input-actions">
+                <button class="paste-btn" id="pasteHashInput">
+                  <i class="fas fa-paste"></i> Paste Hash
+                </button>
+                <button class="clear-btn" id="clearHashInput">
+                  <i class="fas fa-broom"></i> Clear
+                </button>
+              </div>
+            </div>
+            
+            <div class="stats-container">
+              <div class="stat-card success">
+                <h4>Success Rate</h4>
+                <div class="value" id="success-rate">-</div>
+              </div>
+              <div class="stat-card warning">
+                <h4>Avg. Delay</h4>
+                <div class="value" id="avg-delay">-</div>
+              </div>
+              <div class="stat-card">
+                <h4>Total Predictions</h4>
+                <div class="value" id="total-predictions">-</div>
+              </div>
+            </div>
+            
+            <div class="odd-buttons">
+              <button class="odd-btn" onclick="predict('2')" id="odd-2">
+                <span>2x</span>
+                <span>Low Risk</span>
+                <div class="confidence-bar" id="confidence-2" style="width: 0%"></div>
               </button>
-              <button class="clear-btn" id="clearHashInput">
-                <i class="fas fa-broom"></i> Clear
+              <button class="odd-btn" onclick="predict('3')" id="odd-3">
+                <span>3x</span>
+                <span>Balanced</span>
+                <div class="confidence-bar" id="confidence-3" style="width: 0%"></div>
+              </button>
+              <button class="odd-btn" onclick="predict('4')" id="odd-4">
+                <span>4x</span>
+                <span>Moderate</span>
+                <div class="confidence-bar" id="confidence-4" style="width: 0%"></div>
+              </button>
+              <button class="odd-btn" onclick="predict('7')" id="odd-7">
+                <span>7x</span>
+                <span>High Risk</span>
+                <div class="confidence-bar" id="confidence-7" style="width: 0%"></div>
+              </button>
+              <button class="odd-btn" onclick="predict('10')" id="odd-10">
+                <span>10x</span>
+                <span>Very High Risk</span>
+                <div class="confidence-bar" id="confidence-10" style="width: 0%"></div>
+              </button>
+              <button class="odd-btn" onclick="predict('100')" id="odd-100">
+                <span>100x</span>
+                <span>Extreme Risk</span>
+                <div class="confidence-bar" id="confidence-100" style="width: 0%"></div>
               </button>
             </div>
+            
+            <div class="results" id="output">
+              <div class="result-item">
+                <span class="label">Target Multiplier:</span>
+                <span class="value" id="result-odd">-</span>
+              </div>
+              <div class="result-item">
+                <span class="label">Hash Entropy:</span>
+                <span class="value" id="result-entropy">-</span>
+              </div>
+              <div class="result-item">
+                <span class="label">Hash Score:</span>
+                <span class="value" id="result-score">-</span>
+              </div>
+              <div class="result-item">
+                <span class="label">Confidence Level:</span>
+                <span class="value" id="result-confidence">-</span>
+              </div>
+              <div class="result-item">
+                <span class="label">Estimated Delay:</span>
+                <span class="value" id="result-delay">-</span>
+              </div>
+              <div class="result-item">
+                <span class="label">Next Signal Time:</span>
+                <span class="value" id="result-time">-</span>
+              </div>
+              <button class="copy-result-btn" id="copyResultBtn" onclick="copyResultToClipboard(event)" disabled>
+                <i class="fas fa-copy"></i> Copy Signal
+              </button>
+            </div>
+            
+            <div class="countdown" id="countdown">No active signals. Create a new prediction.</div>
           </div>
           
-          <div class="stats-container">
-            <div class="stat-card success">
-              <h4>Success Rate</h4>
-              <div class="value" id="success-rate">-</div>
-            </div>
-            <div class="stat-card warning">
-              <h4>Avg. Delay</h4>
-              <div class="value" id="avg-delay">-</div>
-            </div>
-            <div class="stat-card">
-              <h4>Total Predictions</h4>
-              <div class="value" id="total-predictions">-</div>
+          <!-- History Tab -->
+          <div class="tab-content" id="historyTab">
+            <div class="history-tab">
+              <div class="history-header">
+                <h3><i class="fas fa-history"></i> Prediction History</h3>
+                <button class="history-clear-btn" onclick="showClearDialog()">
+                  <i class="fas fa-trash-alt"></i> Clear
+                </button>
+              </div>
+              <div class="history-list" id="historyLog"></div>
             </div>
           </div>
           
-          <div class="odd-buttons">
-            <button class="odd-btn" onclick="predict('2')" id="odd-2">
-              <span>2x</span>
-              <span>Low Risk</span>
-              <div class="confidence-bar" id="confidence-2" style="width: 0%"></div>
-            </button>
-            <button class="odd-btn" onclick="predict('3')" id="odd-3">
-              <span>3x</span>
-              <span>Balanced</span>
-              <div class="confidence-bar" id="confidence-3" style="width: 0%"></div>
-            </button>
-            <button class="odd-btn" onclick="predict('4')" id="odd-4">
-              <span>4x</span>
-              <span>Moderate</span>
-              <div class="confidence-bar" id="confidence-4" style="width: 0%"></div>
-            </button>
-            <button class="odd-btn" onclick="predict('7')" id="odd-7">
-              <span>7x</span>
-              <span>High Risk</span>
-              <div class="confidence-bar" id="confidence-7" style="width: 0%"></div>
-            </button>
-            <button class="odd-btn" onclick="predict('10')" id="odd-10">
-              <span>10x</span>
-              <span>Very High Risk</span>
-              <div class="confidence-bar" id="confidence-10" style="width: 0%"></div>
-            </button>
-            <button class="odd-btn" onclick="predict('100')" id="odd-100">
-              <span>100x</span>
-              <span>Extreme Risk</span>
-              <div class="confidence-bar" id="confidence-100" style="width: 0%"></div>
-            </button>
+          <!-- Notification Tab -->
+          <div class="tab-content" id="notificationTab">
+            <div class="notification-tab" id="notificationTabContent">
+              <!-- Dynamic content will be inserted here -->
+            </div>
           </div>
           
-          <div class="results" id="output">
-            <div class="result-item">
-              <span class="label">Target Multiplier:</span>
-              <span class="value" id="result-odd">-</span>
+          <!-- Support Tab -->
+          <div class="tab-content" id="supportTab">
+            <div class="support-tab">
+              <div class="support-card">
+                <h3><i class="fas fa-question-circle"></i> Need Help?</h3>
+                <button class="support-btn" onclick="window.open('https://damindu817.github.io/Aviator-Sha512-Hash-Professional-Strategy-Guide/','_blank')" style="background: rgba(255, 190, 11, 0.2); color: var(--warning);">
+                  <i class="fas fa-book"></i> User Guide
+                </button>
+                <button class="support-btn" onclick="window.open('https://damindu817.github.io/DISCLAIMER-/','_blank')" style="background: rgba(255, 0, 110, 0.2); color: var(--danger);">
+                  <i class="fas fa-exclamation-triangle"></i> Disclaimer
+                </button>
+                <button class="support-btn" onclick="window.open('https://t.me/aviatorpredictor')" style="background: rgba(0, 136, 204, 0.2); color: #0088cc;">
+                  <i class="fab fa-telegram"></i> Telegram Support
+                </button>
+                <button class="support-btn" onclick="window.open('https://wa.me/1234567890')" style="background: rgba(37, 211, 102, 0.2); color: #25D366;">
+                  <i class="fab fa-whatsapp"></i> WhatsApp Support
+                </button>
+              </div>
+              
+              <div class="support-card">
+                <h3><i class="fas fa-crown"></i> Premium</h3>
+                <button class="support-btn" onclick="showPremiumDialog()">
+                  <i class="fas fa-star"></i> Upgrade to Premium
+                </button>
+                <button class="support-btn" onclick="showPremiumFeatures()">
+                  <i class="fas fa-gem"></i> Premium Features
+                </button>
+              </div>
             </div>
-            <div class="result-item">
-              <span class="label">Hash Entropy:</span>
-              <span class="value" id="result-entropy">-</span>
-            </div>
-            <div class="result-item">
-              <span class="label">Hash Score:</span>
-              <span class="value" id="result-score">-</span>
-            </div>
-            <div class="result-item">
-              <span class="label">Confidence Level:</span>
-              <span class="value" id="result-confidence">-</span>
-            </div>
-            <div class="result-item">
-              <span class="label">Estimated Delay:</span>
-              <span class="value" id="result-delay">-</span>
-            </div>
-            <div class="result-item">
-              <span class="label">Next Signal Time:</span>
-              <span class="value" id="result-time">-</span>
-            </div>
-            <button class="copy-result-btn" id="copyResultBtn" onclick="copyResultToClipboard(event)" disabled>
-              <i class="fas fa-copy"></i> Copy Signal
-            </button>
-          </div>
-          
-          <div class="countdown" id="countdown">No active signals. Create a new prediction.</div>
-        </div>
-      </div>
-      
-      <!-- History Tab -->
-      <div class="tab-content" id="historyTab">
-        <div class="history-tab">
-          <div class="history-header">
-            <h3><i class="fas fa-history"></i> Prediction History</h3>
-            <button class="history-clear-btn" onclick="showClearDialog()">
-              <i class="fas fa-trash-alt"></i> Clear
-            </button>
-          </div>
-          <div class="history-list" id="historyLog"></div>
-        </div>
-      </div>
-      
-      <!-- Notification Tab -->
-      <div class="tab-content" id="notificationTab">
-        <div class="notification-tab" id="notificationTabContent">
-          <!-- Dynamic content will be inserted here -->
-        </div>
-      </div>
-      
-      <!-- Support Tab -->
-      <div class="tab-content" id="supportTab">
-        <div class="support-tab">
-          <div class="support-card">
-            <h3><i class="fas fa-question-circle"></i> Need Help?</h3>
-            <button class="support-btn" onclick="window.open('https://damindu817.github.io/Aviator-Sha512-Hash-Professional-Strategy-Guide/','_blank')" style="background: rgba(255, 190, 11, 0.2); color: var(--warning);">
-              <i class="fas fa-book"></i> User Guide
-            </button>
-            <button class="support-btn" onclick="window.open('https://damindu817.github.io/DISCLAIMER-/','_blank')" style="background: rgba(255, 0, 110, 0.2); color: var(--danger);">
-              <i class="fas fa-exclamation-triangle"></i> Disclaimer
-            </button>
-            <button class="support-btn" onclick="window.open('https://t.me/aviatorpredictor')" style="background: rgba(0, 136, 204, 0.2); color: #0088cc;">
-              <i class="fab fa-telegram"></i> Telegram Support
-            </button>
-            <button class="support-btn" onclick="window.open('https://wa.me/1234567890')" style="background: rgba(37, 211, 102, 0.2); color: #25D366;">
-              <i class="fab fa-whatsapp"></i> WhatsApp Support
-            </button>
-          </div>
-          
-          <div class="support-card">
-            <h3><i class="fas fa-crown"></i> Premium</h3>
-            <button class="support-btn" onclick="showPremiumDialog()">
-              <i class="fas fa-star"></i> Upgrade to Premium
-            </button>
-            <button class="support-btn" onclick="showPremiumFeatures()">
-              <i class="fas fa-gem"></i> Premium Features
-            </button>
           </div>
         </div>
       </div>
@@ -2534,7 +2537,7 @@
       }
     }
     
-    // Tab switching function
+    // Tab switching function - UPDATED to handle notification badge
     function switchTab(tabId, clickedElement) {
       // Hide all tab contents
       document.querySelectorAll('.tab-content').forEach(tab => {
