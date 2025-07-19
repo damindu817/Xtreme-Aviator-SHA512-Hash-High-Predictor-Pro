@@ -74,6 +74,7 @@
       display: flex;
       flex-direction: column;
       height: 100vh;
+      height: -webkit-fill-available; /* Fix for mobile browsers */
       position: relative;
     }
     
@@ -116,17 +117,19 @@
       -webkit-overflow-scrolling: touch;
     }
     
-    /* Main content container - UPDATED border-radius */
+    /* Main content container - UPDATED with safe area insets */
     .main-container {
       width: 100%;
       max-width: 900px;
       margin: 0 auto;
       background: var(--dark-2);
-      border-radius: 0 0 16px 16px; /* Only rounded corners at bottom */
+      border-radius: 0 0 16px 16px;
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
       overflow: hidden;
       border: 1px solid rgba(255, 255, 255, 0.05);
       position: relative;
+      padding-bottom: calc(var(--nav-height) + env(safe-area-inset-bottom, 0px));
+      margin-bottom: env(safe-area-inset-bottom, 0px);
     }
     
     .datetime {
@@ -141,17 +144,18 @@
       padding: 15px;
     }
     
-    /* Fixed Navigation Bar */
+    /* Fixed Navigation Bar - Updated with safe area */
     .nav-bar {
       position: fixed;
       bottom: 0;
       left: 0;
       right: 0;
-      height: var(--nav-height);
+      height: calc(var(--nav-height) + env(safe-area-inset-bottom, 0px));
       background: var(--dark-2);
       display: flex;
       border-top: 1px solid rgba(255, 255, 255, 0.05);
       z-index: 100;
+      padding-bottom: env(safe-area-inset-bottom, 0px);
     }
     
     .nav-item {
@@ -756,7 +760,7 @@
     /* Updated Disclaimer Badge Animation */
     .disclaimer-badge {
       position: fixed;
-      bottom: 25px;
+      bottom: calc(25px + env(safe-area-inset-bottom, 0px));
       right: 25px;
       background: linear-gradient(145deg, rgba(255, 0, 110, 0.3), rgba(255, 0, 110, 0.4));
       color: var(--danger);
@@ -808,7 +812,7 @@
     /* Disclaimer popup */
     .disclaimer-popup {
       position: fixed;
-      bottom: 85px;
+      bottom: calc(85px + env(safe-area-inset-bottom, 0px));
       right: 25px;
       width: 300px;
       max-width: 90%;
@@ -856,7 +860,7 @@
     /* New Light Bulb Badge */
     .tips-badge {
       position: fixed;
-      bottom: 230px; /* Increased from 180px to 230px to move it higher */
+      bottom: calc(230px + env(safe-area-inset-bottom, 0px));
       right: 25px;
       background: linear-gradient(145deg, rgba(255, 190, 11, 0.3), rgba(255, 190, 11, 0.4));
       color: var(--warning);
@@ -900,7 +904,7 @@
     /* Tips popup styles */
     .tips-popup {
       position: fixed;
-      bottom: 290px; /* Increased from 240px to 290px to match the new badge position */
+      bottom: calc(290px + env(safe-area-inset-bottom, 0px));
       right: 25px;
       width: 300px;
       max-width: 90%;
@@ -2423,7 +2427,7 @@
         const defaultNotifications = [
           {
             "title": "Algorithm Updated",
-            "message": "3x prediction සඳහා නව ඇල්ගොරිතමය යාවත්කාලීන කරන ලදි.",
+            "message": "100x prediction සඳහා නව ඇල්ගොරිතමය යාවත්කාලීන කරන ලදි.",
             "type": "algorithm_update",
             "timestamp": new Date().toISOString()
           },
@@ -2435,7 +2439,7 @@
           },
           {
             "title": "Welcome Message",
-            "message": "නව තොරතුරු සහ උපදෙස් සඳහා Telegram channel එක සමඟ සම්බන්ධ වන්න.",
+            "message": "නව තොරතුරු සහ උපදෙස් සඳහා Telegram channel එක සෙවීම නිවැරදියි.",
             "type": "general",
             "timestamp": new Date(Date.now() - 86400000).toISOString()
           }
