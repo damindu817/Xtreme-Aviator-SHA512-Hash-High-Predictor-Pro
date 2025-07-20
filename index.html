@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>XTREME AVIATOR SHA512 HASH ULTRA PREDICTOR PRO</title>
+  <title>XTREME AVIATOR SHA512 HASH PREDICTOR PRO</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     /* Disable text selection */
@@ -123,7 +123,7 @@
       margin: 0 auto;
       background: var(--dark-2);
       border-radius: 0 0 16px 16px; /* Only rounded corners at bottom */
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1); /* Softer shadow */
       overflow: hidden;
       border: 1px solid rgba(255, 255, 255, 0.05);
       position: relative;
@@ -442,6 +442,7 @@
       overflow: hidden;
       max-height: calc(100vh - 250px);
       overflow-y: auto;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Softer shadow */
     }
     
     .history-item {
@@ -1818,7 +1819,7 @@
   <div class="app-container">
     <!-- Fixed Header -->
     <div class="header">
-      <h1>XTREME AVIATOR SHA512 HASH ULTRA PREDICTOR PRO</h1>
+      <h1>XTREME AVIATOR SHA512 HASH PREDICTOR PRO</h1>
       <p>Advanced AI-powered prediction with 70%+ accuracy</p>
     </div>
     
@@ -1827,8 +1828,8 @@
       <!-- Main Content Container -->
       <div class="main-container">
         <div class="datetime">
-          <div id="current-date"></div>
-          <div id="current-time"></div>
+          <div id="current-date">Loading...</div>
+          <div id="current-time">--:--:--</div>
         </div>
         
         <div class="content">
@@ -2220,12 +2221,19 @@
     let unseenNotifications = 0;
     
     // Initialize on load
-    window.onload = function() {
+    document.addEventListener('DOMContentLoaded', function() {
+      // Set initial placeholder values
+      document.getElementById("current-date").textContent = "Loading...";
+      document.getElementById("current-time").textContent = "--:--:--";
+      
+      // Then initialize the rest of the app
       initializeApp();
-    };
+    });
 
     function initializeApp() {
+      // Immediately update date/time to avoid delay
       updateDateTime();
+      
       loadHistory();
       updateStats();
       
