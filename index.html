@@ -1828,8 +1828,8 @@
       <!-- Main Content Container -->
       <div class="main-container">
         <div class="datetime">
-          <div id="current-date"></div>
-          <div id="current-time"></div>
+          <div id="current-date">Loading...</div>
+          <div id="current-time">--:--:--</div>
         </div>
         
         <div class="content">
@@ -2222,7 +2222,11 @@
     
     // Initialize on load
     document.addEventListener('DOMContentLoaded', function() {
-      // Initialize the app
+      // Set initial placeholder values
+      document.getElementById("current-date").textContent = "Loading...";
+      document.getElementById("current-time").textContent = "--:--:--";
+      
+      // Then initialize the rest of the app
       initializeApp();
     });
 
