@@ -1,9 +1,9 @@
 [
   {
     "title": "Algorithm Updated",
-    "message": "2x / 3× prediction සඳහා නව Aviator ඇල්ගොරිතමය අනුව පද්ධතිය යාවත්කාලීන කරන ලදි.",
+    "message": "3× prediction සඳහා නව Aviator ඇල්ගොරිතමය අනුව පද්ධතිය යාවත්කාලීන කරන ලදි.",
     "type": "algorithm_update",
-    "timestamp": "2025-07-15T09:30:00Z"
+    "timestamp": "2025-07-23T011:30:00Z"
   },
   {
     "title": "Bug Fixed",
@@ -22,11 +22,5 @@
     "message": "ප්‍රතිඵල ඉතිහාසය අලුතින් යාවත්කාලීන කර ඇත.",
     "type": "feature_update",
     "timestamp": "2025-07-16T10:45:00Z"
-  },
-  {
-    "title": "Maintenance Notice",
-    "message": "පද්ධතිය 2025-07-21 02:00 සිට 04:00 දක්වා නඩත්තුව සඳහා අක්‍රිය වේ.",
-    "type": "maintenance",
-    "timestamp": "2025-07-18T14:00:00Z"
   }
 ]
