@@ -5,140 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>XTREME AVIATOR SHA512 HASH PREDICTOR PRO</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
-  <!-- Firebase SDK (Modular Version) -->
-  <script type="module">
-    // Import the functions you need from the SDKs you need
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.0/firebase-auth.js";
-    import { getDatabase, ref, set, onValue, remove } from "https://www.gstatic.com/firebasejs/9.6.0/firebase-database.js";
-
-    // Your web app's Firebase configuration
-    const firebaseConfig = {
-      apiKey: "AIzaSyAR-ZBLLtavfX6lL1yDiYw67IifG3js44k",
-      authDomain: "aviatorsha512signallimit.firebaseapp.com",
-      databaseURL: "https://aviatorsha512signallimit-default-rtdb.firebaseio.com",
-      projectId: "aviatorsha512signallimit",
-      storageBucket: "aviatorsha512signallimit.firebasestorage.app",
-      messagingSenderId: "210832994146",
-      appId: "1:210832994146:web:46d974f8bcda0ed829463b"
-    };
-
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const database = getDatabase(app);
-
-    // Global variables
-    let currentUser = null;
-    let isPaused = false;
-    let pauseTimeRemaining = 0;
-    let pauseTimer = null;
-
-    // පරිශීලක ලොගින් තත්වය පරීක්ෂා කිරීම
-    onAuthStateChanged(auth, (user) => {
-      currentUser = user;
-      if (user) {
-        console.log("User logged in:", user.email);
-        checkSignalLimitStatus();
-      } else {
-        console.log("User logged out");
-      }
-    });
-
-    // සීමා කාලය පරීක්ෂා කිරීම
-    async function checkSignalLimitStatus() {
-      if (!currentUser) return;
-
-      try {
-        const signalLimitRef = ref(database, `users/${currentUser.uid}/signalLimit`);
-        onValue(signalLimitRef, (snapshot) => {
-          const limitData = snapshot.val();
-          if (limitData && limitData.endTime > Date.now()) {
-            isPaused = true;
-            pauseTimeRemaining = Math.floor((limitData.endTime - Date.now()) / 1000);
-            updatePauseButton();
-            startPauseCountdown();
-          }
-        });
-      } catch (error) {
-        console.error("Error checking signal limit:", error);
-      }
-    }
-
-    // සීමා කාලය ආරම්භ කිරීම
-    async function pausePredictions() {
-      if (!currentUser) return;
-
-      isPaused = true;
-      pauseTimeRemaining = 600; // 10 minutes
-      const endTime = Date.now() + (pauseTimeRemaining * 1000);
-
-      try {
-        const signalLimitRef = ref(database, `users/${currentUser.uid}/signalLimit`);
-        await set(signalLimitRef, {
-          active: true,
-          endTime: endTime
-        });
-        updatePauseButton();
-        startPauseCountdown();
-      } catch (error) {
-        console.error("Error saving to Firebase:", error);
-      }
-    }
-
-    // සීමා කාලය ඉවත් කිරීම
-    async function clearSignalLimit() {
-      if (!currentUser) return;
-      const signalLimitRef = ref(database, `users/${currentUser.uid}/signalLimit`);
-      await remove(signalLimitRef);
-    }
-
-    // Update pause button UI
-    function updatePauseButton() {
-      const pauseBtn = document.getElementById("signalLimitPause");
-      if (pauseBtn) {
-        if (isPaused && pauseTimeRemaining > 0) {
-          pauseBtn.innerHTML = `<i class="fas fa-clock"></i> ${formatTime(pauseTimeRemaining)}`;
-          pauseBtn.disabled = true;
-        } else {
-          pauseBtn.innerHTML = '<i class="fas fa-pause"></i> Pause Predictions';
-          pauseBtn.disabled = false;
-        }
-      }
-    }
-
-    // Start pause countdown
-    function startPauseCountdown() {
-      if (pauseTimer) {
-        clearInterval(pauseTimer);
-      }
-
-      pauseTimer = setInterval(() => {
-        pauseTimeRemaining--;
-        updatePauseButton();
-
-        if (pauseTimeRemaining <= 0) {
-          clearInterval(pauseTimer);
-          isPaused = false;
-          clearSignalLimit();
-          hideSignalLimitPopup();
-        }
-      }, 1000);
-    }
-
-    // Format time as MM:SS
-    function formatTime(seconds) {
-      const mins = Math.floor(seconds / 60);
-      const secs = seconds % 60;
-      return `${mins.toString().padStart(2, '0')}m ${secs.toString().padStart(2, '0')}s`;
-    }
-
-    // Make functions available globally
-    window.pausePredictions = pausePredictions;
-    window.checkSignalLimitStatus = checkSignalLimitStatus;
-  </script>
-
   <style>
     /* Disable text selection */
     body {
@@ -1825,127 +1691,10 @@
       100% { transform: translate(random(200) - 100px, random(200) - 100px) scale(0); opacity: 0; }
     }
 
-    /* Signal Limit Popup Styles */
-    .signal-limit-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.8);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 9990;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
+    @keyframes spin {
+      to { transform: rotate(360deg); }
     }
     
-    .signal-limit-overlay.active {
-      opacity: 1;
-      pointer-events: all;
-    }
-    
-    .signal-limit-popup {
-      width: 90%;
-      max-width: 400px;
-      background: var(--dark-2);
-      border-radius: 12px;
-      padding: 0;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-      transform: translateY(20px);
-      transition: transform 0.3s ease;
-      overflow: hidden;
-    }
-    
-    .signal-limit-overlay.active .signal-limit-popup {
-      transform: translateY(0);
-    }
-    
-    .signal-limit-header {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 15px 20px;
-      color: var(--danger);
-      background: rgba(255, 0, 110, 0.1);
-      border-bottom: 1px solid rgba(255, 0, 110, 0.2);
-    }
-    
-    .signal-limit-header i {
-      font-size: 1.5rem;
-    }
-    
-    .signal-limit-header h3 {
-      font-size: 1.2rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      margin: 0;
-    }
-    
-    .signal-limit-content {
-      padding: 20px;
-    }
-    
-    .signal-limit-message {
-      margin-bottom: 20px;
-      color: var(--light-2);
-      line-height: 1.5;
-      font-size: 0.9rem;
-      text-align: center;
-    }
-    
-    .signal-limit-message p {
-      margin-bottom: 10px;
-    }
-    
-    .signal-limit-buttons {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-    }
-    
-    .signal-limit-btn {
-      flex: 1;
-      padding: 10px 15px;
-      border-radius: 8px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-    
-    .continue-btn {
-      background: var(--dark-3);
-      color: var(--light-1);
-      border: 1px solid var(--dark-3);
-    }
-    
-    .continue-btn:hover {
-      background: var(--dark-1);
-    }
-    
-    .pause-btn {
-      background: var(--danger);
-      color: white;
-      border: 1px solid var(--danger);
-    }
-    
-    .pause-btn:hover {
-      background: #e00064;
-    }
-    
-    /* New style for failed signal message */
-    .failed-signal-message {
-      color: var(--danger) !important;
-      font-weight: bold;
-    }
-
     /* Responsive adjustments */
     @media (max-width: 768px) {
       .odd-buttons {
@@ -1972,10 +1721,6 @@
       
       .stats-container {
         grid-template-columns: 1fr;
-      }
-      
-      .signal-limit-buttons {
-        flex-direction: column;
       }
     }
     
@@ -2044,10 +1789,12 @@
         padding: 8px 15px 12px;
         font-size: 0.65rem;
       }
-      
-      .signal-limit-popup {
-        width: calc(100% - 30px);
-      }
+    }
+
+    /* New style for failed signal message */
+    .failed-signal-message {
+      color: var(--danger) !important;
+      font-weight: bold;
     }
   </style>
 </head>
@@ -2288,30 +2035,6 @@
     <a href="https://damindi817.github.io/DISCLAIMER-/" target="_blank">Click icon for guide & creator contact</a>
   </div>
 
-  <!-- Signal Limit Popup -->
-  <div class="signal-limit-overlay" id="signalLimitOverlay">
-    <div class="signal-limit-popup">
-      <div class="signal-limit-header">
-        <i class="fas fa-exclamation-triangle"></i>
-        <h3>SIGNAL LIMIT REACHED</h3>
-      </div>
-      <div class="signal-limit-content">
-        <div class="signal-limit-message">
-          <p>You have already generated 5 signals. Continuously generating more signals increases the risk of pattern detection by the game algorithm.</p>
-          <p>For optimal performance and to avoid detection, we recommend restarting your session or taking a break.</p>
-        </div>
-        <div class="signal-limit-buttons">
-          <button class="signal-limit-btn continue-btn" id="signalLimitContinue">
-            <i class="fas fa-play"></i> Continue
-          </button>
-          <button class="signal-limit-btn pause-btn" id="signalLimitPause">
-            <i class="fas fa-pause"></i> Pause Predictions
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <!-- Custom Dialogs -->
   <div class="dialog-overlay" id="clearDialog">
     <div class="dialog-box">
@@ -2496,7 +2219,6 @@
     let lastNotificationETag = '';
     let lastNotificationModified = '';
     let unseenNotifications = 0;
-    let signalCount = 0;
     
     // Initialize on load
     document.addEventListener('DOMContentLoaded', function() {
@@ -2640,15 +2362,6 @@
         }, 2000);
       });
       
-      // Signal limit popup buttons
-      document.getElementById("signalLimitContinue").addEventListener("click", function() {
-        hideSignalLimitPopup();
-      });
-      
-      document.getElementById("signalLimitPause").addEventListener("click", function() {
-        pausePredictions();
-      });
-      
       // Start checking for notifications
       startNotificationChecking();
       
@@ -2656,14 +2369,180 @@
       loadNotifications();
     }
     
-    // Show signal limit popup
-    function showSignalLimitPopup() {
-      document.getElementById("signalLimitOverlay").classList.add("active");
+    // Start checking for notifications
+    function startNotificationChecking() {
+      if (notificationCheckInterval) {
+        clearInterval(notificationCheckInterval);
+      }
+      
+      // Check every 15 seconds
+      notificationCheckInterval = setInterval(checkForNewNotifications, 15000);
     }
     
-    // Hide signal limit popup
-    function hideSignalLimitPopup() {
-      document.getElementById("signalLimitOverlay").classList.remove("active");
+    // Check for new notifications
+    async function checkForNewNotifications() {
+      try {
+        const response = await fetch('notifications.json', {
+          method: 'HEAD'
+        });
+        
+        const currentETag = response.headers.get('ETag');
+        const currentModified = response.headers.get('Last-Modified');
+        
+        if (currentETag !== lastNotificationETag || currentModified !== lastNotificationModified) {
+          // There are changes, load the new notifications
+          loadNotifications();
+          lastNotificationETag = currentETag;
+          lastNotificationModified = currentModified;
+        }
+      } catch (e) {
+        console.error("Failed to check for notifications:", e);
+      }
+    }
+    
+    // Load notifications from JSON file
+    async function loadNotifications() {
+      try {
+        const response = await fetch('notifications.json');
+        const notifications = await response.json();
+        
+        // Store the ETag and Last-Modified headers for future checks
+        lastNotificationETag = response.headers.get('ETag');
+        lastNotificationModified = response.headers.get('Last-Modified');
+        
+        // Get the last seen notification time from localStorage
+        const lastSeen = localStorage.getItem('lastSeenNotification') || '0';
+        
+        // Count unseen notifications
+        unseenNotifications = notifications.filter(n => {
+          const notifTime = new Date(n.timestamp).getTime();
+          return notifTime > parseInt(lastSeen);
+        }).length;
+        
+        // Update badge
+        updateNotificationBadge();
+        
+        // Render notifications
+        renderNotifications(notifications);
+      } catch (e) {
+        console.error("Failed to load notifications:", e);
+        
+        // If the file doesn't exist, use default notifications
+        const defaultNotifications = [
+          {
+            "title": "Algorithm Updated",
+            "message": "100x prediction සඳහා නව ඇල්ගොරිතමය යාවත්කාලීන කරන ලදි.",
+            "type": "algorithm_update",
+            "timestamp": new Date().toISOString()
+          },
+          {
+            "title": "Bug Fixed",
+            "message": "Timer ක්‍රියාවලියේ සිදුවූ දෝෂයක් නිවැරදි කරන ලදි.",
+            "type": "bug_fix",
+            "timestamp": new Date(Date.now() - 3600000).toISOString()
+          },
+          {
+            "title": "Welcome Message",
+            "message": "නව තොරතුරු සහ උපදෙස් සඳහා Telegram channel එක සෙවීම නිවැරදියි.",
+            "type": "general",
+            "timestamp": new Date(Date.now() - 86400000).toISOString()
+          }
+        ];
+        
+        renderNotifications(defaultNotifications);
+      }
+    }
+    
+    // Update notification badge
+    function updateNotificationBadge() {
+      const badge = document.getElementById('notificationBadge');
+      
+      if (unseenNotifications > 0) {
+        badge.style.display = 'flex';
+        badge.textContent = unseenNotifications > 9 ? '9+' : unseenNotifications;
+      } else {
+        badge.style.display = 'none';
+      }
+    }
+    
+    // Render notifications in the UI
+    function renderNotifications(notifications) {
+      const container = document.getElementById('notificationTabContent');
+      container.innerHTML = '';
+      
+      // Sort by timestamp (newest first)
+      notifications.sort((a, b) => {
+        return new Date(b.timestamp) - new Date(a.timestamp);
+      });
+      
+      notifications.forEach(notification => {
+        const item = document.createElement('div');
+        item.className = `notification-item notification-${notification.type}`;
+        
+        // Get icon based on type
+        let icon, iconClass;
+        switch(notification.type) {
+          case 'algorithm_update':
+            icon = '⚙️';
+            iconClass = 'fas fa-cogs';
+            break;
+          case 'bug_fix':
+            icon = '🐞';
+            iconClass = 'fas fa-bug';
+            break;
+          default:
+            icon = '🔔';
+            iconClass = 'fas fa-bell';
+        }
+        
+        // Format time
+        const timeStr = formatRelativeTime(new Date(notification.timestamp));
+        
+        item.innerHTML = `
+          <div class="notification-title">
+            <i class="${iconClass}"></i> ${notification.title}
+          </div>
+          <div class="notification-time">
+            <i class="far fa-clock"></i> ${timeStr}
+          </div>
+          <div class="notification-message">
+            ${notification.message}
+          </div>
+        `;
+        
+        container.appendChild(item);
+      });
+    }
+    
+    // Format time as "X time ago"
+    function formatRelativeTime(date) {
+      const now = new Date();
+      const diff = now - date;
+      
+      const minute = 60 * 1000;
+      const hour = 60 * minute;
+      const day = 24 * hour;
+      const month = 30 * day;
+      const year = 365 * day;
+      
+      if (diff < minute) {
+        return "Just now";
+      } else if (diff < hour) {
+        const minutes = Math.floor(diff / minute);
+        return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+      } else if (diff < day) {
+        const hours = Math.floor(diff / hour);
+        return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+      } else if (diff < month) {
+        const days = Math.floor(diff / day);
+        return `${days} day${days > 1 ? 's' : ''} ago`;
+      } else if (diff < year) {
+        const months = Math.floor(diff / month);
+        return `${months} month${months > 1 ? 's' : ''} ago`;
+      } else {
+        const years = Math.floor(diff / year);
+        return `${years} year${years > 1 ? 's' : ''} ago`;
+      }
     }
     
     // Tab switching function - UPDATED to handle notification badge
@@ -3373,12 +3252,6 @@
       
       // Update stats
       updateStats();
-      
-      // Increment signal count and check if we need to show the limit popup
-      signalCount++;
-      if (signalCount === 6) {
-        showSignalLimitPopup();
-      }
     }
     
     function updateStats() {
@@ -3458,9 +3331,8 @@
       document.getElementById("result-delay").textContent = "-";
       document.getElementById("result-time").textContent = "-";
       
-      // Reset stats and signal count
+      // Reset stats
       updateStats();
-      signalCount = 0;
       
       hideClearDialog();
     }
@@ -3533,21 +3405,12 @@
         log.appendChild(entry);
       });
       
-      // Update signal count from history
-      signalCount = history.length;
-      
       // Check for active signals on load
       checkNextSignal();
     }
     
     // Main prediction function
     function predict(oddStr) {
-      // Check if predictions are paused
-      if (isPaused) {
-        showErrorDialog("Predictions are currently paused. Please wait until the timer expires.");
-        return;
-      }
-      
       const hash = document.getElementById("hashInput").value.trim().toLowerCase();
       const output = document.getElementById("output");
       
