@@ -41,7 +41,10 @@
       --accent: #3a86ff;
       --extreme: #ff00ff;
       --nav-height: 60px;
-      --header-height: 80px;
+      --header-height: 60px;
+      --whatsapp: #25D366;
+      --telegram: #0088cc;
+      --youtube: #FF0000;
     }
     
     * {
@@ -77,7 +80,7 @@
       position: relative;
     }
     
-    /* Fixed Header */
+    /* Fixed Header - UPDATED to not change in light mode */
     .header {
       position: fixed;
       top: 0;
@@ -86,23 +89,96 @@
       height: var(--header-height);
       background: linear-gradient(90deg, var(--primary), var(--secondary));
       padding: 10px 20px;
-      text-align: center;
       z-index: 100;
       display: flex;
-      flex-direction: column;
-      justify-content: center;
+      justify-content: space-between;
+      align-items: center;
     }
     
     .header h1 {
       font-weight: 800;
-      font-size: 1.4rem;
-      margin-bottom: 2px;
+      font-size: 1.2rem;
       line-height: 1.2;
+      text-align: left;
+      color: white;
     }
     
     .header p {
-      opacity: 0.9;
-      font-size: 0.8rem;
+      display: none;
+    }
+    
+    .header-settings {
+      font-size: 1.2rem;
+      color: white;
+      cursor: pointer;
+    }
+    
+    /* Settings Panel */
+    .settings-panel {
+      position: fixed;
+      top: 0;
+      right: -300px;
+      width: 300px;
+      height: 100%;
+      background: var(--dark-2);
+      z-index: 1000;
+      transition: right 0.3s ease;
+      padding: 20px;
+      box-shadow: -5px 0 15px rgba(0,0,0,0.2);
+    }
+    
+    .settings-panel.show {
+      right: 0;
+    }
+    
+    .settings-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--dark-3);
+    }
+    
+    .settings-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+    
+    .close-settings {
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+    
+    .settings-group {
+      margin-bottom: 20px;
+    }
+    
+    .settings-group-title {
+      font-size: 0.9rem;
+      margin-bottom: 10px;
+      color: var(--light-2);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    .language-options {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .language-option {
+      padding: 8px 15px;
+      border-radius: 20px;
+      background: var(--dark-3);
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+    }
+    
+    .language-option.active {
+      background: var(--primary);
+      color: white;
     }
     
     /* Scrollable content area */
@@ -141,7 +217,7 @@
       padding: 15px;
     }
     
-    /* Fixed Navigation Bar */
+    /* Fixed Navigation Bar - UPDATED to not change in light mode */
     .nav-bar {
       position: fixed;
       bottom: 0;
@@ -665,7 +741,7 @@
       color: var(--warning);
     }
     
-    /* Support Tab Styles */
+    /* Support Tab Styles - UPDATED */
     .support-tab {
       padding: 15px;
     }
@@ -708,6 +784,26 @@
     
     .support-btn i {
       font-size: 1.2rem;
+    }
+    
+    /* WhatsApp support button */
+    .support-btn.whatsapp {
+      background: rgba(37, 211, 102, 0.2);
+      color: var(--whatsapp);
+    }
+    
+    .support-btn.whatsapp:hover {
+      background: rgba(37, 211, 102, 0.3);
+    }
+    
+    /* Telegram support button */
+    .support-btn.telegram {
+      background: rgba(0, 136, 204, 0.2);
+      color: var(--telegram);
+    }
+    
+    .support-btn.telegram:hover {
+      background: rgba(0, 136, 204, 0.3);
     }
     
     /* Tooltip */
@@ -1695,6 +1791,123 @@
       to { transform: rotate(360deg); }
     }
     
+    /* Community Section Styles - UPDATED */
+    .community-card {
+      background: var(--dark-3);
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 15px;
+    }
+    
+    .community-card h3 {
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .community-btn {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      outline: none !important;
+      border: none !important;
+    }
+    
+    .community-btn i {
+      font-size: 1.2rem;
+    }
+    
+    .community-btn.whatsapp {
+      background: rgba(37, 211, 102, 0.2);
+      color: var(--whatsapp);
+    }
+    
+    .community-btn.whatsapp:hover {
+      background: rgba(37, 211, 102, 0.3);
+    }
+    
+    .community-btn.telegram {
+      background: rgba(0, 136, 204, 0.2);
+      color: var(--telegram);
+    }
+    
+    .community-btn.telegram:hover {
+      background: rgba(0, 136, 204, 0.3);
+    }
+    
+    .community-btn.youtube {
+      background: rgba(255, 0, 0, 0.2);
+      color: var(--youtube);
+    }
+    
+    .community-btn.youtube:hover {
+      background: rgba(255, 0, 0, 0.3);
+    }
+
+    /* Help & Guides Section - UPDATED (formerly Resources) */
+    .help-guides-card {
+      background: var(--dark-3);
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 15px;
+    }
+    
+    .help-guides-card h3 {
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .help-guides-btn {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      outline: none !important;
+      border: none !important;
+    }
+    
+    .help-guides-btn i {
+      font-size: 1.2rem;
+    }
+    
+    .help-guides-btn.guide {
+      background: rgba(255, 190, 11, 0.2);
+      color: var(--warning);
+    }
+    
+    .help-guides-btn.guide:hover {
+      background: rgba(255, 190, 11, 0.3);
+    }
+    
+    .help-guides-btn.disclaimer {
+      background: rgba(255, 0, 110, 0.2);
+      color: var(--danger);
+    }
+    
+    .help-guides-btn.disclaimer:hover {
+      background: rgba(255, 0, 110, 0.3);
+    }
+    
     /* Responsive adjustments */
     @media (max-width: 768px) {
       .odd-buttons {
@@ -1732,10 +1945,6 @@
     @media (max-width: 480px) {
       .header h1 {
         font-size: 1.2rem;
-      }
-      
-      .header p {
-        font-size: 0.7rem;
       }
       
       .content {
@@ -1848,12 +2057,36 @@
     </div>
   </div>
 
+  <!-- Settings Panel -->
+  <div class="settings-panel" id="settingsPanel">
+    <div class="settings-header">
+      <div class="settings-title">Settings</div>
+      <div class="close-settings" onclick="hideSettings()">
+        <i class="fas fa-times"></i>
+      </div>
+    </div>
+    
+    <div class="settings-group">
+      <div class="settings-group-title">Language</div>
+      <div class="language-options">
+        <div class="language-option active" onclick="setLanguage('en')">
+          English
+        </div>
+        <div class="language-option" onclick="setLanguage('si')">
+          සිංහල
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- App Structure -->
   <div class="app-container">
     <!-- Fixed Header -->
     <div class="header">
-      <h1>XTREME AVIATOR SHA512 HASH PREDICTOR PRO</h1>
-      <p>Advanced AI-powered prediction with 70%+ accuracy</p>
+      <h1>XTREME AVIATOR SHA512 HASH</h1>
+      <div class="header-settings" onclick="showSettings()">
+        <i class="fas fa-cog"></i>
+      </div>
     </div>
     
     <!-- Scrollable Content Area -->
@@ -1985,29 +2218,38 @@
           <!-- Support Tab -->
           <div class="tab-content" id="supportTab">
             <div class="support-tab">
-              <div class="support-card">
-                <h3><i class="fas fa-question-circle"></i> Need Help?</h3>
-                <button class="support-btn" onclick="window.open('https://damindu817.github.io/Aviator-Sha512-Hash-Professional-Strategy-Guide/','_blank')" style="background: rgba(255, 190, 11, 0.2); color: var(--warning);">
+              <!-- New Community Section -->
+              <div class="community-card">
+                <h3><i class="fas fa-users"></i> Join Our Community</h3>
+                <button class="community-btn whatsapp" onclick="window.open('https://chat.whatsapp.com/YOUR_WHATSAPP_LINK')">
+                  <i class="fab fa-whatsapp"></i> WhatsApp Group
+                </button>
+                <button class="community-btn telegram" onclick="window.open('https://t.me/YOUR_TELEGRAM_LINK')">
+                  <i class="fab fa-telegram"></i> Telegram Group
+                </button>
+                <button class="community-btn youtube" onclick="window.open('https://youtube.com/YOUR_YOUTUBE_CHANNEL')">
+                  <i class="fab fa-youtube"></i> YouTube Channel
+                </button>
+              </div>
+              
+              <!-- Help & Guides Section (formerly Resources) -->
+              <div class="help-guides-card">
+                <h3><i class="fas fa-question-circle"></i> Help & Guides</h3>
+                <button class="help-guides-btn guide" onclick="window.open('https://damindu817.github.io/Aviator-Sha512-Hash-Professional-Strategy-Guide/','_blank')">
                   <i class="fas fa-book"></i> User Guide
                 </button>
-                <button class="support-btn" onclick="window.open('https://damindu817.github.io/DISCLAIMER-/','_blank')" style="background: rgba(255, 0, 110, 0.2); color: var(--danger);">
+                <button class="help-guides-btn disclaimer" onclick="window.open('https://damindu817.github.io/DISCLAIMER-/','_blank')">
                   <i class="fas fa-exclamation-triangle"></i> Disclaimer
-                </button>
-                <button class="support-btn" onclick="window.open('https://t.me/aviatorpredictor')" style="background: rgba(0, 136, 204, 0.2); color: #0088cc;">
-                  <i class="fab fa-telegram"></i> Telegram Support
-                </button>
-                <button class="support-btn" onclick="window.open('https://wa.me/1234567890')" style="background: rgba(37, 211, 102, 0.2); color: #25D366;">
-                  <i class="fab fa-whatsapp"></i> WhatsApp Support
                 </button>
               </div>
               
               <div class="support-card">
-                <h3><i class="fas fa-crown"></i> Premium</h3>
-                <button class="support-btn" onclick="showPremiumDialog()">
-                  <i class="fas fa-star"></i> Upgrade to Premium
+                <h3><i class="fas fa-headset"></i> Support</h3>
+                <button class="support-btn telegram" onclick="window.open('https://t.me/aviatorpredictor')">
+                  <i class="fab fa-telegram"></i> Telegram Support
                 </button>
-                <button class="support-btn" onclick="showPremiumFeatures()">
-                  <i class="fas fa-gem"></i> Premium Features
+                <button class="support-btn whatsapp" onclick="window.open('https://wa.me/1234567890')">
+                  <i class="fab fa-whatsapp"></i> WhatsApp Support
                 </button>
               </div>
             </div>
@@ -2105,30 +2347,6 @@
       <div class="dialog-message" id="successMessage">Prediction signal created successfully!</div>
       <div class="dialog-buttons">
         <button class="dialog-btn dialog-btn-confirm" onclick="hideSuccessDialog()" style="background: var(--success);">OK</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Premium Dialog -->
-  <div class="dialog-overlay" id="premiumDialog">
-    <div class="dialog-box">
-      <div class="dialog-title">
-        <i class="fas fa-crown" style="color: var(--warning);"></i>
-        <span>Premium Features</span>
-      </div>
-      <div class="dialog-message">
-        <ul style="padding-left: 20px; margin-bottom: 15px;">
-          <li>Higher accuracy predictions</li>
-          <li>Exclusive signals</li>
-          <li>Advanced analytics</li>
-          <li>Priority support</li>
-          <li>No ads</li>
-        </ul>
-        <p>Upgrade now to unlock all premium features!</p>
-      </div>
-      <div class="dialog-buttons">
-        <button class="dialog-btn dialog-btn-cancel" onclick="hidePremiumDialog()">Later</button>
-        <button class="dialog-btn dialog-btn-confirm" onclick="window.open('https://damindu817.github.io/Aviator-Sha512-Hash-Professional-Strategy-Guide/','_blank')" style="background: var(--warning);">Upgrade</button>
       </div>
     </div>
   </div>
@@ -2402,6 +2620,29 @@
       loadNotifications();
     }
     
+    // Settings functions
+    function showSettings() {
+      document.getElementById("settingsPanel").classList.add("show");
+    }
+    
+    function hideSettings() {
+      document.getElementById("settingsPanel").classList.remove("show");
+    }
+    
+    function setLanguage(lang) {
+      // Update active button
+      document.querySelectorAll('.language-option').forEach(option => {
+        option.classList.remove('active');
+      });
+      event.target.classList.add('active');
+      
+      // Save preference
+      localStorage.setItem('language', lang);
+      
+      // Here you would implement language switching logic
+      // This would require translation strings and updating the UI
+    }
+    
     // Start checking for notifications
     function startNotificationChecking() {
       if (notificationCheckInterval) {
@@ -2647,21 +2888,6 @@
           tipsPopup.classList.remove("show");
         }, 8000);
       }
-    }
-    
-    // Show premium dialog
-    function showPremiumDialog() {
-      document.getElementById("premiumDialog").classList.add("active");
-    }
-    
-    // Hide premium dialog
-    function hidePremiumDialog() {
-      document.getElementById("premiumDialog").classList.remove("active");
-    }
-    
-    // Show premium features
-    function showPremiumFeatures() {
-      showPremiumDialog();
     }
     
     // Update current date and time with server sync
