@@ -89,7 +89,7 @@
       height: var(--header-height);
       background: linear-gradient(90deg, var(--primary), var(--secondary));
       padding: 10px 20px;
-      z-index: 100;
+      z-index: 1000; /* Increased z-index */
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -121,7 +121,7 @@
       width: 300px;
       height: 100%;
       background: var(--dark-2);
-      z-index: 1000;
+      z-index: 1001; /* Above overlay */
       transition: right 0.3s ease;
       padding: 20px;
       box-shadow: -5px 0 15px rgba(0,0,0,0.2);
@@ -227,7 +227,7 @@
       background: var(--dark-2);
       display: flex;
       border-top: 1px solid rgba(255, 255, 255, 0.05);
-      z-index: 100;
+      z-index: 1000; /* Increased z-index */
     }
     
     .nav-item {
@@ -864,7 +864,7 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      z-index: 999;
+      z-index: 997;
       box-shadow: 0 5px 20px rgba(255, 0, 110, 0.3);
       transition: all 0.3s ease;
       font-size: 1.2rem;
@@ -964,7 +964,7 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      z-index: 997;
+      z-index: 999;
       box-shadow: 0 5px 20px rgba(255, 190, 11, 0.3);
       transition: all 0.3s ease;
       font-size: 1.2rem;
@@ -1009,7 +1009,7 @@
       transform: translateY(20px);
       opacity: 0;
       transition: all 0.3s ease;
-      z-index: 996;
+      z-index: 1000;
       pointer-events: none;
     }
     
@@ -1069,7 +1069,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      z-index: 1000;
+      z-index: 1001;
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.3s ease;
@@ -2038,6 +2038,43 @@
       color: var(--danger) !important;
       font-weight: bold;
     }
+
+    /* New overlay styles for popups */
+    .popup-overlay {
+      position: fixed;
+      top: var(--header-height);
+      bottom: var(--nav-height);
+      left: 0;
+      right: 0;
+      background: rgba(0, 0, 0, 0.85);
+      z-index: 999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .popup-overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    /* Ensure header and nav stay visible */
+    .header, .nav-bar {
+      z-index: 1000 !important;
+    }
+
+    /* Ensure popups stay above overlay */
+    .tips-popup {
+      z-index: 1000 !important;
+    }
+    
+    .disclaimer-popup {
+      z-index: 998 !important;
+    }
+    
+    .signal-container, .risk-signal-container {
+      z-index: 1002 !important;
+    }
   </style>
 </head>
 <body>
@@ -2056,6 +2093,9 @@
       </button>
     </div>
   </div>
+
+  <!-- Popup Overlay -->
+  <div class="popup-overlay" id="popupOverlay"></div>
 
   <!-- Settings Panel -->
   <div class="settings-panel" id="settingsPanel">
@@ -2532,9 +2572,24 @@
         e.preventDefault();
         e.stopPropagation();
         tipsPopup.classList.toggle("show");
+        document.getElementById("popupOverlay").classList.toggle("active", tipsPopup.classList.contains("show"));
         
         // Hide disclaimer popup if showing
         document.getElementById("disclaimerPopup").classList.remove("show");
+      });
+      
+      // Initialize disclaimer badge
+      const disclaimerBadge = document.getElementById("disclaimerBadge");
+      const disclaimerPopup = document.getElementById("disclaimerPopup");
+      
+      disclaimerBadge.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        disclaimerPopup.classList.toggle("show");
+        document.getElementById("popupOverlay").classList.toggle("active", disclaimerPopup.classList.contains("show"));
+        
+        // Hide tips popup if showing
+        document.getElementById("tipsPopup").classList.remove("show");
       });
       
       // Close popups when clicking elsewhere
@@ -2544,7 +2599,12 @@
         }
         
         if (!disclaimerBadge.contains(e.target) && !disclaimerPopup.contains(e.target)) {
-          document.getElementById("disclaimerPopup").classList.remove("show");
+          disclaimerPopup.classList.remove("show");
+        }
+        
+        // Hide overlay if no popups are showing
+        if (!tipsPopup.classList.contains("show") && !disclaimerPopup.classList.contains("show")) {
+          document.getElementById("popupOverlay").classList.remove("active");
         }
       });
       
@@ -2623,10 +2683,12 @@
     // Settings functions
     function showSettings() {
       document.getElementById("settingsPanel").classList.add("show");
+      document.getElementById("popupOverlay").classList.add("active");
     }
     
     function hideSettings() {
       document.getElementById("settingsPanel").classList.remove("show");
+      document.getElementById("popupOverlay").classList.remove("active");
     }
     
     function setLanguage(lang) {
@@ -2868,12 +2930,14 @@
     function showDisclaimer() {
       const popup = document.getElementById("disclaimerPopup");
       popup.classList.add("show");
+      document.getElementById("popupOverlay").classList.add("active");
     }
     
     // Hide disclaimer popup
     function hideDisclaimer() {
       const popup = document.getElementById("disclaimerPopup");
       popup.classList.remove("show");
+      document.getElementById("popupOverlay").classList.remove("active");
     }
     
     // Show tips popup after signal generation and result
@@ -2881,11 +2945,13 @@
       if (!tipsPopupShown && signalResultReceived) {
         const tipsPopup = document.getElementById("tipsPopup");
         tipsPopup.classList.add("show");
+        document.getElementById("popupOverlay").classList.add("active");
         tipsPopupShown = true;
         
         // Auto-hide after 8 seconds
         setTimeout(() => {
           tipsPopup.classList.remove("show");
+          document.getElementById("popupOverlay").classList.remove("active");
         }, 8000);
       }
     }
@@ -3200,6 +3266,7 @@
       
       // Show popup
       popup.classList.add("active");
+      document.getElementById("popupOverlay").classList.add("active");
       
       // Auto-close when signal time arrives
       const now = new Date(Date.now() + serverTimeOffset);
@@ -3317,6 +3384,7 @@
       
       // Show popup and play warning sound
       popup.classList.add("active");
+      document.getElementById("popupOverlay").classList.add("active");
       playWarningSound();
       
       // Auto-close when signal time arrives
@@ -3334,6 +3402,7 @@
     function closeSignalPopup() {
       const popup = document.getElementById("signalPopup");
       popup.classList.remove("active");
+      document.getElementById("popupOverlay").classList.remove("active");
       activeSignalPopup = null;
       
       // Clear countdown interval
@@ -3347,6 +3416,7 @@
     function closeRiskSignalPopup() {
       const popup = document.getElementById("riskSignalPopup");
       popup.classList.remove("active");
+      document.getElementById("popupOverlay").classList.remove("active");
       activeSignalPopup = null;
       
       // Clear countdown interval
@@ -3542,29 +3612,35 @@
     // Dialog functions
     function showClearDialog() {
       document.getElementById("clearDialog").classList.add("active");
+      document.getElementById("popupOverlay").classList.add("active");
     }
     
     function hideClearDialog() {
       document.getElementById("clearDialog").classList.remove("active");
+      document.getElementById("popupOverlay").classList.remove("active");
     }
     
     function showErrorDialog(message) {
       document.getElementById("errorMessage").textContent = message;
       document.getElementById("errorDialog").classList.add("active");
+      document.getElementById("popupOverlay").classList.add("active");
     }
     
     function hideErrorDialog() {
       document.getElementById("errorDialog").classList.remove("active");
+      document.getElementById("popupOverlay").classList.remove("active");
     }
     
     function showSuccessDialog(message) {
       document.getElementById("successMessage").textContent = message;
       document.getElementById("successDialog").classList.add("active");
+      document.getElementById("popupOverlay").classList.add("active");
       playSuccessSound();
     }
     
     function hideSuccessDialog() {
       document.getElementById("successDialog").classList.remove("active");
+      document.getElementById("popupOverlay").classList.remove("active");
       
       // After hiding the success dialog, check if we should show tips popup
       if (signalResultReceived) {
