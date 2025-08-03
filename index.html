@@ -950,10 +950,10 @@
       text-decoration: underline;
     }
 
-    /* New Light Bulb Badge */
+    /* New Light Bulb Badge - UPDATED POSITION */
     .tips-badge {
       position: fixed;
-      bottom: 280px;
+      bottom: 280px; /* Changed from 230px to 280px to move it higher */
       right: 25px;
       background: linear-gradient(145deg, rgba(255, 190, 11, 0.3), rgba(255, 190, 11, 0.4));
       color: var(--warning);
@@ -994,10 +994,10 @@
                       0 0 0 30px rgba(255, 190, 11, 0); }
     }
     
-    /* Tips popup styles */
+    /* Tips popup styles - UPDATED POSITION */
     .tips-popup {
       position: fixed;
-      bottom: 290px;
+      bottom: 340px; /* Changed from 290px to 340px to match new badge position */
       right: 25px;
       width: 300px;
       max-width: 90%;
@@ -1970,7 +1970,7 @@
       
       /* Adjust badge positions for mobile */
       .tips-badge {
-        bottom: 150px;
+        bottom: 200px; /* Adjusted from 150px to 200px */
         right: 15px;
       }
       
@@ -1980,7 +1980,7 @@
       }
       
       .tips-popup {
-        bottom: 200px;
+        bottom: 260px; /* Adjusted from 200px to 260px */
         right: 15px;
         width: calc(100% - 30px);
       }
@@ -2280,12 +2280,12 @@
     </div>
   </div>
 
-  <!-- Tips Badge -->
+  <!-- Tips Badge - Position updated -->
   <div class="tips-badge" id="tipsBadge">
     <i class="fas fa-lightbulb"></i>
   </div>
 
-  <!-- Tips Popup -->
+  <!-- Tips Popup - Position updated -->
   <div class="tips-popup" id="tipsPopup">
     <h4><i class="fas fa-lightbulb"></i> TIPS & TRICKS</h4>
     <p>Here are some expert tips to improve your predictions:</p>
