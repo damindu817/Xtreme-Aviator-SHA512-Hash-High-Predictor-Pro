@@ -699,7 +699,7 @@
     .history-multiplier-100 span { background: rgba(255, 0, 255, 0.2); color: var(--extreme); }
     
     .history-details {
-      text-align: right;
+      text-align: left;
       font-size: 0.85rem;
     }
     
@@ -708,7 +708,6 @@
       margin-bottom: 5px;
       display: flex;
       align-items: center;
-      justify-content: flex-end;
       gap: 5px;
     }
     
@@ -2495,15 +2494,17 @@
       
       // Initialize signal popup events
       document.getElementById("signalPopup").addEventListener('click', function(e) {
+        // Only close if clicking directly on the overlay background
         if (e.target === this) {
-          closeSignalPopup();
+          e.stopPropagation();
         }
       });
       
       // Initialize risk signal popup events
       document.getElementById("riskSignalPopup").addEventListener('click', function(e) {
+        // Only close if clicking directly on the overlay background
         if (e.target === this) {
-          closeRiskSignalPopup();
+          e.stopPropagation();
         }
       });
       
