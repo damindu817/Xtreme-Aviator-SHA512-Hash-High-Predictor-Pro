@@ -122,7 +122,7 @@
       height: 100%;
       background: var(--dark-2);
       z-index: 1000;
-      transition: right 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      transition: right 0.3s ease-out;
       padding: 20px;
       box-shadow: -5px 0 25px rgba(0,0,0,0.3);
       border-left: 1px solid rgba(255, 255, 255, 0.05);
@@ -574,7 +574,6 @@
       transition: all 0.3s ease;
       display: flex;
       align-items: center;
-      justify-content: center;
       gap: 8px;
       margin-top: 15px;
       width: 100%;
@@ -638,6 +637,7 @@
       overflow-y: auto;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
       border: 1px solid rgba(255, 255, 255, 0.05);
+      margin-top: 15px;
     }
     
     .history-item {
@@ -1145,7 +1145,6 @@
       font-weight: 500;
       font-size: 0.8rem;
       display: inline-block;
-      margin-top: 5px;
     }
     
     .tips-popup a:hover {
@@ -1167,7 +1166,6 @@
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.3s ease;
-      backdrop-filter: blur(5px);
     }
 
     .dialog-overlay.active {
@@ -1266,7 +1264,6 @@
       right: 0;
       bottom: 0;
       background: rgba(0, 0, 0, 0.7);
-      backdrop-filter: blur(8px);
       display: flex;
       justify-content: center;
       align-items: center;
@@ -1513,7 +1510,6 @@
       right: 0;
       bottom: 0;
       background: rgba(0, 0, 0, 0.7);
-      backdrop-filter: blur(8px);
       display: flex;
       justify-content: center;
       align-items: center;
@@ -1789,7 +1785,6 @@
       animation: fadeIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
       position: relative;
       z-index: 2;
-      backdrop-filter: blur(10px);
     }
     
     .offline-icon {
@@ -2658,7 +2653,7 @@
           lastNotificationModified = currentModified;
         }
       } catch (e) {
-        console.error("Failed to check for notifications:", e);
+        console.error("Time sync failed, using local time:", e);
       }
     }
     
