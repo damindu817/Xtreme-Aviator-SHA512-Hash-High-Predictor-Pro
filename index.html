@@ -1413,6 +1413,11 @@
       animation: spin 2s linear infinite;
     }
     
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
     #countdown-timer {
       font-size: 1.8rem;
       font-weight: 800;
@@ -1877,16 +1882,93 @@
       100% { transform: translate(random(200) - 100px, random(200) - 100px) scale(0); opacity: 0; }
     }
 
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-    
     /* New style for failed signal message */
     .failed-signal-message {
       color: var(--danger) !important;
       font-weight: bold;
     }
 
+    /* Auto Selection Panel Styles */
+    .auto-selection-panel {
+      background: var(--dark-3);
+      border-radius: 12px;
+      padding: 20px;
+      margin: 25px 0;
+      border-left: 4px solid var(--primary);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .auto-selection-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    
+    .auto-selection-title {
+      font-weight: 600;
+      color: var(--light-1);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .auto-select-btn {
+      background: rgba(6, 214, 160, 0.2);
+      color: var(--success);
+      border: none;
+      border-radius: 10px;
+      padding: 12px 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      font-size: 0.9rem;
+    }
+    
+    .auto-select-btn:hover {
+      background: rgba(6, 214, 160, 0.3);
+    }
+    
+    .auto-select-btn i {
+      font-size: 1.1rem;
+    }
+    
+    .auto-selection-result {
+      margin-top: 15px;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      display: none;
+    }
+    
+    .auto-selection-result.active {
+      display: block;
+      animation: fadeIn 0.3s ease-out;
+    }
+    
+    .auto-selection-details {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    
+    .auto-selection-detail {
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    .auto-selection-detail i {
+      font-size: 1rem;
+    }
+    
     /* Responsive adjustments */
     @media (max-width: 768px) {
       .odd-buttons {
@@ -1918,6 +2000,10 @@
       /* Adjust signal popups for tablet */
       .signal-card, .risk-signal-card {
         max-width: 350px;
+      }
+      
+      .auto-selection-details {
+        grid-template-columns: 1fr;
       }
     }
     
@@ -2103,6 +2189,42 @@
               <div class="stat-card">
                 <h4>Total Predictions</h4>
                 <div class="value" id="total-predictions">-</div>
+              </div>
+            </div>
+            
+            <!-- Auto Selection Panel -->
+            <div class="auto-selection-panel">
+              <div class="auto-selection-header">
+                <h3 class="auto-selection-title"><i class="fas fa-robot"></i> AI Auto Selection</h3>
+              </div>
+              <p style="margin-bottom: 15px; font-size: 0.9rem; color: var(--light-2);">Let our AI analyze the hash and recommend the safest multiplier with highest confidence.</p>
+              <button class="auto-select-btn" id="autoSelectBtn" onclick="autoSelectMultiplier()">
+                <i class="fas fa-magic"></i> Auto Select Best Multiplier
+              </button>
+              
+              <div class="auto-selection-result" id="autoSelectionResult">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <strong>Recommended Multiplier:</strong>
+                  <span id="auto-selected-odd" style="font-weight: 700; font-size: 1.1rem;">-</span>
+                </div>
+                <div class="auto-selection-details">
+                  <div class="auto-selection-detail">
+                    <i class="fas fa-shield-alt" style="color: var(--success);"></i>
+                    <span>Safety: <span id="auto-safety">-</span></span>
+                  </div>
+                  <div class="auto-selection-detail">
+                    <i class="fas fa-chart-line" style="color: var(--primary);"></i>
+                    <span>Confidence: <span id="auto-confidence">-</span></span>
+                  </div>
+                  <div class="auto-selection-detail">
+                    <i class="fas fa-clock" style="color: var(--warning);"></i>
+                    <span>Delay: <span id="auto-delay">-</span></span>
+                  </div>
+                  <div class="auto-selection-detail">
+                    <i class="fas fa-percentage" style="color: var(--secondary);"></i>
+                    <span>Success Rate: <span id="auto-success-rate">-</span></span>
+                  </div>
+                </div>
               </div>
             </div>
             
@@ -2995,6 +3117,77 @@
     
     // ====== END OF UPDATED ALGORITHMS ====== //
     
+    // Auto-select the best multiplier based on hash analysis
+    function autoSelectMultiplier() {
+      const hash = document.getElementById("hashInput").value.trim();
+      if (!hash || hash.length !== 128 || !/^[a-f0-9]+$/.test(hash)) {
+        showErrorDialog("Please enter a valid SHA512 hash first.");
+        return;
+      }
+      
+      const entropy = calcEntropy(hash);
+      const score = scoreFromHash(hash);
+      const resultPanel = document.getElementById("autoSelectionResult");
+      
+      // Analyze all multipliers
+      const multipliers = [2, 3, 4, 7, 10, 100];
+      const analysis = multipliers.map(odd => {
+        const confidence = calculateConfidence(entropy, score, odd.toString(), hash);
+        const delay = calculateDelay(score, entropy, odd.toString(), hash);
+        
+        // Calculate safety score (higher is safer)
+        let safetyScore = 0;
+        if (odd === 2) safetyScore = 95;
+        else if (odd === 3) safetyScore = 85;
+        else if (odd === 4) safetyScore = 70;
+        else if (odd === 7) safetyScore = 50;
+        else if (odd === 10) safetyScore = 30;
+        else safetyScore = 5; // 100x is very risky
+        
+        // Adjust safety based on confidence
+        safetyScore = Math.min(100, Math.max(0, safetyScore + (confidence - 50) / 2));
+        
+        return {
+          odd,
+          confidence,
+          delay,
+          safetyScore,
+          successRate: Math.min(95, Math.max(5, confidence * 0.9)) // Estimated success rate
+        };
+      });
+      
+      // Sort by best combination of safety and confidence
+      analysis.sort((a, b) => {
+        // Weight safety more than confidence for auto-selection
+        const scoreA = (a.safetyScore * 0.7) + (a.confidence * 0.3);
+        const scoreB = (b.safetyScore * 0.7) + (b.confidence * 0.3);
+        return scoreB - scoreA; // Descending order
+      });
+      
+      const best = analysis[0];
+      
+      // Update UI with recommendation
+      document.getElementById("auto-selected-odd").textContent = `${best.odd}x`;
+      document.getElementById("auto-safety").textContent = `${Math.round(best.safetyScore)}%`;
+      document.getElementById("auto-confidence").textContent = `${best.confidence}%`;
+      document.getElementById("auto-delay").textContent = `${best.delay}s`;
+      document.getElementById("auto-success-rate").textContent = `${Math.round(best.successRate)}%`;
+      
+      // Show the result panel
+      resultPanel.classList.add("active");
+      
+      // Highlight the recommended odd button
+      document.querySelectorAll('.odd-btn').forEach(btn => {
+        btn.style.boxShadow = 'none';
+      });
+      document.getElementById(`odd-${best.odd}`).style.boxShadow = `0 0 0 3px rgba(58, 134, 255, 0.5)`;
+      
+      // Auto-select this odd after a short delay
+      setTimeout(() => {
+        predict(best.odd.toString());
+      }, 1500);
+    }
+    
     // Paste hash from clipboard
     document.getElementById("pasteHashInput").addEventListener('click', async function() {
       try {
@@ -3032,6 +3225,9 @@
       document.getElementById("result-confidence").textContent = "-";
       document.getElementById("result-delay").textContent = "-";
       document.getElementById("result-time").textContent = "-";
+      
+      // Reset auto-selection panel
+      document.getElementById("autoSelectionResult").classList.remove("active");
     });
     
     // Audio functions
