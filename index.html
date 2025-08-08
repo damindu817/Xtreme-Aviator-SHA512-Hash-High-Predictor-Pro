@@ -3177,11 +3177,10 @@
       // Show the result panel
       resultPanel.classList.add("active");
       
-      // Highlight the recommended odd button
-      document.querySelectorAll('.odd-btn').forEach(btn => {
-        btn.style.boxShadow = 'none';
-      });
-      document.getElementById(`odd-${best.odd}`).style.boxShadow = `0 0 0 3px rgba(58, 134, 255, 0.5)`;
+      // Auto-select this odd after a short delay
+setTimeout(() => {
+  predict(best.odd.toString());
+}, 1500);
       
       // Auto-select this odd after a short delay
       setTimeout(() => {
