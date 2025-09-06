@@ -1,0 +1,51 @@
+/* Crash Time Input Styles */
+.crash-time-group {
+  margin-top: 15px;
+}
+
+.crash-time-group label {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: var(--light-2);
+}
+
+.crash-time-input {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#crashTimeInput {
+  flex: 1;
+  padding: 15px 18px;
+  background: var(--dark-3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  color: var(--light-1);
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+#crashTimeInput:focus {
+  outline: none;
+  border-color: var(--secondary);
+  box-shadow: 0 0 0 3px rgba(131, 56, 236, 0.2), inset 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.crash-time-btn {
+  padding: 15px;
+  border-radius: 10px;
+  background: rgba(131, 56, 236, 0.2);
+  color: var(--secondary);
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.crash-time-btn:hover {
+  background: rgba(131, 56, 236, 0.3);
+  transform: scale(1.05);
+}
